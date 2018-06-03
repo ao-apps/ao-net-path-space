@@ -35,11 +35,11 @@ Manages allocation of a path space between components.
 * Very fast lookups even when managing a large number of spaces.
 * Supports `/path` for a single resource.
 * Supports `/path/` for a single resource.
-* Supports `/path/&ast;` bounded wildcard spaces (matches files in one directory only).
-* Supports `/path/&ast;/&ast;` multi-level bounded wildcard spaces (matches files at the given directory depth only).
-* Supports `/path/&ast;&ast;` multi-level unbounded wildcard spaces (matches all files and directories within a path, allows other sub-spaces to be allocated).
-* Supports `/path/&ast;/&ast;&ast;` multi-level unbounded wildcard within a bounded wildcard (matches all files and directories below the given directory depth, allows other sub-spaces to be allocated).
-* Supports `/path/&ast;&ast;&ast;` multi-level greedy wildcard spaces (matches all files and directories within a path, while not allowing any sub-spaces to be allocated).
+* Supports `/path/*` bounded wildcard spaces (matches files in one directory only).
+* Supports `/path/*/*` multi-level bounded wildcard spaces (matches files at the given directory depth only).
+* Supports `/path/**` multi-level unbounded wildcard spaces (matches all files and directories within a path, allows other sub-spaces to be allocated).
+* Supports `/path/*/**` multi-level unbounded wildcard within a bounded wildcard (matches all files and directories below the given directory depth, allows other sub-spaces to be allocated).
+* Supports `/path/***` multi-level greedy wildcard spaces (matches all files and directories within a path, while not allowing any sub-spaces to be allocated).
 * Supports `/path/*/***` multi-level greedy wildcard spaces within a bounded wildcard (matches all files and directories below the given directory depth, while not allowing any sub-spaces to be allocated).
 * Small footprint, minimal dependencies - not part of a big monolithic package.
 * Java 1.6 implementation:
