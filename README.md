@@ -33,14 +33,19 @@ Manages allocation of a path space between components.
 ## Features
 * Identifies conflicting spaces.
 * Very fast lookups even when managing a large number of spaces.
-* Supports `/path` for a single resource.
-* Supports `/path/` for a single resource.
-* Supports `/path/*` bounded wildcard spaces (matches files in one directory only).
-* Supports `/path/*/*` multi-level bounded wildcard spaces (matches files at the given directory depth only).
-* Supports `/path/**` multi-level unbounded wildcard spaces (matches all files and directories within a path, allows other sub-spaces to be allocated).
-* Supports `/path/*/**` multi-level unbounded wildcard within a bounded wildcard (matches all files and directories below the given directory depth, allows other sub-spaces to be allocated).
-* Supports `/path/***` multi-level greedy wildcard spaces (matches all files and directories within a path, while not allowing any sub-spaces to be allocated).
-* Supports `/path/*/***` multi-level greedy wildcard spaces within a bounded wildcard (matches all files and directories below the given directory depth, while not allowing any sub-spaces to be allocated).
+* Supports several types of spaces:
+    * Single resource:
+        * `/path` matches a single resource.
+        * `/path/` matches a single resource.
+    * Wildcard space:
+        * `/path/*` - wildcard space - matches all resources in one path depth only.
+        * `/path/*/*` - multi-level wildcard space - matches all resources at the given path depth only.
+    * Unbounded space - Allows other sub-spaces to be allocated:
+        * `/path/**` - unbounded space - matches all resources at or below one path depth.
+        * `/path/*/**` - multi-level unbounded space - matches all resources at or below the given path depth.
+    * Greedy space - Does not allow other sub-spaces to be allocated:
+        * `/path/***` - greedy space - matches all resources at or below one path depth.
+        * `/path/*/***` - multi-level greedy space - matches all resources at or below the given path depth.
 * Small footprint, minimal dependencies - not part of a big monolithic package.
 * Java 1.6 implementation:
     * Android compatible.
