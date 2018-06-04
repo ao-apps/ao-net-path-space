@@ -89,7 +89,7 @@ public final class Prefix implements Comparable<Prefix> {
 	}
 
 	// TODO: Not allow any other number of asterisk-only path elements, such as /**** or /****/, which is probably a typo?
-	private static void checkBase(Path base, int wildcards, MultiLevelType multiLevelType) throws IllegalArgumentException {
+	private static void checkBase(Path base) throws IllegalArgumentException {
 		if(base != Path.ROOT) {
 			String baseStr = base.toString();
 			char lastChar = baseStr.charAt(baseStr.length() - 1);
@@ -143,7 +143,7 @@ public final class Prefix implements Comparable<Prefix> {
 			if(wildcards < 0) throw new IllegalArgumentException("wildcards < 0: " + wildcards);
 		}
 		// May not end in "/" when there is any wildcard or multi-level, unless it is the root "/".
-		checkBase(base, wildcards, multiLevelType);
+		checkBase(base);
 		return new Prefix(
 			base,
 			wildcards,
@@ -199,7 +199,7 @@ public final class Prefix implements Comparable<Prefix> {
 				throw new IllegalArgumentException(e);
 			}
 		}
-		checkBase(base, wildcards, multiLevelType);
+		checkBase(base);
 		return new Prefix(base, wildcards, multiLevelType);
 	}
 
