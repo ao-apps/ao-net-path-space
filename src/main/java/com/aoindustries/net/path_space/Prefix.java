@@ -26,7 +26,6 @@ import com.aoindustries.lang.NullArgumentException;
 import com.aoindustries.net.Path;
 import com.aoindustries.util.ComparatorUtils;
 import com.aoindustries.validation.ValidationException;
-import com.sun.xml.internal.bind.v2.TODO;
 
 /**
  * @author  AO Industries, Inc.
@@ -281,14 +280,14 @@ public final class Prefix implements Comparable<Prefix> {
 	 * There are no ordering guarantees between prefixes that {@link #conflictsWith(com.aoindustries.net.path_space.Prefix) conflict with one another}.
 	 * </p>
 	 *
-	 * @see TODO
+	 * @see #conflictsWith(com.aoindustries.net.path_space.Prefix)
 	 */
 	@Override
 	public int compareTo(Prefix other) {
 		// TODO: Throw exception if trying to compare two conflicting paths?
 
 		// base ascending
-		int diff = base.compareTo(other.base); // TODO: Sub directories before files in directory?  /path/other/ before /path/other ?
+		int diff = base.compareTo(other.base);
 		if(diff != 0) return diff;
 
 		// Ending /*, /**, and /*** all count as the same number of wildcards
@@ -332,15 +331,7 @@ public final class Prefix implements Comparable<Prefix> {
 
 	/**
 	 * Checks if two prefixes are conflicting.
-	 * Conflicts include:
-	 * <ol>
-	 * <li>/path/* and /path/*</li>
-	 * <li>/path/*&#47;* and /path/*&#47;*</li>
-	 * <li>/path/*&#47;* and /path/*&#47;**</li>
-	 * <li>/path/*&#47;* and /path/*&#47;***</li>
-	 * <li>/path/*&#47;* and /path/***</li>
-	 * <li>TODO: More examples?  Worth iterating all patterns?  Simple way to put into words?</li>
-	 * </ol>
+	 * Conflicts include either occupying the same space or a subspace of another greedy space, with all wildcards considered.
 	 */
 	public boolean conflictsWith(Prefix other) {
 		// A simple forward matching implementation that goes one slash at a time
@@ -458,74 +449,5 @@ public final class Prefix implements Comparable<Prefix> {
 				}
 			}
 		}
-
-		/* This craziness that tries to work backwards might work (with more time puzzling it), but is pretty hard to understand:
-		Prefix prefix1 = this;
-		Prefix prefix2 = other;
-		String base1 = prefix1.base.toString();
-		if(base1.length() == 1) base1 = "";
-		String base2 = prefix2.base.toString();
-		if(base2.length() == 1) base2 = "";
-		int effectiveWildcards1 = prefix1.wildcards;
-		if(prefix1.multiLevelType != MultiLevelType.NONE) effectiveWildcards1++;
-		int effectiveWildcards2 = prefix2.wildcards;
-		if(prefix2.multiLevelType != MultiLevelType.NONE) effectiveWildcards2++;
-		// Swap so wildcards1 always less than wildcards2
-		if(effectiveWildcards1 > effectiveWildcards2) {
-			Prefix prefixTmp = prefix1;
-			prefix1 = prefix2;
-			prefix2 = prefixTmp;
-			String baseTmp = base1;
-			base1 = base2;
-			base2 = baseTmp;
-			int effectiveWildcardsTmp = effectiveWildcards1;
-			effectiveWildcards1 = effectiveWildcards2;
-			effectiveWildcards2 = effectiveWildcardsTmp;
-		}
-		// Check for direct wildcard match or non-wildcard overlapping wildcards
-		int base1SlashPos = base1.length();
-		for(int i = effectiveWildcards1; i < effectiveWildcards2; i++) {
-			base1SlashPos = base1.lastIndexOf(Path.SEPARATOR_CHAR, base1SlashPos - 1);
-			if(base1SlashPos == -1) break;
-		}
-		if(
-			base1SlashPos != -1
-			&& base2.length() == base1SlashPos
-			&& base2.regionMatches(0, base1, 0, base1SlashPos)
-		) return true;
-		assert effectiveWildcards1 <= effectiveWildcards2;
-		// Check for any overlapping greedy
-		if(prefix1.multiLevelType == MultiLevelType.GREEDY) {
-			if(prefix2.multiLevelType == MultiLevelType.GREEDY) {
-				throw new NotImplementedException("TODO 1.1: prefix1 = " + prefix1 + ", prefix2 = " + prefix2 + ", base1SlashPos = " + base1SlashPos);
-				//return
-				//	base1SlashPos <= base2.length() // TODO: This is just a guess based on observed data, not yet understood.
-				//	|| base1SlashPos >= base2.length(); // TODO: This is just a guess based on observed data, not yet understood.
-			} //else {
-				if(base1SlashPos == -1) return true; // TODO: Not understood
-				return
-					base1.regionMatches(0, base2, 0, base1SlashPos)
-					&& (
-						base1SlashPos == base2.length()
-						|| base2.charAt(base1SlashPos) == Path.SEPARATOR_CHAR
-					)
-				; // TODO: Not understood
-				//throw new NotImplementedException("TODO 1.2: prefix1 = " + prefix1 + ", prefix2 = " + prefix2 + ", base1SlashPos = " + base1SlashPos);
-				//return base1SlashPos < base2.length(); // TODO: This is just a guess based on observed data, not yet understood.
-			//}
-		} else if(prefix2.multiLevelType == MultiLevelType.GREEDY) {
-			if(base1SlashPos < base2.length()) return false; // TODO: Not understood
-			return
-				base1.regionMatches(0, base2, 0, base2.length())
-				&& (
-					base1SlashPos == base2.length()
-					|| base1.charAt(base2.length()) == Path.SEPARATOR_CHAR
-				)
-			; // TODO: Not understood
-			//throw new NotImplementedException("TODO 2: prefix1 = " + prefix1 + ", prefix2 = " + prefix2 + ", base1SlashPos = " + base1SlashPos);
-		} else {
-			return false;
-		}
-		 */
 	}
 }
