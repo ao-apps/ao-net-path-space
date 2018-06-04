@@ -22,6 +22,7 @@
  */
 package com.aoindustries.net.path_space;
 
+import com.aoindustries.lang.NotImplementedException;
 import com.aoindustries.lang.NullArgumentException;
 import com.aoindustries.net.Path;
 import com.aoindustries.util.ComparatorUtils;
@@ -330,5 +331,29 @@ public final class Prefix implements Comparable<Prefix> {
 	 */
 	public MultiLevelType getMultiLevelType() {
 		return multiLevelType;
+	}
+
+	/**
+	 * TODO: All non-wildcards before all wildcards?  Check for specific paths before any wildcard checks?  Never
+	 *       conflict specific with wildcard?  Even allow specific inside of a greedy path?
+	 *
+	 * Checks if two prefixes are conflicting.
+	 * Conflicts include:
+	 * <ol>
+	 * <li>/path and /path</li>
+	 * <li>/path/ and /path/* (TODO: conflict?)</li>
+	 * <li>/path/other and /path/* (TODO: conflict?)</li>
+	 * <li>/path/ and /path/** (TODO: conflict?)</li>
+	 * <li>/path/other and /path/** (TODO: conflict?)</li>
+	 * <li>/path/ and /path/*** (TODO: conflict?)</li>
+	 * <li>/path/other and /path/*** (TODO: conflict?)</li>
+	 * <li>/path/some/other and /path/*&#47;*</li>
+	 * <li>/path/some/other and /path/*&#47;**</li>
+	 * <li>/path/some/other and /path/*&#47;***</li>
+	 * <li>TODO</li>
+	 * </ol>
+	 */
+	public boolean conflictsWith(Prefix other) {
+		throw new NotImplementedException();
 	}
 }
