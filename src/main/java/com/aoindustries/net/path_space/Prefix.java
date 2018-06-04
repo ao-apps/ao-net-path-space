@@ -288,7 +288,7 @@ public final class Prefix implements Comparable<Prefix> {
 		// TODO: Throw exception if trying to compare two conflicting paths?
 
 		// base ascending
-		int diff = base.compareTo(other.base);
+		int diff = base.compareTo(other.base); // TODO: Sub directories before files in directory?  /path/other/ before /path/other ?
 		if(diff != 0) return diff;
 
 		// Ending /*, /**, and /*** all count as the same number of wildcards
@@ -339,10 +339,8 @@ public final class Prefix implements Comparable<Prefix> {
 	 * <li>/path/*&#47;* and /path/*&#47;**</li>
 	 * <li>/path/*&#47;* and /path/*&#47;***</li>
 	 * <li>/path/*&#47;* and /path/***</li>
-	 * <li>TODO: More examples</li>
+	 * <li>TODO: More examples?  Worth iterating all patterns?  Simple way to put into words?</li>
 	 * </ol>
-	 *
-	 * TODO: Write tests first
 	 */
 	public boolean conflictsWith(Prefix other) {
 		throw new NotImplementedException();

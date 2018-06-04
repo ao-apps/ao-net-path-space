@@ -27,6 +27,7 @@ import com.aoindustries.net.path_space.Prefix.MultiLevelType;
 import static com.aoindustries.net.path_space.Prefix.valueOf;
 import com.aoindustries.validation.ValidationException;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -542,6 +543,192 @@ public class PrefixTest {
 	public void testComparePathSlashBeforeGreedy() {
 		assertTrue(
 			valueOf("/path/").compareTo(valueOf("/path/***")) < 0
+		);
+	}
+	// </editor-fold>
+
+	// <editor-fold defaultstate="collapsed" desc="Test conflictsWith">
+	/**
+	 * Tests that all others conflict with the first
+	 */
+	private static void testConflicts(Prefix p0, Prefix ... others) {
+		if(others.length == 0) throw new IllegalArgumentException();
+		assertTrue("p0 must conflict with self: " + p0, p0.conflictsWith(p0));
+		for(Prefix other : others) {
+			assertTrue("other must conflict with self: " + other, other.conflictsWith(other));
+			assertTrue("p0 = " + p0 + ", other = " + other, p0.conflictsWith(other));
+			assertTrue("other = " + other + ", p0 = " + p0, other.conflictsWith(p0));
+		}
+	}
+
+	/**
+	 * Tests that all others do not conflict with the first
+	 */
+	private static void testNotConflicts(Prefix p0, Prefix ... others) {
+		assertTrue("p0 must conflict with self: " + p0, p0.conflictsWith(p0));
+		if(others.length == 0) throw new IllegalArgumentException();
+		for(Prefix other : others) {
+			assertTrue("other must conflict with self: " + other, other.conflictsWith(other));
+			assertFalse("p0 = " + p0 + ", other = " + other, p0.conflictsWith(other));
+			assertFalse("other = " + other + ", p0 = " + p0, other.conflictsWith(p0));
+		}
+	}
+
+	@Test
+	public void testRootWildcardConflicts() {
+		testConflicts(
+			valueOf("/*"),
+			valueOf("/*"),
+			valueOf("/**"),
+			valueOf("/***")
+		);
+	}
+
+	@Test
+	public void testRootWildcardNotConflicts() {
+		testNotConflicts(
+			valueOf("/*"),
+			valueOf("/*/*"),
+			valueOf("/*/**"),
+			valueOf("/*/***"),
+			valueOf("/path/*"),
+			valueOf("/path/**"),
+			valueOf("/path/***")
+		);
+	}
+
+	@Test
+	public void testRootUnboundedConflicts() {
+		testConflicts(
+			valueOf("/**"),
+			valueOf("/*"),
+			valueOf("/**"),
+			valueOf("/***")
+		);
+	}
+
+	@Test
+	public void testRootUnboundedNotConflicts() {
+		testNotConflicts(
+			valueOf("/**"),
+			valueOf("/*/*"),
+			valueOf("/*/**"),
+			valueOf("/*/***"),
+			valueOf("/path/*"),
+			valueOf("/path/**"),
+			valueOf("/path/***")
+		);
+	}
+
+	@Test
+	public void testRootGreedyConflicts() {
+		testConflicts(
+			valueOf("/***"),
+			valueOf("/*"),
+			valueOf("/**"),
+			valueOf("/***"),
+			valueOf("/*/*"),
+			valueOf("/*/**"),
+			valueOf("/*/***"),
+			valueOf("/path/*"),
+			valueOf("/path/**"),
+			valueOf("/path/***")
+		);
+	}
+
+	@Test
+	public void testPathWildcardConflicts() {
+		testConflicts(
+			valueOf("/path/*"),
+			valueOf("/***"),
+			valueOf("/*/*"),
+			valueOf("/*/**"),
+			valueOf("/*/***"),
+			valueOf("/path/*"),
+			valueOf("/path/**"),
+			valueOf("/path/***")
+		);
+	}
+
+	@Test
+	public void testPathWildcardNotConflicts() {
+		testNotConflicts(
+			valueOf("/path/*"),
+			valueOf("/pathy/*"),
+			valueOf("/pathy/**"),
+			valueOf("/pathy/***"),
+			valueOf("/*"),
+			valueOf("/**"),
+			valueOf("/path/*/*"),
+			valueOf("/path/*/**"),
+			valueOf("/path/*/***"),
+			valueOf("/path/other/*"),
+			valueOf("/path/other/**"),
+			valueOf("/path/other/***")
+		);
+	}
+
+	@Test
+	public void testPathUnboundedConflicts() {
+		testConflicts(
+			valueOf("/path/**"),
+			valueOf("/***"),
+			valueOf("/*/*"),
+			valueOf("/*/**"),
+			valueOf("/*/***"),
+			valueOf("/path/*"),
+			valueOf("/path/**"),
+			valueOf("/path/***")
+		);
+	}
+
+	@Test
+	public void testPathUnboundedNotConflicts() {
+		testNotConflicts(
+			valueOf("/path/**"),
+			valueOf("/pathy/*"),
+			valueOf("/pathy/**"),
+			valueOf("/pathy/***"),
+			valueOf("/*"),
+			valueOf("/**"),
+			valueOf("/path/*/*"),
+			valueOf("/path/*/**"),
+			valueOf("/path/*/***"),
+			valueOf("/path/other/*"),
+			valueOf("/path/other/**"),
+			valueOf("/path/other/***")
+		);
+	}
+
+	@Test
+	public void testPathGreedyConflicts() {
+		testConflicts(
+			valueOf("/path/***"),
+			valueOf("/***"),
+			valueOf("/*/*"),
+			valueOf("/*/**"),
+			valueOf("/*/***"),
+			valueOf("/path/*"),
+			valueOf("/path/**"),
+			valueOf("/path/***"),
+			valueOf("/path/*/*"),
+			valueOf("/path/*/**"),
+			valueOf("/path/*/***"),
+			valueOf("/path/other/*"),
+			valueOf("/path/other/**"),
+			valueOf("/path/other/***")
+		);
+	}
+
+	@Test
+	public void testPathGreedyNotConflicts() {
+		testNotConflicts(
+			valueOf("/path/***"),
+			valueOf("/pathy/*"),
+			valueOf("/pathy/**"),
+			valueOf("/pathy/***"),
+			valueOf("/*"),
+			valueOf("/**")
 		);
 	}
 	// </editor-fold>
