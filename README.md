@@ -34,16 +34,16 @@ Manages allocation of a path space between components.
 * Identifies conflicting spaces.
 * Very fast lookups even when managing a large number of spaces.
 * Supports several types of spaces:
-    * Single resource:
+    * Single resources:
         * `/path` matches a single resource.
         * `/path/` matches a single resource.
-    * Wildcard space:
+    * Wildcard spaces:
         * `/path/*` - wildcard space - matches all resources in one path depth only.
         * `/path/*/*` - multi-level wildcard space - matches all resources at the given path depth only.
-    * Unbounded space - Allows other sub-spaces to be allocated:
+    * Unbounded spaces - Allows other sub-spaces to be allocated:
         * `/path/**` - unbounded space - matches all resources at or below one path depth.
         * `/path/*/**` - multi-level unbounded space - matches all resources at or below the given path depth.
-    * Greedy space - Does not allow other sub-spaces to be allocated:
+    * Greedy spaces - Like unbounded spaces, but do not allow other sub-spaces to be allocated:
         * `/path/***` - greedy space - matches all resources at or below one path depth.
         * `/path/*/***` - multi-level greedy space - matches all resources at or below the given path depth.
 * Small footprint, minimal dependencies - not part of a big monolithic package.
