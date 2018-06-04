@@ -94,9 +94,7 @@ public final class Prefix implements Comparable<Prefix> {
 			String baseStr = base.toString();
 			char lastChar = baseStr.charAt(baseStr.length() - 1);
 			if(lastChar == Path.SEPARATOR_CHAR) {
-				if(wildcards > 0 || multiLevelType != MultiLevelType.NONE) {
-					throw new IllegalArgumentException("Prefix base may not end with slash \"" + Path.SEPARATOR_CHAR + "\" when using any wildcard suffix, unless it is the root \"" + Path.ROOT + "\" itself: " + base);
-				}
+				throw new IllegalArgumentException("Prefix base may not end with slash \"" + Path.SEPARATOR_CHAR + "\" unless it is the root \"" + Path.ROOT + "\" itself: " + base);
 			}
 			// May not end in "/*", "/**", or "/***".
 			if(baseStr.endsWith(WILDCARD_SUFFIX)) {
@@ -125,12 +123,12 @@ public final class Prefix implements Comparable<Prefix> {
 	/**
 	 * Gets an instance of a prefix given the individual fields.
 	 *
-	 * @param base  May not be {@code null}.  May not end in "/" when there is any wildcard or multi-level,
-	 *              unless it is the root "/".  May not end in "/*", "/**", or "/***".
+	 * @param base  May not be {@code null}.  May not end in "/" unless it is the root "/".
+	 *              May not end in "/*", "/**", or "/***".
 	 *              May not contain "/*&#47;", "/**&#47;", or "/***&#47;" to avoid any
 	 *              expectations of infix matching, which is not supported.
 	 *
-	 * @param wildcards  Must be {@code >= 0}
+	 * @param wildcards  Must be {@code >= 0}.  Must be {@code >= 1} when multiLevelType is {@link MultiLevelType#NONE}
 	 *
 	 * @param multiLevelType May not be {@code null}
 	 *
@@ -139,7 +137,11 @@ public final class Prefix implements Comparable<Prefix> {
 	public static Prefix valueOf(Path base, int wildcards, MultiLevelType multiLevelType) {
 		NullArgumentException.checkNotNull(base, "base");
 		NullArgumentException.checkNotNull(multiLevelType, "multiLevelType");
-		if(wildcards < 0) throw new IllegalArgumentException("wildcards < 0: " + wildcards);
+		if(multiLevelType == MultiLevelType.NONE) {
+			if(wildcards < 1) throw new IllegalArgumentException("wildcards < 1: " + wildcards);
+		} else {
+			if(wildcards < 0) throw new IllegalArgumentException("wildcards < 0: " + wildcards);
+		}
 		// May not end in "/" when there is any wildcard or multi-level, unless it is the root "/".
 		checkBase(base, wildcards, multiLevelType);
 		return new Prefix(
@@ -183,6 +185,9 @@ public final class Prefix implements Comparable<Prefix> {
 		) {
 			wildcards++;
 			prefixLen -= WILDCARD_SUFFIX_LEN;
+		}
+		if(multiLevelType == MultiLevelType.NONE) {
+			if(wildcards < 1) throw new IllegalArgumentException("prefix does not end with any type of wildcard: " + prefix);
 		}
 		Path base;
 		if(prefixLen == 0) {
@@ -247,24 +252,20 @@ public final class Prefix implements Comparable<Prefix> {
 	@Override
 	public String toString() {
 		String baseStr = base.toString();
-		if(wildcards == 0 && multiLevelType == MultiLevelType.NONE) {
-			return baseStr;
-		} else {
-			int baseStrLen = baseStr.length();
-			if(baseStr.charAt(baseStrLen - 1) == Path.SEPARATOR_CHAR) {
-				assert base == Path.ROOT : "When there are wildcard or multi-level suffixes, only the root may end in slash: " + base;
-				baseStrLen--;
-			}
-			String multiLevelSuffix = multiLevelType.suffix;
-			int multiLevelSuffixLen = multiLevelSuffix.length();
-			int toStringLen = baseStrLen + wildcards * WILDCARD_SUFFIX.length() + multiLevelSuffixLen;
-			StringBuilder sb = new StringBuilder(toStringLen);
-			sb.append(baseStr, 0, baseStrLen);
-			for(int i = 0; i < wildcards; i++) sb.append(WILDCARD_SUFFIX);
-			sb.append(multiLevelSuffix);
-			assert toStringLen == sb.length();
-			return sb.toString();
+		int baseStrLen = baseStr.length();
+		if(baseStr.charAt(baseStrLen - 1) == Path.SEPARATOR_CHAR) {
+			assert base == Path.ROOT : "Only the root may end in slash: " + base;
+			baseStrLen--;
 		}
+		String multiLevelSuffix = multiLevelType.suffix;
+		int multiLevelSuffixLen = multiLevelSuffix.length();
+		int toStringLen = baseStrLen + wildcards * WILDCARD_SUFFIX_LEN + multiLevelSuffixLen;
+		StringBuilder sb = new StringBuilder(toStringLen);
+		sb.append(baseStr, 0, baseStrLen);
+		for(int i = 0; i < wildcards; i++) sb.append(WILDCARD_SUFFIX);
+		sb.append(multiLevelSuffix);
+		assert toStringLen == sb.length();
+		return sb.toString();
 	}
 
 	/**
@@ -276,6 +277,9 @@ public final class Prefix implements Comparable<Prefix> {
 	 * <p>
 	 * The implementation of TODO: Link findSpace, should be much faster than an iterative search, however.
 	 * </p>
+	 * <p>
+	 * There are no ordering guarantees between prefixes that {@link #conflictsWith(com.aoindustries.net.path_space.Prefix) conflict with one another}.
+	 * </p>
 	 * TODO: Add tests
 	 *
 	 * @see TODO
@@ -283,14 +287,6 @@ public final class Prefix implements Comparable<Prefix> {
 	@Override
 	public int compareTo(Prefix other) {
 		// TODO: Throw exception if trying to compare two conflicting paths?
-
-		// TODO: What to do with trailing slash and wildcards overlapping? Like /path/ and /path/* or /path/**
-		// TODO: Is the solution to never allow trailing slashes even without wildcards, since this introduces an ambiguity/overlap
-		// TODO: Is ending "/" before wildcard level 0?
-
-		// TODO: Non-wildcards before wildcards within the same level directory:
-		//     TODO: Ending "/" without wildcards before wildcard level = 1 ("/path/" before "/path/*")
-		//     TODO: /path/other before /path/*, as it is more specific (but these would be conflicting anyway?)
 
 		// base ascending
 		int diff = base.compareTo(other.base);
@@ -312,8 +308,8 @@ public final class Prefix implements Comparable<Prefix> {
 
 	/**
 	 * Gets the base of this path space.  This does not include any trailing
-	 * wildcard or multi-level suffixes.  This will not end in a slash (/) when
-	 * there are any wildcard or multi-level suffixes, unless this is the root "/" itself.
+	 * wildcard or multi-level suffixes.  This will not end in a slash (/)
+	 * unless this is the root "/" ({@link Path#ROOT}) itself.
 	 */
 	public Path getBase() {
 		return base;
@@ -321,6 +317,8 @@ public final class Prefix implements Comparable<Prefix> {
 
 	/**
 	 * Gets the number of wildcard levels attached to the base.
+	 * This will be at least one when {@link #getMultiLevelType()} is {@link MultiLevelType#NONE}.
+	 * Otherwise, may also be zero.
 	 */
 	public int getWildcards() {
 		return wildcards;
@@ -334,23 +332,15 @@ public final class Prefix implements Comparable<Prefix> {
 	}
 
 	/**
-	 * TODO: All non-wildcards before all wildcards?  Check for specific paths before any wildcard checks?  Never
-	 *       conflict specific with wildcard?  Even allow specific inside of a greedy path?
-	 *
 	 * Checks if two prefixes are conflicting.
 	 * Conflicts include:
 	 * <ol>
-	 * <li>/path and /path</li>
-	 * <li>/path/ and /path/* (TODO: conflict?)</li>
-	 * <li>/path/other and /path/* (TODO: conflict?)</li>
-	 * <li>/path/ and /path/** (TODO: conflict?)</li>
-	 * <li>/path/other and /path/** (TODO: conflict?)</li>
-	 * <li>/path/ and /path/*** (TODO: conflict?)</li>
-	 * <li>/path/other and /path/*** (TODO: conflict?)</li>
-	 * <li>/path/some/other and /path/*&#47;*</li>
-	 * <li>/path/some/other and /path/*&#47;**</li>
-	 * <li>/path/some/other and /path/*&#47;***</li>
-	 * <li>TODO</li>
+	 * <li>/path/* and /path/*</li>
+	 * <li>/path/*&#47;* and /path/*&#47;*</li>
+	 * <li>/path/*&#47;* and /path/*&#47;**</li>
+	 * <li>/path/*&#47;* and /path/*&#47;***</li>
+	 * <li>/path/*&#47;* and /path/***</li>
+	 * <li>TODO: More examples</li>
 	 * </ol>
 	 *
 	 * TODO: Write tests first

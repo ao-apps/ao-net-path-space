@@ -56,7 +56,7 @@ public class PrefixTest {
 		testValueOf(Path.valueOf(base), wildcards, multiLevelType, toString);
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testValueOfRoot() {
 		testValueOf(
 			Path.ROOT, 0, Prefix.MultiLevelType.NONE,
@@ -128,7 +128,7 @@ public class PrefixTest {
 		);
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testValueOfPath() throws ValidationException {
 		testValueOf(
 			"/path", 0, Prefix.MultiLevelType.NONE,
@@ -136,7 +136,7 @@ public class PrefixTest {
 		);
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testValueOfPathSlash() throws ValidationException {
 		testValueOf(
 			"/path/", 0, Prefix.MultiLevelType.NONE,
@@ -394,7 +394,7 @@ public class PrefixTest {
 	// </editor-fold>
 
 	// <editor-fold defaultstate="collapsed" desc="Test compareTo">
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testCompareToRootEqualsRoot() {
 		assertEquals(
 			0,
@@ -440,21 +440,21 @@ public class PrefixTest {
 		);
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testCompareToRootWildcardBeforeRoot() {
 		assertTrue(
 			valueOf("/*").compareTo(valueOf("/")) < 0
 		);
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testCompareToRootBeforePath() {
 		assertTrue(
 			valueOf("/").compareTo(valueOf("/path")) < 0
 		);
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testCompareToPathBeforePathSlash() {
 		assertTrue(
 			valueOf("/path").compareTo(valueOf("/path/")) < 0
@@ -524,27 +524,25 @@ public class PrefixTest {
 		);
 	}
 
-	/* TODO: There is a conflict between ending with "/" and wildcard?
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testComparePathSlashBeforeWildcard() {
 		assertTrue(
 			valueOf("/path/").compareTo(valueOf("/path/*")) < 0
 		);
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testComparePathSlashBeforeUnbounded() {
 		assertTrue(
 			valueOf("/path/").compareTo(valueOf("/path/**")) < 0
 		);
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testComparePathSlashBeforeGreedy() {
 		assertTrue(
 			valueOf("/path/").compareTo(valueOf("/path/***")) < 0
 		);
 	}
-	 */
 	// </editor-fold>
 }

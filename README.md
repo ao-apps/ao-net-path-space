@@ -34,9 +34,6 @@ Manages allocation of a path space between components.
 * Identifies conflicting spaces.
 * Very fast lookups even when managing a large number of spaces.
 * Supports several types of spaces:
-    * Single resources:
-        * `/path` matches a single resource.
-        * `/path/` matches a single resource.
     * Wildcard spaces:
         * `/path/*` - wildcard space - matches all resources in one path depth only.
         * `/path/*/*` - multi-level wildcard space - matches all resources at the given path depth only.

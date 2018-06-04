@@ -33,6 +33,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 		title="@{documented.name}"
 		description="@{documented.description}"
 		datePublished="2018-06-03T20:05:42-0500"
+		dateModified="2018-06-04T14:08:55-0500"
 	>
 		<core:child page="changelog" />
 		<core:child page="apidocs/" />
@@ -63,12 +64,6 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 				<li>Very fast lookups even when managing a large number of spaces.</li>
 				<li>Supports several types of spaces:
 					<ul>
-						<li>Single resources:
-							<ul>
-								<li><code>/path</code> matches a single resource.</li>
-								<li><code>/path/</code> matches a single resource.</li>
-							</ul>
-						</li>
 						<li>Wildcard spaces:
 							<ul>
 								<li><code>/path/*</code> - wildcard space - matches all resources in one path depth only.</li>
