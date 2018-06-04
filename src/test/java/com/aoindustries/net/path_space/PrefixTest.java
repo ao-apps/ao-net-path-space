@@ -23,10 +23,12 @@
 package com.aoindustries.net.path_space;
 
 import com.aoindustries.net.Path;
-import org.junit.Test;
-import static com.aoindustries.net.path_space.Prefix.*;
+import com.aoindustries.net.path_space.Prefix.MultiLevelType;
+import static com.aoindustries.net.path_space.Prefix.valueOf;
 import com.aoindustries.validation.ValidationException;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 /**
  * @see Prefix
@@ -389,5 +391,160 @@ public class PrefixTest {
 	public void testCheckBaseNoContainsGreedyStringGreedy() {
 		valueOf("/path/***/other/***");
 	}
+	// </editor-fold>
+
+	// <editor-fold defaultstate="collapsed" desc="Test compareTo">
+	@Test
+	public void testCompareToRootEqualsRoot() {
+		assertEquals(
+			0,
+			valueOf("/").compareTo(valueOf("/"))
+		);
+	}
+
+	@Test
+	public void testCompareToRootEqualsRootWildcard() {
+		assertEquals(
+			0,
+			valueOf("/*").compareTo(valueOf("/*"))
+		);
+	}
+
+	@Test
+	public void testCompareToRootEqualsRootUnbounded() {
+		assertEquals(
+			0,
+			valueOf("/**").compareTo(valueOf("/**"))
+		);
+	}
+
+	@Test
+	public void testCompareToRootEqualsRootGreedy() {
+		assertEquals(
+			0,
+			valueOf("/***").compareTo(valueOf("/***"))
+		);
+	}
+
+	@Test
+	public void testCompareToRootGreedyBeforeUnbounded() {
+		assertTrue(
+			valueOf("/***").compareTo(valueOf("/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToRootUnboundedBeforeWildcard() {
+		assertTrue(
+			valueOf("/**").compareTo(valueOf("/*")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToRootWildcardBeforeRoot() {
+		assertTrue(
+			valueOf("/*").compareTo(valueOf("/")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToRootBeforePath() {
+		assertTrue(
+			valueOf("/").compareTo(valueOf("/path")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathBeforePathSlash() {
+		assertTrue(
+			valueOf("/path").compareTo(valueOf("/path/")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperWildcardsWildcardBeforeWildcard() {
+		assertTrue(
+			valueOf("/path/*/*/*").compareTo(valueOf("/path/*/*")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperWildcardsUnboundedBeforeWildcard() {
+		assertTrue(
+			valueOf("/path/*/*/**").compareTo(valueOf("/path/*/*")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperWildcardsGreedyBeforeWildcard() {
+		assertTrue(
+			valueOf("/path/*/*/***").compareTo(valueOf("/path/*/*")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperWildcardsWildcardBeforeUnbounded() {
+		assertTrue(
+			valueOf("/path/*/*/*").compareTo(valueOf("/path/*/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperWildcardsUnboundedBeforeUnbounded() {
+		assertTrue(
+			valueOf("/path/*/*/**").compareTo(valueOf("/path/*/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperWildcardsGreedyBeforeUnbounded() {
+		assertTrue(
+			valueOf("/path/*/*/***").compareTo(valueOf("/path/*/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperWildcardsWildcardBeforeGreedy() {
+		assertTrue(
+			valueOf("/path/*/*/*").compareTo(valueOf("/path/*/***")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperWildcardsUnboundedBeforeGreedy() {
+		assertTrue(
+			valueOf("/path/*/*/**").compareTo(valueOf("/path/*/***")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperWildcardsGreedyBeforeGreedy() {
+		assertTrue(
+			valueOf("/path/*/*/***").compareTo(valueOf("/path/*/***")) < 0
+		);
+	}
+
+	/* TODO: There is a conflict between ending with "/" and wildcard?
+	@Test
+	public void testComparePathSlashBeforeWildcard() {
+		assertTrue(
+			valueOf("/path/").compareTo(valueOf("/path/*")) < 0
+		);
+	}
+
+	@Test
+	public void testComparePathSlashBeforeUnbounded() {
+		assertTrue(
+			valueOf("/path/").compareTo(valueOf("/path/**")) < 0
+		);
+	}
+
+	@Test
+	public void testComparePathSlashBeforeGreedy() {
+		assertTrue(
+			valueOf("/path/").compareTo(valueOf("/path/***")) < 0
+		);
+	}
+	 */
 	// </editor-fold>
 }

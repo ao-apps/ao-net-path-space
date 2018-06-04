@@ -22,9 +22,9 @@
  */
 package com.aoindustries.net.path_space;
 
-import com.aoindustries.lang.NotImplementedException;
 import com.aoindustries.lang.NullArgumentException;
 import com.aoindustries.net.Path;
+import com.aoindustries.util.ComparatorUtils;
 import com.aoindustries.validation.ValidationException;
 
 /**
@@ -53,6 +53,9 @@ public final class Prefix implements Comparable<Prefix> {
 	public static final String GREEDY_SUFFIX = UNBOUNDED_SUFFIX + WILDCARD_CHAR;
 	private static final int GREEDY_SUFFIX_LEN = GREEDY_SUFFIX.length();
 
+	/**
+	 * @implNote This ordering is important for the implementation of {@link Prefix#compareTo(com.aoindustries.net.path_space.Prefix)}.
+	 */
 	public enum MultiLevelType {
 		NONE("", true),
 		UNBOUNDED(UNBOUNDED_SUFFIX, true),
@@ -84,6 +87,7 @@ public final class Prefix implements Comparable<Prefix> {
 		}
 	}
 
+	// TODO: Not allow any other number of asterisk-only path elements, such as /**** or /****/, which is probably a typo?
 	private static void checkBase(Path base, int wildcards, MultiLevelType multiLevelType) throws IllegalArgumentException {
 		if(base != Path.ROOT) {
 			String baseStr = base.toString();
@@ -156,6 +160,7 @@ public final class Prefix implements Comparable<Prefix> {
 	 * @see  #valueOf(com.aoindustries.net.Path, int, com.aoindustries.net.path_space.Prefix.MultiLevelType)
 	 */
 	public static Prefix valueOf(String prefix) {
+		NullArgumentException.checkNotNull(prefix, "prefix");
 		// The number of characters left in the parsing
 		int prefixLen = prefix.length();
 		// Parse multi-level
@@ -275,8 +280,33 @@ public final class Prefix implements Comparable<Prefix> {
 	 * @see TODO
 	 */
 	@Override
-	public int compareTo(Prefix o) {
-		throw new NotImplementedException();
+	public int compareTo(Prefix other) {
+		// TODO: Throw exception if trying to compare two conflicting paths?
+
+		// TODO: What to do with trailing slash and wildcards overlapping? Like /path/ and /path/* or /path/**
+		// TODO: Is the solution to never allow trailing slashes even without wildcards, since this introduces an ambiguity/overlap
+		// TODO: Is ending "/" before wildcard level 0?
+
+		// TODO: Non-wildcards before wildcards within the same level directory:
+		//     TODO: Ending "/" without wildcards before wildcard level = 1 ("/path/" before "/path/*")
+		//     TODO: /path/other before /path/*, as it is more specific (but these would be conflicting anyway?)
+
+		// base ascending
+		int diff = base.compareTo(other.base);
+		if(diff != 0) return diff;
+
+		// Ending /*, /**, and /*** all count as the same number of wildcards
+		int effectiveWildcards = wildcards;
+		if(multiLevelType != MultiLevelType.NONE) effectiveWildcards++;
+		int effectiveWildcardsOther = other.wildcards;
+		if(other.multiLevelType != MultiLevelType.NONE) effectiveWildcardsOther++;
+
+		// wildcards descending (this means has wildcards before no wildcards)
+		diff = ComparatorUtils.compare(effectiveWildcardsOther, effectiveWildcards);
+		if(diff != 0) return diff;
+
+		// multiLevelType descending (Order by /***, /**, NONE)
+		return other.multiLevelType.compareTo(multiLevelType);
 	}
 
 	/**
