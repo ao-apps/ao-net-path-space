@@ -352,6 +352,8 @@ public final class Prefix implements Comparable<Prefix> {
 	 * <li>/path/some/other and /path/*&#47;***</li>
 	 * <li>TODO</li>
 	 * </ol>
+	 *
+	 * TODO: Write tests first
 	 */
 	public boolean conflictsWith(Prefix other) {
 		throw new NotImplementedException();
