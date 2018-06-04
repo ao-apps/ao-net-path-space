@@ -364,31 +364,18 @@ public final class Prefix implements Comparable<Prefix> {
 		while(true) {
 			// Find actual path elements or null if past base
 			String path1;
+			boolean isWildcard1;
+			boolean isGreedy1;
 			if(lastSlashPos1 < base1Len) {
 				int slashPos = base1.indexOf(Path.SEPARATOR_STRING, lastSlashPos1 + 1);
 				int nextSlashPos = slashPos == -1 ? base1Len : slashPos;
 				path1 = base1.substring(lastSlashPos1 + 1, nextSlashPos);
 				lastSlashPos1 = nextSlashPos;
+				isWildcard1 = false;
+				isGreedy1 = false;
 			} else {
 				path1 = null;
-			}
-			String path2;
-			if(lastSlashPos2 < base2Len) {
-				int slashPos = base2.indexOf(Path.SEPARATOR_STRING, lastSlashPos2 + 1);
-				int nextSlashPos = slashPos == -1 ? base2Len : slashPos;
-				path2 = base2.substring(lastSlashPos2 + 1, nextSlashPos);
-				lastSlashPos2 = nextSlashPos;
-			} else {
-				path2 = null;
-			}
-			// Both path elements exist, must match
-			//if(path1 != null && path2 != null) {
-			//	if(!path1.equals(path2)) return false;
-			//}
-			// Consume wildcards, as long as still have some
-			boolean isWildcard1;
-			boolean isGreedy1;
-			if(path1 == null) {
+				// Consume wildcards, as long as still have some
 				if(wildcardsUsed1 < effectiveWildcards1) {
 					isWildcard1 = true;
 					wildcardsUsed1++;
@@ -397,13 +384,20 @@ public final class Prefix implements Comparable<Prefix> {
 					isWildcard1 = false;
 					isGreedy1 = prefix1.multiLevelType == MultiLevelType.GREEDY;
 				}
-			} else {
-				isWildcard1 = false;
-				isGreedy1 = false;
 			}
+			String path2;
 			boolean isWildcard2;
 			boolean isGreedy2;
-			if(path2 == null) {
+			if(lastSlashPos2 < base2Len) {
+				int slashPos = base2.indexOf(Path.SEPARATOR_STRING, lastSlashPos2 + 1);
+				int nextSlashPos = slashPos == -1 ? base2Len : slashPos;
+				path2 = base2.substring(lastSlashPos2 + 1, nextSlashPos);
+				lastSlashPos2 = nextSlashPos;
+				isWildcard2 = false;
+				isGreedy2 = false;
+			} else {
+				path2 = null;
+				// Consume wildcards, as long as still have some
 				if(wildcardsUsed2 < effectiveWildcards2) {
 					isWildcard2 = true;
 					wildcardsUsed2++;
@@ -412,12 +406,10 @@ public final class Prefix implements Comparable<Prefix> {
 					isWildcard2 = false;
 					isGreedy2 = prefix2.multiLevelType == MultiLevelType.GREEDY;
 				}
-			} else {
-				isWildcard2 = false;
-				isGreedy2 = false;
 			}
 			if(path1 != null) {
 				if(path2 != null) {
+					// Both path elements exist, must match
 					assert path1 != null;
 					assert path2 != null;
 					if(!path1.equals(path2)) return false;
