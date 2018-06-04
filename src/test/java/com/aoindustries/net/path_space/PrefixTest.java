@@ -556,8 +556,8 @@ public class PrefixTest {
 		assertTrue("p0 must conflict with self: " + p0, p0.conflictsWith(p0));
 		for(Prefix other : others) {
 			assertTrue("other must conflict with self: " + other, other.conflictsWith(other));
-			assertTrue("p0 = " + p0 + ", other = " + other, p0.conflictsWith(other));
-			assertTrue("other = " + other + ", p0 = " + p0, other.conflictsWith(p0));
+			assertTrue("must conflict: p0 = " + p0 + ", other = " + other, p0.conflictsWith(other));
+			assertTrue("must conflict: other = " + other + ", p0 = " + p0, other.conflictsWith(p0));
 		}
 	}
 
@@ -565,12 +565,12 @@ public class PrefixTest {
 	 * Tests that all others do not conflict with the first
 	 */
 	private static void testNotConflicts(Prefix p0, Prefix ... others) {
-		assertTrue("p0 must conflict with self: " + p0, p0.conflictsWith(p0));
 		if(others.length == 0) throw new IllegalArgumentException();
+		assertTrue("p0 must conflict with self: " + p0, p0.conflictsWith(p0));
 		for(Prefix other : others) {
 			assertTrue("other must conflict with self: " + other, other.conflictsWith(other));
-			assertFalse("p0 = " + p0 + ", other = " + other, p0.conflictsWith(other));
-			assertFalse("other = " + other + ", p0 = " + p0, other.conflictsWith(p0));
+			assertFalse("must not conflict: p0 = " + p0 + ", other = " + other, p0.conflictsWith(other));
+			assertFalse("must not conflict: other = " + other + ", p0 = " + p0, other.conflictsWith(p0));
 		}
 	}
 
@@ -659,6 +659,9 @@ public class PrefixTest {
 			valueOf("/pathy/***"),
 			valueOf("/*"),
 			valueOf("/**"),
+			valueOf("/*/*/*"),
+			valueOf("/*/*/**"),
+			valueOf("/*/*/***"),
 			valueOf("/path/*/*"),
 			valueOf("/path/*/**"),
 			valueOf("/path/*/***"),
@@ -691,6 +694,9 @@ public class PrefixTest {
 			valueOf("/pathy/***"),
 			valueOf("/*"),
 			valueOf("/**"),
+			valueOf("/*/*/*"),
+			valueOf("/*/*/**"),
+			valueOf("/*/*/***"),
 			valueOf("/path/*/*"),
 			valueOf("/path/*/**"),
 			valueOf("/path/*/***"),
@@ -708,6 +714,9 @@ public class PrefixTest {
 			valueOf("/*/*"),
 			valueOf("/*/**"),
 			valueOf("/*/***"),
+			valueOf("/*/*/*"),
+			valueOf("/*/*/**"),
+			valueOf("/*/*/***"),
 			valueOf("/path/*"),
 			valueOf("/path/**"),
 			valueOf("/path/***"),

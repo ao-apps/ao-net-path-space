@@ -22,11 +22,11 @@
  */
 package com.aoindustries.net.path_space;
 
-import com.aoindustries.lang.NotImplementedException;
 import com.aoindustries.lang.NullArgumentException;
 import com.aoindustries.net.Path;
 import com.aoindustries.util.ComparatorUtils;
 import com.aoindustries.validation.ValidationException;
+import com.sun.xml.internal.bind.v2.TODO;
 
 /**
  * @author  AO Industries, Inc.
@@ -343,6 +343,192 @@ public final class Prefix implements Comparable<Prefix> {
 	 * </ol>
 	 */
 	public boolean conflictsWith(Prefix other) {
-		throw new NotImplementedException();
+		// A simple forward matching implementation that goes one slash at a time
+		Prefix prefix1 = this;
+		Prefix prefix2 = other;
+		String base1 = prefix1.base.toString();
+		if(base1.length() == 1) base1 = "";
+		int base1Len = base1.length();
+		String base2 = prefix2.base.toString();
+		if(base2.length() == 1) base2 = "";
+		int base2Len = base2.length();
+		int effectiveWildcards1 = prefix1.wildcards;
+		if(prefix1.multiLevelType != MultiLevelType.NONE) effectiveWildcards1++;
+		int effectiveWildcards2 = prefix2.wildcards;
+		if(prefix2.multiLevelType != MultiLevelType.NONE) effectiveWildcards2++;
+
+		int lastSlashPos1 = 0;
+		int wildcardsUsed1 = 0;
+		int lastSlashPos2 = 0;
+		int wildcardsUsed2 = 0;
+		while(true) {
+			// Find actual path elements or null if past base
+			String path1;
+			if(lastSlashPos1 < base1Len) {
+				int slashPos = base1.indexOf(Path.SEPARATOR_STRING, lastSlashPos1 + 1);
+				int nextSlashPos = slashPos == -1 ? base1Len : slashPos;
+				path1 = base1.substring(lastSlashPos1 + 1, nextSlashPos);
+				lastSlashPos1 = nextSlashPos;
+			} else {
+				path1 = null;
+			}
+			String path2;
+			if(lastSlashPos2 < base2Len) {
+				int slashPos = base2.indexOf(Path.SEPARATOR_STRING, lastSlashPos2 + 1);
+				int nextSlashPos = slashPos == -1 ? base2Len : slashPos;
+				path2 = base2.substring(lastSlashPos2 + 1, nextSlashPos);
+				lastSlashPos2 = nextSlashPos;
+			} else {
+				path2 = null;
+			}
+			// Both path elements exist, must match
+			//if(path1 != null && path2 != null) {
+			//	if(!path1.equals(path2)) return false;
+			//}
+			// Consume wildcards, as long as still have some
+			boolean isWildcard1;
+			boolean isGreedy1;
+			if(path1 == null) {
+				if(wildcardsUsed1 < effectiveWildcards1) {
+					isWildcard1 = true;
+					wildcardsUsed1++;
+					isGreedy1 = false;
+				} else {
+					isWildcard1 = false;
+					isGreedy1 = prefix1.multiLevelType == MultiLevelType.GREEDY;
+				}
+			} else {
+				isWildcard1 = false;
+				isGreedy1 = false;
+			}
+			boolean isWildcard2;
+			boolean isGreedy2;
+			if(path2 == null) {
+				if(wildcardsUsed2 < effectiveWildcards2) {
+					isWildcard2 = true;
+					wildcardsUsed2++;
+					isGreedy2 = false;
+				} else {
+					isWildcard2 = false;
+					isGreedy2 = prefix2.multiLevelType == MultiLevelType.GREEDY;
+				}
+			} else {
+				isWildcard2 = false;
+				isGreedy2 = false;
+			}
+			if(path1 != null) {
+				if(path2 != null) {
+					assert path1 != null;
+					assert path2 != null;
+					if(!path1.equals(path2)) return false;
+					// Keep searching
+				} else {
+					assert path1 != null;
+					assert path2 == null;
+					if(isGreedy2) return true;
+					// Keep searching
+				}
+			} else {
+				if(path2 != null) {
+					assert path1 == null;
+					assert path2 != null;
+					if(isGreedy1) return true;
+					// Keep searching
+				} else {
+					assert path1 == null;
+					assert path2 == null;
+					if(isWildcard1) {
+						if(isWildcard2) {
+							assert isWildcard1;
+							assert isWildcard2;
+							// Keep searching
+						} else {
+							assert isWildcard1;
+							assert !isWildcard2;
+							return isGreedy2;
+						}
+					} else {
+						if(isWildcard2) {
+							assert !isWildcard1;
+							assert isWildcard2;
+							return isGreedy1;
+						} else {
+							assert !isWildcard1;
+							assert !isWildcard2;
+							return isGreedy1 || isGreedy2 || (!isGreedy1 && !isGreedy2);
+						}
+					}
+				}
+			}
+		}
+
+		/* This craziness that tries to work backwards might work (with more time puzzling it), but is pretty hard to understand:
+		Prefix prefix1 = this;
+		Prefix prefix2 = other;
+		String base1 = prefix1.base.toString();
+		if(base1.length() == 1) base1 = "";
+		String base2 = prefix2.base.toString();
+		if(base2.length() == 1) base2 = "";
+		int effectiveWildcards1 = prefix1.wildcards;
+		if(prefix1.multiLevelType != MultiLevelType.NONE) effectiveWildcards1++;
+		int effectiveWildcards2 = prefix2.wildcards;
+		if(prefix2.multiLevelType != MultiLevelType.NONE) effectiveWildcards2++;
+		// Swap so wildcards1 always less than wildcards2
+		if(effectiveWildcards1 > effectiveWildcards2) {
+			Prefix prefixTmp = prefix1;
+			prefix1 = prefix2;
+			prefix2 = prefixTmp;
+			String baseTmp = base1;
+			base1 = base2;
+			base2 = baseTmp;
+			int effectiveWildcardsTmp = effectiveWildcards1;
+			effectiveWildcards1 = effectiveWildcards2;
+			effectiveWildcards2 = effectiveWildcardsTmp;
+		}
+		// Check for direct wildcard match or non-wildcard overlapping wildcards
+		int base1SlashPos = base1.length();
+		for(int i = effectiveWildcards1; i < effectiveWildcards2; i++) {
+			base1SlashPos = base1.lastIndexOf(Path.SEPARATOR_CHAR, base1SlashPos - 1);
+			if(base1SlashPos == -1) break;
+		}
+		if(
+			base1SlashPos != -1
+			&& base2.length() == base1SlashPos
+			&& base2.regionMatches(0, base1, 0, base1SlashPos)
+		) return true;
+		assert effectiveWildcards1 <= effectiveWildcards2;
+		// Check for any overlapping greedy
+		if(prefix1.multiLevelType == MultiLevelType.GREEDY) {
+			if(prefix2.multiLevelType == MultiLevelType.GREEDY) {
+				throw new NotImplementedException("TODO 1.1: prefix1 = " + prefix1 + ", prefix2 = " + prefix2 + ", base1SlashPos = " + base1SlashPos);
+				//return
+				//	base1SlashPos <= base2.length() // TODO: This is just a guess based on observed data, not yet understood.
+				//	|| base1SlashPos >= base2.length(); // TODO: This is just a guess based on observed data, not yet understood.
+			} //else {
+				if(base1SlashPos == -1) return true; // TODO: Not understood
+				return
+					base1.regionMatches(0, base2, 0, base1SlashPos)
+					&& (
+						base1SlashPos == base2.length()
+						|| base2.charAt(base1SlashPos) == Path.SEPARATOR_CHAR
+					)
+				; // TODO: Not understood
+				//throw new NotImplementedException("TODO 1.2: prefix1 = " + prefix1 + ", prefix2 = " + prefix2 + ", base1SlashPos = " + base1SlashPos);
+				//return base1SlashPos < base2.length(); // TODO: This is just a guess based on observed data, not yet understood.
+			//}
+		} else if(prefix2.multiLevelType == MultiLevelType.GREEDY) {
+			if(base1SlashPos < base2.length()) return false; // TODO: Not understood
+			return
+				base1.regionMatches(0, base2, 0, base2.length())
+				&& (
+					base1SlashPos == base2.length()
+					|| base1.charAt(base2.length()) == Path.SEPARATOR_CHAR
+				)
+			; // TODO: Not understood
+			//throw new NotImplementedException("TODO 2: prefix1 = " + prefix1 + ", prefix2 = " + prefix2 + ", base1SlashPos = " + base1SlashPos);
+		} else {
+			return false;
+		}
+		 */
 	}
 }
