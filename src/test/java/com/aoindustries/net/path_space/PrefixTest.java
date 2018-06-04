@@ -38,6 +38,7 @@ public class PrefixTest {
 	public PrefixTest() {
 	}
 
+	// <editor-fold defaultstate="collapsed" desc="Test valueOf both by fields and by parsing String">
 	private static void testValueOf(Path base, int wildcards, MultiLevelType multiLevelType, String toString) {
 		Prefix p1 = valueOf(base, wildcards, multiLevelType);
 		Prefix p2 = valueOf(toString);
@@ -204,7 +205,31 @@ public class PrefixTest {
 			"/path/*/*/***"
 		);
 	}
+	// </editor-fold>
 
+	// <editor-fold defaultstate="collapsed" desc="Test valueOf argument checks, both by fields and by parsing String">
+	@Test(expected = IllegalArgumentException.class)
+	public void testValueOfBaseNotNull() throws ValidationException {
+		valueOf(null, 0, MultiLevelType.NONE);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testValueOfWildcardsNotNegative() throws ValidationException {
+		valueOf(Path.ROOT, -1, MultiLevelType.NONE);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testValueOfMultiLevelTypeNotNull() throws ValidationException {
+		valueOf(Path.ROOT, 0, null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testValueOfPrefixNotNull() {
+		valueOf(null);
+	}
+	// </editor-fold>
+
+	// <editor-fold defaultstate="collapsed" desc="Test valueOf base validations, both by fields and by parsing String">
 	@Test(expected = IllegalArgumentException.class)
 	public void testCheckBaseEndSlashWildcardFields() throws ValidationException {
 		valueOf(Path.valueOf("/path/"), 1, MultiLevelType.NONE);
@@ -364,4 +389,5 @@ public class PrefixTest {
 	public void testCheckBaseNoContainsGreedyStringGreedy() {
 		valueOf("/path/***/other/***");
 	}
+	// </editor-fold>
 }
