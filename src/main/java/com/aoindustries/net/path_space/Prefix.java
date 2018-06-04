@@ -22,6 +22,7 @@
  */
 package com.aoindustries.net.path_space;
 
+import com.aoindustries.lang.NotImplementedException;
 import com.aoindustries.lang.NullArgumentException;
 import com.aoindustries.net.Path;
 import com.aoindustries.util.ComparatorUtils;
@@ -268,7 +269,7 @@ public final class Prefix implements Comparable<Prefix> {
 	}
 
 	/**
-	 * The natural ordering is such that an iterative call to TODO: link matches will return.
+	 * The natural ordering is such that an iterative call to {@link #matches(com.aoindustries.net.Path)} will return.
 	 * {@code true} on the most specific matching space.  This match is consistent with TODO: link findSpace.
 	 * <p>
 	 * This ordering is useful for human review, as it represents the path space conceptually in a top-to-bottom list.
@@ -280,7 +281,8 @@ public final class Prefix implements Comparable<Prefix> {
 	 * There are no ordering guarantees between prefixes that {@link #conflictsWith(com.aoindustries.net.path_space.Prefix) conflict with one another}.
 	 * </p>
 	 *
-	 * @see #conflictsWith(com.aoindustries.net.path_space.Prefix)
+	 * @see  #conflictsWith(com.aoindustries.net.path_space.Prefix)
+	 * @see  #matches(com.aoindustries.net.Path)
 	 */
 	@Override
 	public int compareTo(Prefix other) {
@@ -449,5 +451,12 @@ public final class Prefix implements Comparable<Prefix> {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Checks if a given path matches this prefix.
+	 */
+	public boolean matches(Path path) {
+		throw new NotImplementedException();
 	}
 }

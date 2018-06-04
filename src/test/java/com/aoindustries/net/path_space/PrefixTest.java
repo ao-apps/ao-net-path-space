@@ -552,7 +552,6 @@ public class PrefixTest {
 	 * Tests that all others conflict with the first
 	 */
 	private static void testConflicts(Prefix p0, Prefix ... others) {
-		if(others.length == 0) throw new IllegalArgumentException();
 		assertTrue("p0 must conflict with self: " + p0, p0.conflictsWith(p0));
 		for(Prefix other : others) {
 			assertTrue("other must conflict with self: " + other, other.conflictsWith(other));
@@ -565,7 +564,6 @@ public class PrefixTest {
 	 * Tests that all others do not conflict with the first
 	 */
 	private static void testNotConflicts(Prefix p0, Prefix ... others) {
-		if(others.length == 0) throw new IllegalArgumentException();
 		assertTrue("p0 must conflict with self: " + p0, p0.conflictsWith(p0));
 		for(Prefix other : others) {
 			assertTrue("other must conflict with self: " + other, other.conflictsWith(other));
@@ -633,6 +631,14 @@ public class PrefixTest {
 			valueOf("/path/*"),
 			valueOf("/path/**"),
 			valueOf("/path/***")
+		);
+	}
+
+	@Test
+	public void testRootGreedyNotConflicts() {
+		testNotConflicts(
+			valueOf("/***")
+			// All conflict, nothing to do
 		);
 	}
 
@@ -738,6 +744,158 @@ public class PrefixTest {
 			valueOf("/pathy/***"),
 			valueOf("/*"),
 			valueOf("/**")
+		);
+	}
+	// </editor-fold>
+
+	// <editor-fold defaultstate="collapsed" desc="Test matches">
+	/**
+	 * Tests that all paths match
+	 */
+	private static void testMatches(Prefix prefix, String ... paths) throws ValidationException {
+		for(String path : paths) {
+			assertTrue("must match: prefix = " + prefix + ", path = " + path, prefix.matches(Path.valueOf(path)));
+		}
+	}
+
+	/**
+	 * Tests that all paths do not match
+	 */
+	private static void testNotMatches(Prefix prefix, String ... paths) throws ValidationException {
+		for(String path : paths) {
+			assertFalse("must not match: prefix = " + prefix + ", path = " + path, prefix.matches(Path.valueOf(path)));
+		}
+	}
+
+	// TODO: Add tests for /*/*, /*/**, /*/***, /path/*/*, /path/*/**, /path/*/***, /*/*/*/*, ...
+
+	@Test
+	public void testRootWildcardMatches() throws ValidationException {
+		testMatches(
+			valueOf("/*"),
+			"/",
+			"/path"
+		);
+	}
+
+	@Test
+	public void testRootWildcardNotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/*"),
+			"/path/",
+			"/path/other",
+			"/path/other/"
+		);
+	}
+
+	@Test
+	public void testRootUnboundedMatches() throws ValidationException {
+		testMatches(
+			valueOf("/**"),
+			"/",
+			"/path",
+			"/path/other",
+			"/path/other/",
+			"/path/other/more",
+			"/path/other/more/"
+		);
+	}
+
+	@Test
+	public void testRootUnboundedNotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/**")
+			// All should match, nothing to do
+		);
+	}
+
+	@Test
+	public void testRootGreedyMatches() throws ValidationException {
+		testMatches(
+			valueOf("/***"),
+			"/",
+			"/path",
+			"/path/other",
+			"/path/other/",
+			"/path/other/more",
+			"/path/other/more/"
+		);
+	}
+
+	@Test
+	public void testRootGreedyNotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/***")
+			// All should match, nothing to do
+		);
+	}
+
+	@Test
+	public void testPathWildcardMatches() throws ValidationException {
+		testMatches(
+			valueOf("/path/*"),
+			"/path/",
+			"/path/other"
+		);
+	}
+
+	@Test
+	public void testPathWildcardNotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/path/*"),
+			"/",
+			"/path",
+			"/path/other/",
+			"/path/other/more",
+			"/path/other/more/",
+			"/pathy",
+			"/pathy/"
+		);
+	}
+
+	@Test
+	public void testPathUnboundedMatches() throws ValidationException {
+		testMatches(
+			valueOf("/path/**"),
+			"/path/",
+			"/path/other",
+			"/path/other/",
+			"/path/other/more",
+			"/path/other/more/"
+		);
+	}
+
+	@Test
+	public void testPathUnboundedNotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/path/**"),
+			"/",
+			"/path",
+			"/pathy",
+			"/pathy/"
+		);
+	}
+
+	@Test
+	public void testPathGreedyMatches() throws ValidationException {
+		testMatches(
+			valueOf("/path/***"),
+			"/path/",
+			"/path/other",
+			"/path/other/",
+			"/path/other/more",
+			"/path/other/more/"
+		);
+	}
+
+	@Test
+	public void testPathGreedyNotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/path/***"),
+			"/",
+			"/path",
+			"/pathy",
+			"/pathy/"
 		);
 	}
 	// </editor-fold>
