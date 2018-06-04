@@ -40,12 +40,15 @@ Manages allocation of a path space between components.
     * Wildcard spaces:
         * `/path/*` - wildcard space - matches all resources in one path depth only.
         * `/path/*/*` - multi-level wildcard space - matches all resources at the given path depth only.
+        * `/path/*/*/*` - any number of levels allowed
     * Unbounded spaces - Allows other sub-spaces to be allocated:
         * `/path/**` - unbounded space - matches all resources at or below one path depth.
         * `/path/*/**` - multi-level unbounded space - matches all resources at or below the given path depth.
+        * `/path/*/*/**` - any number of levels allowed
     * Greedy spaces - Like unbounded spaces, but do not allow other sub-spaces to be allocated:
         * `/path/***` - greedy space - matches all resources at or below one path depth.
         * `/path/*/***` - multi-level greedy space - matches all resources at or below the given path depth.
+        * `/path/*/*/***` - any number of levels allowed
 * Small footprint, minimal dependencies - not part of a big monolithic package.
 * Java 1.6 implementation:
     * Android compatible.
