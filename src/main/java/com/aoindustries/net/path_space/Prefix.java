@@ -362,19 +362,20 @@ public final class Prefix implements Comparable<Prefix> {
 		int lastSlashPos2 = 0;
 		int wildcardsUsed2 = 0;
 		while(true) {
-			// Find actual path elements or null if past base
-			String path1;
+			// Find actual path elements or go into wildcard space if past base
+			int path1Start, path1Len;
 			boolean isWildcard1;
 			boolean isGreedy1;
 			if(lastSlashPos1 < base1Len) {
 				int slashPos = base1.indexOf(Path.SEPARATOR_STRING, lastSlashPos1 + 1);
 				int nextSlashPos = slashPos == -1 ? base1Len : slashPos;
-				path1 = base1.substring(lastSlashPos1 + 1, nextSlashPos);
+				path1Start = lastSlashPos1 + 1;
+				path1Len = nextSlashPos - path1Start;
 				lastSlashPos1 = nextSlashPos;
 				isWildcard1 = false;
 				isGreedy1 = false;
 			} else {
-				path1 = null;
+				path1Start = path1Len = -1;
 				// Consume wildcards, as long as still have some
 				if(wildcardsUsed1 < effectiveWildcards1) {
 					isWildcard1 = true;
@@ -385,18 +386,19 @@ public final class Prefix implements Comparable<Prefix> {
 					isGreedy1 = prefix1.multiLevelType == MultiLevelType.GREEDY;
 				}
 			}
-			String path2;
+			int path2Start, path2Len;
 			boolean isWildcard2;
 			boolean isGreedy2;
 			if(lastSlashPos2 < base2Len) {
 				int slashPos = base2.indexOf(Path.SEPARATOR_STRING, lastSlashPos2 + 1);
 				int nextSlashPos = slashPos == -1 ? base2Len : slashPos;
-				path2 = base2.substring(lastSlashPos2 + 1, nextSlashPos);
+				path2Start = lastSlashPos2 + 1;
+				path2Len = nextSlashPos - path2Start;
 				lastSlashPos2 = nextSlashPos;
 				isWildcard2 = false;
 				isGreedy2 = false;
 			} else {
-				path2 = null;
+				path2Start = path2Len = -1;
 				// Consume wildcards, as long as still have some
 				if(wildcardsUsed2 < effectiveWildcards2) {
 					isWildcard2 = true;
@@ -407,28 +409,31 @@ public final class Prefix implements Comparable<Prefix> {
 					isGreedy2 = prefix2.multiLevelType == MultiLevelType.GREEDY;
 				}
 			}
-			if(path1 != null) {
-				if(path2 != null) {
+			if(path1Start != -1) {
+				if(path2Start != -1) {
 					// Both path elements exist, must match
-					assert path1 != null;
-					assert path2 != null;
-					if(!path1.equals(path2)) return false;
+					assert path1Start != -1;
+					assert path2Start != -1;
+					if(
+						path1Len != path2Len
+						|| !base1.regionMatches(path1Start, base2, path2Start, path1Len)
+					) return false;
 					// Keep searching
 				} else {
-					assert path1 != null;
-					assert path2 == null;
+					assert path1Start != -1;
+					assert path2Start == -1;
 					if(isGreedy2) return true;
 					// Keep searching
 				}
 			} else {
-				if(path2 != null) {
-					assert path1 == null;
-					assert path2 != null;
+				if(path2Start != -1) {
+					assert path1Start == -1;
+					assert path2Start != -1;
 					if(isGreedy1) return true;
 					// Keep searching
 				} else {
-					assert path1 == null;
-					assert path2 == null;
+					assert path1Start == -1;
+					assert path2Start == -1;
 					if(isWildcard1) {
 						if(isWildcard2) {
 							assert isWildcard1;
