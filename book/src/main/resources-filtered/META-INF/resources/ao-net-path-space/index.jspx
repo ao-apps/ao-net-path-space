@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ao-net-path-space - Manages allocation of a path space between components.
+Copyright (C) 2018  AO Industries, Inc.
+    support@aoindustries.com
+    7262 Bull Pen Cir
+    Mobile, AL 36695
+
+This file is part of ao-net-path-space.
+
+ao-net-path-space is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ao-net-path-space is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
+-->
+<jsp:root
+	xmlns:ao="https://aoindustries.com/ao-taglib/"
+	xmlns:core="https://semanticcms.com/core/taglib/"
+	xmlns:jsp="http://java.sun.com/JSP/Page"
+	xmlns:section="https://semanticcms.com/section/taglib/"
+	version="2.1"
+>
+	<jsp:directive.page language="java" pageEncoding="UTF-8" session="false" />
+	<core:page
+		title="@{documented.name}"
+		description="@{documented.description}"
+		datePublished="2018-06-03T20:05:42-0500"
+	>
+		<core:child page="changelog" />
+		<core:child page="apidocs/" />
+		<ao:include
+			page="/ao-badges/badges.inc.jspx"
+			arg.projectStatus="${currentPage.property.projectStatus}"
+			arg.managementStatus="${currentPage.property.managementStatus}"
+			arg.packagingStatus="${currentPage.property.packagingStatus}"
+			arg.javaVersion="${currentPage.property.javaVersion}"
+			arg.semanticVersioning="${currentPage.property.semanticVersioning}"
+			arg.license="${currentPage.property.license}"
+		/>
+		<p>
+			@{documented.description}
+		</p>
+		<section:section label="Project Links">
+			<ul>
+				<li><core:link page="/">Project Home</core:link></li>
+				<li><core:link page="changelog">Changelog</core:link></li>
+				<li><core:link page="apidocs/">API Docs</core:link></li>
+				<li><ao:a href="https://search.maven.org/#search%7Cgav%7C1%7Cg:%22@{documented.groupId}%22%20AND%20a:%22@{documented.artifactId}%22">Maven Central Repository</ao:a></li>
+				<li><ao:a href="@{documented.scm.url}">GitHub</ao:a></li>
+			</ul>
+		</section:section>
+		<section:section label="Features">
+			<ul>
+				<li>Identifies conflicting spaces.</li>
+				<li>Very fast lookups even when managing a large number of spaces.</li>
+				<li>Supports several types of spaces:
+					<ul>
+						<li>Single resources:
+							<ul>
+								<li><code>/path</code> matches a single resource.</li>
+								<li><code>/path/</code> matches a single resource.</li>
+							</ul>
+						</li>
+						<li>Wildcard spaces:
+							<ul>
+								<li><code>/path/*</code> - wildcard space - matches all resources in one path depth only.</li>
+								<li><code>/path/*/*</code> - multi-level wildcard space - matches all resources at the given path depth only.</li>
+								<li><code>/path/*/*/*</code> - any number of levels allowed.</li>
+							</ul>
+						</li>
+						<li>Unbounded spaces - Allows other sub-spaces to be allocated:
+							<ul>
+								<li><code>/path/**</code> - unbounded space - matches all resources at or below one path depth.</li>
+								<li><code>/path/*/**</code> - multi-level unbounded space - matches all resources at or below the given path depth.</li>
+								<li><code>/path/*/*/**</code> - any number of levels allowed.</li>
+							</ul>
+						</li>
+						<li>Greedy spaces - Like unbounded spaces, but do not allow other sub-spaces to be allocated:
+							<ul>
+								<li><code>/path/***</code> - greedy space - matches all resources at or below one path depth.</li>
+								<li><code>/path/*/***</code> - multi-level greedy space - matches all resources at or below the given path depth.</li>
+								<li><code>/path/*/*/***</code> - any number of levels allowed.</li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li>Small footprint, minimal dependencies - not part of a big monolithic package.</li>
+				<li>Java 1.6 implementation:
+					<ul>
+						<li>Android compatible.</li>
+						<li>Java EE 6+ compatible.</li>
+					</ul>
+				</li>
+			</ul>
+		</section:section>
+		<section:section label="Motivation">
+			<p>
+				Managing the URL path space is central to web application development.  When components are developed
+				independently and combined into a single URL space, as well as underlying implementation space
+				(such as Java Servlet paths), it is important that each component occupy a well-defined space without
+				unexpected overlapping of other components.  The goal is to reliably identify conflicts within an
+				application's URL or implementation space instead of having unintended overlapping components or
+				access rules.
+			</p>
+			<p>
+				<core:link domain="semanticcms.com" book="/core/controller" /> uses this project to manage which
+				requests are passed along for direct processing by the local Servlet container.  This layer of allocating
+				the servlet space is important because resources from <code>/META-INF/resources/</code> within all project
+				JAR files are merged into a single space with the potential to inadvertently overlap.  Explicit activation
+				of servlet space through the controller helps identify these conflicts early in the module development or
+				integration phase.
+			</p>
+		</section:section>
+		<section:section label="Evaluated Alternatives">
+			<p>
+				No alternative known.  Please let us know if this effort is redundant.  Always happy for any assistance
+				in curing ignorance.
+			</p>
+		</section:section>
+	</core:page>
+</jsp:root>
