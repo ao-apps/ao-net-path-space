@@ -26,11 +26,14 @@ import com.aoindustries.lang.NullArgumentException;
 import com.aoindustries.net.Path;
 import com.aoindustries.util.ComparatorUtils;
 import com.aoindustries.validation.ValidationException;
+import java.io.Serializable;
 
 /**
+ * @implNote  Made {@link Serializable} because is used as a field in {@link PrefixConflictException}.
+ *
  * @author  AO Industries, Inc.
  */
-public final class Prefix implements Comparable<Prefix> {
+public final class Prefix implements Comparable<Prefix>, Serializable {
 
 	public static final char WILDCARD_CHAR = '*';
 
@@ -201,6 +204,8 @@ public final class Prefix implements Comparable<Prefix> {
 		checkBase(base);
 		return new Prefix(base, wildcards, multiLevelType);
 	}
+
+	private static final long serialVersionUID = 1L;
 
 	private final Path base;
 
@@ -452,8 +457,11 @@ public final class Prefix implements Comparable<Prefix> {
 
 	/**
 	 * Checks if a given path matches this prefix.
+	 *
+	 * @return  the number of characters in the path that match the prefix or {@code -1} for no match.
+	 *          When matches the root, returns {@code 0}.
 	 */
-	public boolean matches(Path path) {
+	public int matches(Path path) {
 		String pathStr = path.toString();
 		String baseStr = base == Path.ROOT ? "" : base.toString();
 		int baseLen = baseStr.length();
@@ -463,7 +471,7 @@ public final class Prefix implements Comparable<Prefix> {
 			pathLen <= baseLen
 			|| !pathStr.startsWith(baseStr)
 			|| pathStr.charAt(baseLen) != Path.SEPARATOR_CHAR
-		) return false;
+		) return -1;
 		// Determine minimum number of wildcards to match
 		int effectiveWildcards = wildcards;
 		if(multiLevelType != MultiLevelType.NONE) effectiveWildcards++;
@@ -473,11 +481,11 @@ public final class Prefix implements Comparable<Prefix> {
 			int nextSlashPos = pathStr.indexOf(Path.SEPARATOR_CHAR, lastSlashPos + 1);
 			if(nextSlashPos == -1) {
 				// End of path reached, must have used all wildcards
-				return effectiveWildcards == 0;
+				return (effectiveWildcards == 0) ? lastSlashPos : -1;
 			}
-			lastSlashPos = nextSlashPos;
+			if(effectiveWildcards > 0) lastSlashPos = nextSlashPos;
 		}
 		// All wildcards used but path left, must be unbounded or greedy
-		return multiLevelType != MultiLevelType.NONE;
+		return (multiLevelType != MultiLevelType.NONE) ? lastSlashPos : -1;
 	}
 }

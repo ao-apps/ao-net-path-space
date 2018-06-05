@@ -28,6 +28,7 @@ import static com.aoindustries.net.path_space.Prefix.valueOf;
 import com.aoindustries.validation.ValidationException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -748,10 +749,16 @@ public class PrefixTest {
 	// <editor-fold defaultstate="collapsed" desc="Test matches">
 	/**
 	 * Tests that all paths match
+	 *
+	 * @implNote TODO: Add test of match length
 	 */
 	private static void testMatches(Prefix prefix, String ... paths) throws ValidationException {
 		for(String path : paths) {
-			assertTrue("must match: prefix = " + prefix + ", path = " + path, prefix.matches(Path.valueOf(path)));
+			assertNotEquals(
+				"must match: prefix = " + prefix + ", path = " + path,
+				-1,
+				prefix.matches(Path.valueOf(path))
+			);
 		}
 	}
 
@@ -760,7 +767,11 @@ public class PrefixTest {
 	 */
 	private static void testNotMatches(Prefix prefix, String ... paths) throws ValidationException {
 		for(String path : paths) {
-			assertFalse("must not match: prefix = " + prefix + ", path = " + path, prefix.matches(Path.valueOf(path)));
+			assertEquals(
+				"must not match: prefix = " + prefix + ", path = " + path,
+				-1,
+				prefix.matches(Path.valueOf(path))
+			);
 		}
 	}
 
