@@ -22,7 +22,6 @@
  */
 package com.aoindustries.net.path_space;
 
-import com.aoindustries.lang.NotImplementedException;
 import com.aoindustries.lang.NullArgumentException;
 import com.aoindustries.net.Path;
 import com.aoindustries.util.ComparatorUtils;
@@ -339,11 +338,9 @@ public final class Prefix implements Comparable<Prefix> {
 		// A simple forward matching implementation that goes one slash at a time
 		Prefix prefix1 = this;
 		Prefix prefix2 = other;
-		String base1 = prefix1.base.toString();
-		if(base1.length() == 1) base1 = "";
+		String base1 = prefix1.base == Path.ROOT ? "" : prefix1.base.toString();
 		int base1Len = base1.length();
-		String base2 = prefix2.base.toString();
-		if(base2.length() == 1) base2 = "";
+		String base2 = prefix2.base == Path.ROOT ? "" : prefix2.base.toString();
 		int base2Len = base2.length();
 		int effectiveWildcards1 = prefix1.wildcards;
 		if(prefix1.multiLevelType != MultiLevelType.NONE) effectiveWildcards1++;
@@ -457,6 +454,30 @@ public final class Prefix implements Comparable<Prefix> {
 	 * Checks if a given path matches this prefix.
 	 */
 	public boolean matches(Path path) {
-		throw new NotImplementedException();
+		String pathStr = path.toString();
+		String baseStr = base == Path.ROOT ? "" : base.toString();
+		int baseLen = baseStr.length();
+		int pathLen = pathStr.length();
+		// Path must start with baseStr + '/'
+		if(
+			pathLen <= baseLen
+			|| !pathStr.startsWith(baseStr)
+			|| pathStr.charAt(baseLen) != Path.SEPARATOR_CHAR
+		) return false;
+		// Determine minimum number of wildcards to match
+		int effectiveWildcards = wildcards;
+		if(multiLevelType != MultiLevelType.NONE) effectiveWildcards++;
+		// Match all wildcards
+		int lastSlashPos = baseLen;
+		while(effectiveWildcards-- > 0) {
+			int nextSlashPos = pathStr.indexOf(Path.SEPARATOR_CHAR, lastSlashPos + 1);
+			if(nextSlashPos == -1) {
+				// End of path reached, must have used all wildcards
+				return effectiveWildcards == 0;
+			}
+			lastSlashPos = nextSlashPos;
+		}
+		// All wildcards used but path left, must be unbounded or greedy
+		return multiLevelType != MultiLevelType.NONE;
 	}
 }
