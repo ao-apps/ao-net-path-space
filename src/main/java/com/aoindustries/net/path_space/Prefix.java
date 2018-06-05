@@ -272,6 +272,27 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 		return sb.toString();
 	}
 
+	private static int compare(Prefix p1, Prefix p2) {
+		// TODO: Throw exception if trying to compare two conflicting paths?
+
+		// base ascending
+		int diff = p1.base.compareTo(p2.base);
+		if(diff != 0) return diff;
+
+		// Ending /*, /**, and /*** all count as the same number of wildcards
+		int effectiveWildcards = p1.wildcards;
+		if(p1.multiLevelType != MultiLevelType.NONE) effectiveWildcards++;
+		int effectiveWildcardsOther = p2.wildcards;
+		if(p2.multiLevelType != MultiLevelType.NONE) effectiveWildcardsOther++;
+
+		// wildcards descending (this means has wildcards before no wildcards)
+		diff = ComparatorUtils.compare(effectiveWildcardsOther, effectiveWildcards);
+		if(diff != 0) return diff;
+
+		// multiLevelType descending (Order by /***, /**, NONE)
+		return p2.multiLevelType.compareTo(p1.multiLevelType);
+	}
+
 	/**
 	 * The natural ordering is such that an iterative call to {@link #matches(com.aoindustries.net.Path)} will return.
 	 * {@code true} on the most specific matching space.  This match is consistent with TODO: link findSpace.
@@ -290,24 +311,11 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 	 */
 	@Override
 	public int compareTo(Prefix other) {
-		// TODO: Throw exception if trying to compare two conflicting paths?
-
-		// base ascending
-		int diff = base.compareTo(other.base);
-		if(diff != 0) return diff;
-
-		// Ending /*, /**, and /*** all count as the same number of wildcards
-		int effectiveWildcards = wildcards;
-		if(multiLevelType != MultiLevelType.NONE) effectiveWildcards++;
-		int effectiveWildcardsOther = other.wildcards;
-		if(other.multiLevelType != MultiLevelType.NONE) effectiveWildcardsOther++;
-
-		// wildcards descending (this means has wildcards before no wildcards)
-		diff = ComparatorUtils.compare(effectiveWildcardsOther, effectiveWildcards);
-		if(diff != 0) return diff;
-
-		// multiLevelType descending (Order by /***, /**, NONE)
-		return other.multiLevelType.compareTo(multiLevelType);
+		int diff = compare(this, other);
+		assert Integer.signum(diff) == -Integer.signum(compare(other, this))
+			: "compareTo method is not reflexive: this = \"" + this + "\", other = \"" + other + '"';
+		// TODO: assert
+		return diff;
 	}
 
 	/**
