@@ -38,9 +38,6 @@ import org.junit.Test;
  */
 public class PrefixTest {
 	
-	public PrefixTest() {
-	}
-
 	// <editor-fold defaultstate="collapsed" desc="Test valueOf both by fields and by parsing String">
 	private static void testValueOf(Path base, int wildcards, MultiLevelType multiLevelType, String toString) {
 		Prefix p1 = valueOf(base, wildcards, multiLevelType);
@@ -767,7 +764,7 @@ public class PrefixTest {
 		}
 	}
 
-	// TODO: Add tests for /*/*, /*/**, /*/***, /path/*/*, /path/*/**, /path/*/***, /*/*/*/*, ...
+	// <editor-fold defaultstate="collapsed" desc="Test matches with .../*...">
 
 	@Test
 	public void testRootWildcardMatches() throws ValidationException {
@@ -815,6 +812,7 @@ public class PrefixTest {
 			valueOf("/***"),
 			"/",
 			"/path",
+			"/path/",
 			"/path/other",
 			"/path/other/",
 			"/path/other/more",
@@ -898,5 +896,191 @@ public class PrefixTest {
 			"/pathy/"
 		);
 	}
+	// </editor-fold>
+
+	// <editor-fold defaultstate="collapsed" desc="Test matches with .../*/*...">
+	@Test
+	public void testRootWildcardWildcardMatches() throws ValidationException {
+		testMatches(
+			valueOf("/*/*"),
+			"/path/",
+			"/path/other"
+		);
+	}
+
+	@Test
+	public void testRootWildcardWildcardNotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/*/*"),
+			"/",
+			"/path",
+			"/path/other/",
+			"/path/other/more",
+			"/path/other/more/"
+		);
+	}
+
+	@Test
+	public void testRootWildcardUnboundedMatches() throws ValidationException {
+		testMatches(
+			valueOf("/*/**"),
+			"/path/",
+			"/path/other",
+			"/path/other/",
+			"/path/other/more",
+			"/path/other/more/"
+		);
+	}
+
+	@Test
+	public void testRootWildcardUnboundedNotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/*/**"),
+			"/",
+			"/path"
+		);
+	}
+
+	@Test
+	public void testRootWildcardGreedyMatches() throws ValidationException {
+		testMatches(
+			valueOf("/*/***"),
+			"/path/",
+			"/path/other",
+			"/path/other/",
+			"/path/other/more",
+			"/path/other/more/"
+		);
+	}
+
+	@Test
+	public void testRootWildcardGreedyNotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/*/***"),
+			"/",
+			"/path"
+		);
+	}
+
+	@Test
+	public void testPathWildcardWildcardMatches() throws ValidationException {
+		testMatches(
+			valueOf("/path/*/*"),
+			"/path/other/",
+			"/path/other/more"
+		);
+	}
+
+	@Test
+	public void testPathWildcardWildcardNotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/path/*/*"),
+			"/",
+			"/path",
+			"/path/",
+			"/path/other",
+			"/path/other/more/",
+			"/path/other/more/fruit",
+			"/path/other/more/fruit/"
+		);
+	}
+
+	@Test
+	public void testPathWildcardUnboundedMatches() throws ValidationException {
+		testMatches(
+			valueOf("/path/*/**"),
+			"/path/other/",
+			"/path/other/more",
+			"/path/other/more/",
+			"/path/other/more/fruit",
+			"/path/other/more/fruit/"
+		);
+	}
+
+	@Test
+	public void testPathWildcardUnboundedNotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/path/*/**"),
+			"/",
+			"/path",
+			"/path/",
+			"/path/other"
+		);
+	}
+
+	@Test
+	public void testPathWildcardGreedyMatches() throws ValidationException {
+		testMatches(
+			valueOf("/path/*/***"),
+			"/path/other/",
+			"/path/other/more",
+			"/path/other/more/",
+			"/path/other/more/fruit",
+			"/path/other/more/fruit/"
+		);
+	}
+
+	@Test
+	public void testPathWildcardGreedyNotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/path/*/***"),
+			"/",
+			"/path",
+			"/path/",
+			"/path/other"
+		);
+	}
+	// </editor-fold>
+
+	// <editor-fold defaultstate="collapsed" desc="Test matches with deeper nested /*/*/*...">
+	@Test
+	public void testRootWildcard3() throws ValidationException {
+		testMatches(
+			valueOf("/*/*/*"),
+			"/path/other/",
+			"/path/other/more"
+		);
+	}
+
+	@Test
+	public void testRootWildcard3NotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/*/*/*"),
+			"/",
+			"/path",
+			"/path/",
+			"/path/other",
+			"/path/other/more/",
+			"/path/other/more/fruit",
+			"/path/other/more/fruit/"
+		);
+	}
+
+	@Test
+	public void testRootWildcard4() throws ValidationException {
+		testMatches(
+			valueOf("/*/*/*/*"),
+			"/path/other/more/",
+			"/path/other/more/fruit"
+		);
+	}
+
+	@Test
+	public void testRootWildcard4NotMatches() throws ValidationException {
+		testNotMatches(
+			valueOf("/*/*/*/*"),
+			"/",
+			"/path",
+			"/path/",
+			"/path/other",
+			"/path/other/",
+			"/path/other/more",
+			"/path/other/more/fruit/",
+			"/path/other/more/fruit/loops",
+			"/path/other/more/fruit/loops/"
+		);
+	}
+	// </editor-fold>
+
 	// </editor-fold>
 }
