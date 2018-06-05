@@ -356,19 +356,18 @@ public final class Prefix implements Comparable<Prefix> {
 		int wildcardsUsed2 = 0;
 		while(true) {
 			// Find actual path elements or go into wildcard space if past base
-			int path1Start, path1Len;
+			int path1Start;
 			boolean isWildcard1;
 			boolean isGreedy1;
 			if(lastSlashPos1 < base1Len) {
 				int slashPos = base1.indexOf(Path.SEPARATOR_STRING, lastSlashPos1 + 1);
 				int nextSlashPos = slashPos == -1 ? base1Len : slashPos;
 				path1Start = lastSlashPos1 + 1;
-				path1Len = nextSlashPos - path1Start;
 				lastSlashPos1 = nextSlashPos;
 				isWildcard1 = false;
 				isGreedy1 = false;
 			} else {
-				path1Start = path1Len = -1;
+				path1Start = -1;
 				// Consume wildcards, as long as still have some
 				if(wildcardsUsed1 < effectiveWildcards1) {
 					isWildcard1 = true;
@@ -379,19 +378,18 @@ public final class Prefix implements Comparable<Prefix> {
 					isGreedy1 = prefix1.multiLevelType == MultiLevelType.GREEDY;
 				}
 			}
-			int path2Start, path2Len;
+			int path2Start;
 			boolean isWildcard2;
 			boolean isGreedy2;
 			if(lastSlashPos2 < base2Len) {
 				int slashPos = base2.indexOf(Path.SEPARATOR_STRING, lastSlashPos2 + 1);
 				int nextSlashPos = slashPos == -1 ? base2Len : slashPos;
 				path2Start = lastSlashPos2 + 1;
-				path2Len = nextSlashPos - path2Start;
 				lastSlashPos2 = nextSlashPos;
 				isWildcard2 = false;
 				isGreedy2 = false;
 			} else {
-				path2Start = path2Len = -1;
+				path2Start = -1;
 				// Consume wildcards, as long as still have some
 				if(wildcardsUsed2 < effectiveWildcards2) {
 					isWildcard2 = true;
@@ -407,6 +405,8 @@ public final class Prefix implements Comparable<Prefix> {
 					// Both path elements exist, must match
 					assert path1Start != -1;
 					assert path2Start != -1;
+					int path1Len = lastSlashPos1 - path1Start;
+					int path2Len = lastSlashPos2 - path2Start;
 					if(
 						path1Len != path2Len
 						|| !base1.regionMatches(path1Start, base2, path2Start, path1Len)
