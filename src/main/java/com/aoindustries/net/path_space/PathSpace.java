@@ -39,7 +39,7 @@ import java.util.TreeMap;
  * </p>
  * <p>
  * This class is not implemented in a thread-safe manner.  External synchronization is required
- * in a multi-threaded use.
+ * in a multi-threaded use.  TODO: Synchronized internally with read-write locking to allow concurrent read-only access.
  * </p>
  * TODO: Should this implement Map&lt;Prefix, V&gt;?
  *
