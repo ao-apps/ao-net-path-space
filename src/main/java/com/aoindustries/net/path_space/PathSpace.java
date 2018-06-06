@@ -25,11 +25,13 @@ package com.aoindustries.net.path_space;
 import com.aoindustries.lang.NotImplementedException;
 import com.aoindustries.net.Path;
 import com.aoindustries.validation.ValidationException;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Manages a set of {@link Prefix}, identifying conflicts and providing efficient lookup
@@ -38,8 +40,7 @@ import java.util.TreeMap;
  * Each path space has an associated value.
  * </p>
  * <p>
- * This class is not implemented in a thread-safe manner.  External synchronization is required
- * in a multi-threaded use.  TODO: Synchronized internally with read-write locking to allow concurrent read-only access.
+ * This class is thread-safe.
  * </p>
  * TODO: Should this implement Map&lt;Prefix, V&gt;?
  *
@@ -55,6 +56,11 @@ public class PathSpace <V> {
 		ASSERTIONS_ENABLED = assertionsEnabled;
 	}
 	 */
+
+	// TODO: Java 1.8: StampedLock since not needing reentrant
+	private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+	private final Lock readLock = readWriteLock.readLock();
+	private final Lock writeLock = readWriteLock.writeLock();
 
 	private final Map<Prefix, V> map = new HashMap<Prefix, V>();
 
@@ -78,19 +84,24 @@ public class PathSpace <V> {
 	 * @see  Prefix#conflictsWith(com.aoindustries.net.path_space.Prefix)
 	 */
 	public void put(Prefix prefix, V value) throws PrefixConflictException {
-		// Check for conflict
-		for(Prefix existing : map.keySet()) {
-			if(existing.conflictsWith(prefix)) {
-				throw new PrefixConflictException(existing, prefix);
+		writeLock.lock();
+		try {
+			// Check for conflict
+			for(Prefix existing : map.keySet()) {
+				if(existing.conflictsWith(prefix)) {
+					throw new PrefixConflictException(existing, prefix);
+				}
 			}
-		}
-		// Add to map
-		V existingValue = map.put(prefix, value);
-		if(existingValue != null) throw new ConcurrentModificationException();
-		// Add to sorted map when performing assertions
-		if(ASSERTIONS_ENABLED) {
-			existingValue = sortedMap.put(prefix, value);
-			if(existingValue != null) throw new ConcurrentModificationException();
+			// Add to map
+			V existingValue = map.put(prefix, value);
+			assert existingValue == null;
+			// Add to sorted map when performing assertions
+			if(ASSERTIONS_ENABLED) {
+				existingValue = sortedMap.put(prefix, value);
+				assert existingValue == null;
+			}
+		} finally {
+			writeLock.unlock();
 		}
 	}
 
@@ -155,42 +166,47 @@ public class PathSpace <V> {
 	 * @return  The matching prefix or {@code null} if no match
 	 */
 	public PathMatch<V> get(Path path) {
-		if(!ASSERTIONS_ENABLED) {
-			throw new NotImplementedException("TODO: Implement fast look-up version");
-		} else {
-			// Perform sequential scan for assertions
-			PathMatch<V> sequentialMatch = null;
-			for(Map.Entry<Prefix, V> entry : sortedMap.entrySet()) {
-				Prefix prefix = entry.getKey();
-				int matchLen = prefix.matches(path);
-				if(matchLen != -1) {
-					Path prefixPath;
-					try {
-						prefixPath = matchLen == 0 ? Path.ROOT : Path.valueOf(path.toString().substring(0, matchLen));
-					} catch(ValidationException e) {
-						AssertionError ae = new AssertionError("A path prefix of a valid path is also valid for length " + matchLen + ": " + path);
-						ae.initCause(e);
-						throw ae;
+		readLock.lock();
+		try {
+			if(!ASSERTIONS_ENABLED) {
+				throw new NotImplementedException("TODO: Implement fast look-up version");
+			} else {
+				// Perform sequential scan for assertions
+				PathMatch<V> sequentialMatch = null;
+				for(Map.Entry<Prefix, V> entry : sortedMap.entrySet()) {
+					Prefix prefix = entry.getKey();
+					int matchLen = prefix.matches(path);
+					if(matchLen != -1) {
+						Path prefixPath;
+						try {
+							prefixPath = matchLen == 0 ? Path.ROOT : Path.valueOf(path.toString().substring(0, matchLen));
+						} catch(ValidationException e) {
+							AssertionError ae = new AssertionError("A path prefix of a valid path is also valid for length " + matchLen + ": " + path);
+							ae.initCause(e);
+							throw ae;
+						}
+						Path subPath;
+						try {
+							subPath = matchLen == 0 ? path : Path.valueOf(path.toString().substring(matchLen));
+						} catch(ValidationException e) {
+							AssertionError ae = new AssertionError("A sub-path of a valid path is also valid from position " + matchLen + ": " + path);
+							ae.initCause(e);
+							throw ae;
+						}
+						sequentialMatch = new PathMatch<V>(
+							prefix,
+							prefixPath,
+							subPath,
+							entry.getValue()
+						);
+						break;
 					}
-					Path subPath;
-					try {
-						subPath = matchLen == 0 ? path : Path.valueOf(path.toString().substring(matchLen));
-					} catch(ValidationException e) {
-						AssertionError ae = new AssertionError("A sub-path of a valid path is also valid from position " + matchLen + ": " + path);
-						ae.initCause(e);
-						throw ae;
-					}
-					sequentialMatch = new PathMatch<V>(
-						prefix,
-						prefixPath,
-						subPath,
-						entry.getValue()
-					);
-					break;
 				}
+				// TODO: Don't return this, but compare for equality with fast implementation
+				return sequentialMatch;
 			}
-			// TODO: Don't return this, but compare for equality with fast implementation
-			return sequentialMatch;
+		} finally {
+			readLock.unlock();
 		}
 	}
 }
