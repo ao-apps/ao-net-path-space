@@ -42,7 +42,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * <p>
  * This class is thread-safe.
  * </p>
- * TODO: Should this implement Map&lt;Prefix, V&gt;?
  *
  * @author  AO Industries, Inc.
  */
