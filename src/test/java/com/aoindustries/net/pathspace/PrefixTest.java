@@ -22,7 +22,6 @@
  */
 package com.aoindustries.net.pathspace;
 
-import com.aoindustries.net.pathspace.Prefix;
 import com.aoindustries.net.Path;
 import com.aoindustries.net.pathspace.Prefix.MultiLevelType;
 import static com.aoindustries.net.pathspace.Prefix.valueOf;

@@ -22,9 +22,6 @@
  */
 package com.aoindustries.net.pathspace;
 
-import com.aoindustries.net.pathspace.PathSpace;
-import com.aoindustries.net.pathspace.Prefix;
-import com.aoindustries.net.pathspace.PrefixConflictException;
 import com.aoindustries.net.Path;
 import com.aoindustries.validation.ValidationException;
 import java.util.ArrayList;
