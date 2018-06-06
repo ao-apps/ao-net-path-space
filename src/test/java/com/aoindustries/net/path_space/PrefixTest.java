@@ -586,6 +586,106 @@ public class PrefixTest {
 		);
 	}
 
+	@Test
+	public void testCompareToMuchDeeperPath0() {
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToMuchDeeperPath1() {
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/a/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToMuchDeeperPath2() {
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/a/a/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToMuchDeeperPath3() {
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/a/a/a/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToMuchDeeperPath4() {
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/a/a/a/a/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToMuchDeeperPath5() {
+		// TODO: These conflict, should the conflict throw and exception?
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/a/a/a/a/a/**")) > 0
+		);
+	}
+
+	@Test
+	public void testCompareToMuchDeeperPath6() {
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/a/a/a/a/a/a/**")) > 0
+		);
+	}
+
+	@Test
+	public void testCompareToMuchDeeperWildcardPath0() {
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToMuchDeeperWildcardPath1() {
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/*/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToMuchDeeperWildcardPath2() {
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/*/*/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToMuchDeeperWildcardPath3() {
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/*/*/*/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToMuchDeeperWildcardPath4() {
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/*/*/*/*/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToMuchDeeperWildcardPath5() {
+		// TODO: These conflict, should the conflict throw and exception?
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/*/*/*/*/*/**")) > 0
+		);
+	}
+
+	@Test
+	public void testCompareToMuchDeeperWildcardPath6() {
+		assertTrue(
+			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/*/*/*/*/*/*/**")) > 0
+		);
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testComparePathSlashBeforeWildcard() {
 		assertTrue(
