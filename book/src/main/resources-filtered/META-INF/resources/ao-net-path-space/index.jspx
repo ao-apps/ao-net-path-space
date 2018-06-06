@@ -33,7 +33,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 		title="@{documented.name}"
 		description="@{documented.description}"
 		datePublished="2018-06-03T20:05:42-0500"
-		dateModified="2018-06-04T14:08:55-0500"
+		dateModified="2018-06-05T20:37:49-0500"
 	>
 		<core:child page="changelog" />
 		<core:child page="apidocs/" />
@@ -109,7 +109,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 				<core:link domain="semanticcms.com" book="/core/controller" /> uses this project to manage which
 				requests are passed along for direct processing by the local Servlet container.  This layer of allocating
 				the servlet space is important because resources from <code>/META-INF/resources/</code> within all project
-				JAR files are merged into a single space with the potential to inadvertently overlap.  Explicit activation
+				JAR files are merged into a single space with the potential to inadvertently overlap.  Explicit reservation
 				of servlet space through the controller helps identify these conflicts early in the module development or
 				integration phase.
 			</p>
