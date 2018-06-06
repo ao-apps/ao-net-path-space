@@ -61,6 +61,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 							<configuration>
 								<links>
 									<link>${javac.link.javaApi}</link>
+									<link>https://commons.apache.org/proper/commons-lang/apidocs/</link>
 									<link>https://aoindustries.com/ao-net-types/apidocs/</link>
 								</links>
 							</configuration>
@@ -76,6 +77,11 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.7</version>
 		</dependency>
 		<dependency>
 			<groupId>com.aoindustries</groupId>
