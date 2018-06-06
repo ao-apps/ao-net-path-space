@@ -523,6 +523,69 @@ public class PrefixTest {
 		);
 	}
 
+	@Test
+	public void testCompareToPathDeeperPathWildcardsWildcardBeforeWildcard() {
+		assertTrue(
+			valueOf("/path/other/*/*").compareTo(valueOf("/path/*/*")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperPathWildcardsUnboundedBeforeWildcard() {
+		assertTrue(
+			valueOf("/path/other/*/**").compareTo(valueOf("/path/*/*")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperPathWildcardsGreedyBeforeWildcard() {
+		assertTrue(
+			valueOf("/path/other/*/***").compareTo(valueOf("/path/*/*")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperPathWildcardsWildcardBeforeUnbounded() {
+		assertTrue(
+			valueOf("/path/other/*/*").compareTo(valueOf("/path/*/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperPathWildcardsUnboundedBeforeUnbounded() {
+		assertTrue(
+			valueOf("/path/other/*/**").compareTo(valueOf("/path/*/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperPathWildcardsGreedyBeforeUnbounded() {
+		assertTrue(
+			valueOf("/path/other/*/***").compareTo(valueOf("/path/*/**")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperPathWildcardsWildcardBeforeGreedy() {
+		assertTrue(
+			valueOf("/path/other/*/*").compareTo(valueOf("/path/*/***")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperPathWildcardsUnboundedBeforeGreedy() {
+		assertTrue(
+			valueOf("/path/other/*/**").compareTo(valueOf("/path/*/***")) < 0
+		);
+	}
+
+	@Test
+	public void testCompareToPathDeeperPathWildcardsGreedyBeforeGreedy() {
+		assertTrue(
+			valueOf("/path/other/*/***").compareTo(valueOf("/path/*/***")) < 0
+		);
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testComparePathSlashBeforeWildcard() {
 		assertTrue(
