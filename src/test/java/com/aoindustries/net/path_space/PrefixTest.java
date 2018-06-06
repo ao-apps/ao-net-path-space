@@ -393,317 +393,205 @@ public class PrefixTest {
 	// </editor-fold>
 
 	// <editor-fold defaultstate="collapsed" desc="Test compareTo">
-	@Test(expected = IllegalArgumentException.class)
-	public void testCompareToRootEqualsRoot() {
+	private static void assertCompareEqual(String prefix1, String prefix2) {
+		Prefix p1 = valueOf(prefix1);
+		Prefix p2 = valueOf(prefix2);
 		assertEquals(
+			"Prefixes do not compare as equal: \"" + p1 + "\" and \"" + p2 + '"',
 			0,
-			valueOf("/").compareTo(valueOf("/"))
+			p1.compareTo(p2)
 		);
+		assertEquals(
+			"Prefixes do not compare as equal (reversed): \"" + p2 + "\" and \"" + p1 + '"',
+			0,
+			p2.compareTo(p1)
+		);
+	}
+
+	private static void assertCompareBefore(String prefix1, String ... others) {
+		Prefix p1 = valueOf(prefix1);
+		for(String prefix2 : others) {
+			Prefix p2 = valueOf(prefix2);
+			assertEquals(
+				"Prefix does not compare as before: \"" + p1 + "\" and \"" + p2 + '"',
+				-1,
+				Integer.signum(p1.compareTo(p2))
+			);
+			assertEquals(
+				"Prefix does not compare as after (reversed): \"" + p2 + "\" and \"" + p1 + '"',
+				1,
+				Integer.signum(p2.compareTo(p1))
+			);
+		}
+	}
+
+	private static void assertCompareAfter(String prefix1, String ... others) {
+		Prefix p1 = valueOf(prefix1);
+		for(String prefix2 : others) {
+			Prefix p2 = valueOf(prefix2);
+			assertEquals(
+				"Prefix does not compare as after: \"" + p1 + "\" and \"" + p2 + '"',
+				1,
+				Integer.signum(p1.compareTo(p2))
+			);
+			assertEquals(
+				"Prefix does not compare as before (reversed): \"" + p2 + "\" and \"" + p1 + '"',
+				-1,
+				Integer.signum(p2.compareTo(p1))
+			);
+		}
 	}
 
 	@Test
 	public void testCompareToRootEqualsRootWildcard() {
-		assertEquals(
-			0,
-			valueOf("/*").compareTo(valueOf("/*"))
-		);
+		assertCompareEqual("/*", "/*");
 	}
 
 	@Test
 	public void testCompareToRootEqualsRootUnbounded() {
-		assertEquals(
-			0,
-			valueOf("/**").compareTo(valueOf("/**"))
-		);
+		assertCompareEqual("/**", "/**");
 	}
 
 	@Test
 	public void testCompareToRootEqualsRootGreedy() {
-		assertEquals(
-			0,
-			valueOf("/***").compareTo(valueOf("/***"))
-		);
+		assertCompareEqual("/***", "/***");
 	}
 
 	@Test
 	public void testCompareToRootGreedyBeforeUnbounded() {
-		assertTrue(
-			valueOf("/***").compareTo(valueOf("/**")) < 0
-		);
+		assertCompareBefore("/***", "/**");
 	}
 
 	@Test
 	public void testCompareToRootUnboundedBeforeWildcard() {
-		assertTrue(
-			valueOf("/**").compareTo(valueOf("/*")) < 0
-		);
+		assertCompareBefore("/**", "/*");
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testCompareToRootWildcardBeforeRoot() {
-		assertTrue(
-			valueOf("/*").compareTo(valueOf("/")) < 0
-		);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testCompareToRootBeforePath() {
-		assertTrue(
-			valueOf("/").compareTo(valueOf("/path")) < 0
-		);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testCompareToPathBeforePathSlash() {
-		assertTrue(
-			valueOf("/path").compareTo(valueOf("/path/")) < 0
+	@Test
+	public void testCompareToPathDeeperWildcardsBeforeWildcard() {
+		assertCompareAfter(
+			"/path/*/*",
+			"/path/*/*/*",
+			"/path/*/*/**",
+			"/path/*/*/***"
 		);
 	}
 
 	@Test
-	public void testCompareToPathDeeperWildcardsWildcardBeforeWildcard() {
-		assertTrue(
-			valueOf("/path/*/*/*").compareTo(valueOf("/path/*/*")) < 0
+	public void testCompareToPathDeeperWildcardsBeforeUnbounded() {
+		assertCompareAfter(
+			"/path/*/**",
+			"/path/*/*/*",
+			"/path/*/*/**",
+			"/path/*/*/***"
 		);
 	}
 
 	@Test
-	public void testCompareToPathDeeperWildcardsUnboundedBeforeWildcard() {
-		assertTrue(
-			valueOf("/path/*/*/**").compareTo(valueOf("/path/*/*")) < 0
+	public void testCompareToPathDeeperWildcardsBeforeGreedy() {
+		assertCompareAfter(
+			"/path/*/***",
+			"/path/*/*/*",
+			"/path/*/*/**",
+			"/path/*/*/***"
 		);
 	}
 
 	@Test
-	public void testCompareToPathDeeperWildcardsGreedyBeforeWildcard() {
-		assertTrue(
-			valueOf("/path/*/*/***").compareTo(valueOf("/path/*/*")) < 0
+	public void testCompareToPathDeeperPathWildcardsBeforeWildcard() {
+		assertCompareAfter(
+			"/path/*/*",
+			"/path/other/*/*",
+			"/path/other/*/**",
+			"/path/other/*/***"
 		);
 	}
 
 	@Test
-	public void testCompareToPathDeeperWildcardsWildcardBeforeUnbounded() {
-		assertTrue(
-			valueOf("/path/*/*/*").compareTo(valueOf("/path/*/**")) < 0
+	public void testCompareToPathDeeperPathWildcardsBeforeUnbounded() {
+		assertCompareAfter(
+			"/path/*/**",
+			"/path/other/*/*",
+			"/path/other/*/**",
+			"/path/other/*/***"
 		);
 	}
 
 	@Test
-	public void testCompareToPathDeeperWildcardsUnboundedBeforeUnbounded() {
-		assertTrue(
-			valueOf("/path/*/*/**").compareTo(valueOf("/path/*/**")) < 0
+	public void testCompareToPathDeeperPathWildcardsBeforeGreedy() {
+		assertCompareAfter(
+			"/path/*/***",
+			"/path/other/*/*",
+			"/path/other/*/**",
+			"/path/other/*/***"
 		);
 	}
 
 	@Test
-	public void testCompareToPathDeeperWildcardsGreedyBeforeUnbounded() {
-		assertTrue(
-			valueOf("/path/*/*/***").compareTo(valueOf("/path/*/**")) < 0
+	public void testCompareToMuchDeeperPathsWildcard() {
+		assertCompareBefore(
+			"/z/z/z/z/z/*",
+			"/**",
+			"/z/**",
+			"/z/z/**",
+			"/z/z/z/**",
+			"/z/z/z/z/**"
+		);
+		assertCompareAfter(
+			"/z/z/z/z/z/*",
+			"/a/**",
+			"/a/a/**",
+			"/a/a/a/**",
+			"/a/a/a/a/**",
+			// TODO: This conflicts, should the conflict throw and exception?
+			"/a/a/a/a/a/**",
+			// TODO: This conflicts, should the conflict throw and exception?
+			"/z/z/z/z/z/**",
+			"/a/a/a/a/a/a/**",
+			"/z/z/z/z/z/z/**"
 		);
 	}
 
 	@Test
-	public void testCompareToPathDeeperWildcardsWildcardBeforeGreedy() {
-		assertTrue(
-			valueOf("/path/*/*/*").compareTo(valueOf("/path/*/***")) < 0
+	public void testCompareToMuchDeeperWildcardsOnly() {
+		assertCompareBefore(
+			"/z/z/z/z/z/*",
+			"/**",
+			"/*/**",
+			"/*/*/**",
+			"/*/*/*/**",
+			"/*/*/*/*/**"
+		);
+		assertCompareAfter(
+			"/z/z/z/z/z/*",
+			// TODO: This conflicts, should the conflict throw and exception?
+			"/*/*/*/*/*/**",
+			"/*/*/*/*/*/*/**"
 		);
 	}
 
 	@Test
-	public void testCompareToPathDeeperWildcardsUnboundedBeforeGreedy() {
-		assertTrue(
-			valueOf("/path/*/*/**").compareTo(valueOf("/path/*/***")) < 0
+	public void testCompareToMuchDeeperPathWildcards() {
+		assertCompareBefore(
+			"/z/z/z/z/z/*",
+			"/**",
+			"/z/**",
+			"/z/*/**",
+			"/z/*/*/**",
+			"/z/*/*/*/**"
 		);
-	}
-
-	@Test
-	public void testCompareToPathDeeperWildcardsGreedyBeforeGreedy() {
-		assertTrue(
-			valueOf("/path/*/*/***").compareTo(valueOf("/path/*/***")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToPathDeeperPathWildcardsWildcardBeforeWildcard() {
-		assertTrue(
-			valueOf("/path/other/*/*").compareTo(valueOf("/path/*/*")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToPathDeeperPathWildcardsUnboundedBeforeWildcard() {
-		assertTrue(
-			valueOf("/path/other/*/**").compareTo(valueOf("/path/*/*")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToPathDeeperPathWildcardsGreedyBeforeWildcard() {
-		assertTrue(
-			valueOf("/path/other/*/***").compareTo(valueOf("/path/*/*")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToPathDeeperPathWildcardsWildcardBeforeUnbounded() {
-		assertTrue(
-			valueOf("/path/other/*/*").compareTo(valueOf("/path/*/**")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToPathDeeperPathWildcardsUnboundedBeforeUnbounded() {
-		assertTrue(
-			valueOf("/path/other/*/**").compareTo(valueOf("/path/*/**")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToPathDeeperPathWildcardsGreedyBeforeUnbounded() {
-		assertTrue(
-			valueOf("/path/other/*/***").compareTo(valueOf("/path/*/**")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToPathDeeperPathWildcardsWildcardBeforeGreedy() {
-		assertTrue(
-			valueOf("/path/other/*/*").compareTo(valueOf("/path/*/***")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToPathDeeperPathWildcardsUnboundedBeforeGreedy() {
-		assertTrue(
-			valueOf("/path/other/*/**").compareTo(valueOf("/path/*/***")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToPathDeeperPathWildcardsGreedyBeforeGreedy() {
-		assertTrue(
-			valueOf("/path/other/*/***").compareTo(valueOf("/path/*/***")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperPath0() {
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/**")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperPath1() {
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/a/**")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperPath2() {
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/a/a/**")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperPath3() {
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/a/a/a/**")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperPath4() {
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/a/a/a/a/**")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperPath5() {
-		// TODO: These conflict, should the conflict throw and exception?
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/a/a/a/a/a/**")) > 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperPath6() {
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/a/a/a/a/a/a/**")) > 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperWildcardPath0() {
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/**")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperWildcardPath1() {
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/*/**")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperWildcardPath2() {
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/*/*/**")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperWildcardPath3() {
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/*/*/*/**")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperWildcardPath4() {
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/*/*/*/*/**")) < 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperWildcardPath5() {
-		// TODO: These conflict, should the conflict throw and exception?
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/*/*/*/*/*/**")) > 0
-		);
-	}
-
-	@Test
-	public void testCompareToMuchDeeperWildcardPath6() {
-		assertTrue(
-			valueOf("/z/z/z/z/z/*").compareTo(valueOf("/*/*/*/*/*/*/**")) > 0
-		);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testComparePathSlashBeforeWildcard() {
-		assertTrue(
-			valueOf("/path/").compareTo(valueOf("/path/*")) < 0
-		);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testComparePathSlashBeforeUnbounded() {
-		assertTrue(
-			valueOf("/path/").compareTo(valueOf("/path/**")) < 0
-		);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testComparePathSlashBeforeGreedy() {
-		assertTrue(
-			valueOf("/path/").compareTo(valueOf("/path/***")) < 0
+		assertCompareAfter(
+			"/z/z/z/z/z/*",
+			"/a/**",
+			"/a/*/**",
+			"/a/*/*/**",
+			"/a/*/*/*/**",
+			// TODO: This conflicts, should the conflict throw and exception?
+			"/a/*/*/*/*/**",
+			// TODO: This conflicts, should the conflict throw and exception?
+			"/z/*/*/*/*/**",
+			"/a/*/*/*/*/*/**",
+			"/z/*/*/*/*/*/**"
 		);
 	}
 	// </editor-fold>
