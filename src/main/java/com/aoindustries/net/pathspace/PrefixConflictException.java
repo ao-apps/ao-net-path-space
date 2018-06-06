@@ -20,12 +20,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.aoindustries.net.path_space;
+package com.aoindustries.net.pathspace;
 
 /**
  * Exception thrown when conflicting prefixes are detected.
  *
- * @see  PathSpace#put(com.aoindustries.net.path_space.Prefix, java.lang.Object)
+ * @see  PathSpace#put(com.aoindustries.net.pathspace.Prefix, java.lang.Object)
  *
  * @author  AO Industries, Inc.
  */

@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.aoindustries.net.path_space;
+package com.aoindustries.net.pathspace;
 
 import com.aoindustries.lang.NotImplementedException;
 import com.aoindustries.net.Path;
@@ -67,7 +67,7 @@ public class PathSpace <V> {
 	 * A sorted set to verify map lookup results are consistent with a sequential
 	 * scan, in natural ordering, of prefixes checking for the first match.
 	 *
-	 * @see  Prefix#compareTo(com.aoindustries.net.path_space.Prefix)
+	 * @see  Prefix#compareTo(com.aoindustries.net.pathspace.Prefix)
 	 * @see  Prefix#matches(com.aoindustries.net.Path)
 	 */
 	private final SortedMap<Prefix, V> sortedMap = ASSERTIONS_ENABLED ? new TreeMap<Prefix, V>() : null;
@@ -80,7 +80,7 @@ public class PathSpace <V> {
 	 *
 	 * @throws  PrefixConflictException  If the prefix conflicts with an existing entry
 	 *
-	 * @see  Prefix#conflictsWith(com.aoindustries.net.path_space.Prefix)
+	 * @see  Prefix#conflictsWith(com.aoindustries.net.pathspace.Prefix)
 	 */
 	public void put(Prefix prefix, V value) throws PrefixConflictException {
 		writeLock.lock();

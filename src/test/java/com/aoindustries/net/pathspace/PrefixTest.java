@@ -20,11 +20,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.aoindustries.net.path_space;
+package com.aoindustries.net.pathspace;
 
+import com.aoindustries.net.pathspace.Prefix;
 import com.aoindustries.net.Path;
-import com.aoindustries.net.path_space.Prefix.MultiLevelType;
-import static com.aoindustries.net.path_space.Prefix.valueOf;
+import com.aoindustries.net.pathspace.Prefix.MultiLevelType;
+import static com.aoindustries.net.pathspace.Prefix.valueOf;
 import com.aoindustries.validation.ValidationException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

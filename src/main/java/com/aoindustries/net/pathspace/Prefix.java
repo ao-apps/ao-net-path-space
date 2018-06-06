@@ -20,7 +20,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.aoindustries.net.path_space;
+package com.aoindustries.net.pathspace;
 
 import com.aoindustries.lang.NullArgumentException;
 import com.aoindustries.net.Path;
@@ -58,7 +58,7 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 	private static final int GREEDY_SUFFIX_LEN = GREEDY_SUFFIX.length();
 
 	/**
-	 * @implNote This ordering is important for the implementation of {@link Prefix#compareTo(com.aoindustries.net.path_space.Prefix)}.
+	 * @implNote This ordering is important for the implementation of {@link Prefix#compareTo(com.aoindustries.net.pathspace.Prefix)}.
 	 */
 	public enum MultiLevelType {
 		NONE("", true),
@@ -160,10 +160,10 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 	 * This is the inverse function of {@link #toString()}.
 	 * </p>
 	 *
-	 * @param  prefix  The prefix to parse.  Must adhere to all rules of {@link  #valueOf(com.aoindustries.net.Path, int, com.aoindustries.net.path_space.Prefix.MultiLevelType)}
+	 * @param  prefix  The prefix to parse.  Must adhere to all rules of {@link  #valueOf(com.aoindustries.net.Path, int, com.aoindustries.net.pathspace.Prefix.MultiLevelType)}
 	 *
 	 * @see  #toString()
-	 * @see  #valueOf(com.aoindustries.net.Path, int, com.aoindustries.net.path_space.Prefix.MultiLevelType)
+	 * @see  #valueOf(com.aoindustries.net.Path, int, com.aoindustries.net.pathspace.Prefix.MultiLevelType)
 	 */
 	public static Prefix valueOf(String prefix) {
 		NullArgumentException.checkNotNull(prefix, "prefix");
@@ -218,7 +218,7 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 	 * Validity checks are performed in the @{code valueOf} methods because this class is used internally
 	 * for map lookups.  These lookups avoid the validity checks on these short-lived key lookup instances.
 	 *
-	 * @see  #valueOf(com.aoindustries.net.Path, int, com.aoindustries.net.path_space.Prefix.MultiLevelType)
+	 * @see  #valueOf(com.aoindustries.net.Path, int, com.aoindustries.net.pathspace.Prefix.MultiLevelType)
 	 * @see  #valueOf(java.lang.String)
 	 */
 	private Prefix(Path base, int wildcards, MultiLevelType multiLevelType) {
@@ -315,10 +315,10 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 	 * The implementation of TODO: Link findSpace, should be much faster than an iterative search, however.
 	 * </p>
 	 * <p>
-	 * TODO: There are no ordering guarantees between prefixes that {@link #conflictsWith(com.aoindustries.net.path_space.Prefix) conflict with one another}?
+	 * TODO: There are no ordering guarantees between prefixes that {@link #conflictsWith(com.aoindustries.net.pathspace.Prefix) conflict with one another}?
 	 * </p>
 	 *
-	 * @see  #conflictsWith(com.aoindustries.net.path_space.Prefix)
+	 * @see  #conflictsWith(com.aoindustries.net.pathspace.Prefix)
 	 * @see  #matches(com.aoindustries.net.Path)
 	 */
 	@Override
