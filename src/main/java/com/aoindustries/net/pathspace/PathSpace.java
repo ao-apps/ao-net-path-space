@@ -178,7 +178,7 @@ public class PathSpace <V> {
 					if(matchLen != -1) {
 						Path prefixPath;
 						try {
-							prefixPath = matchLen == 0 ? Path.ROOT : Path.valueOf(path.toString().substring(0, matchLen));
+							prefixPath = (matchLen == 0) ? Path.ROOT : Path.valueOf(path.toString().substring(0, matchLen));
 						} catch(ValidationException e) {
 							AssertionError ae = new AssertionError("A path prefix of a valid path is also valid for length " + matchLen + ": " + path);
 							ae.initCause(e);
@@ -186,7 +186,7 @@ public class PathSpace <V> {
 						}
 						Path subPath;
 						try {
-							subPath = matchLen == 0 ? path : Path.valueOf(path.toString().substring(matchLen));
+							subPath = (matchLen == 0) ? path : Path.valueOf(path.toString().substring(matchLen));
 						} catch(ValidationException e) {
 							AssertionError ae = new AssertionError("A sub-path of a valid path is also valid from position " + matchLen + ": " + path);
 							ae.initCause(e);

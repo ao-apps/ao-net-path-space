@@ -113,9 +113,9 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 			int firstPos = baseStr.indexOf(WILDCARD_SUFFIX); // Quick check if any "/*" found
 			if(firstPos != -1) {
 				if(
-					baseStr.indexOf(WILDCARD_SUFFIX + Path.SEPARATOR_CHAR, firstPos) != -1
+					   baseStr.indexOf(WILDCARD_SUFFIX  + Path.SEPARATOR_CHAR, firstPos) != -1
 					|| baseStr.indexOf(UNBOUNDED_SUFFIX + Path.SEPARATOR_CHAR, firstPos) != -1
-					|| baseStr.indexOf(GREEDY_SUFFIX + Path.SEPARATOR_CHAR, firstPos) != -1
+					|| baseStr.indexOf(GREEDY_SUFFIX    + Path.SEPARATOR_CHAR, firstPos) != -1
 				) {
 					throw new IllegalArgumentException("Infix wildcards not supported: " + base);
 				}
@@ -284,8 +284,8 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 
 		// Determine the total path depth, including both wildcards and path elements
 		// This is computed as the number of slashes in the base ("" for root '/'), plus number of effective wildcards
-		String baseStr1 = p1.base == Path.ROOT ? "" : p1.base.toString();
-		String baseStr2 = p2.base == Path.ROOT ? "" : p2.base.toString();
+		String baseStr1 = (p1.base == Path.ROOT) ? "" : p1.base.toString();
+		String baseStr2 = (p2.base == Path.ROOT) ? "" : p2.base.toString();
 		int pathDepth1 = StringUtils.countMatches(baseStr1, Path.SEPARATOR_CHAR) + effectiveWildcards1;
 		int pathDepth2 = StringUtils.countMatches(baseStr2, Path.SEPARATOR_CHAR) + effectiveWildcards2;
 
@@ -364,9 +364,9 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 		// A simple forward matching implementation that goes one slash at a time
 		Prefix prefix1 = this;
 		Prefix prefix2 = other;
-		String base1 = prefix1.base == Path.ROOT ? "" : prefix1.base.toString();
+		String base1 = (prefix1.base == Path.ROOT) ? "" : prefix1.base.toString();
 		int base1Len = base1.length();
-		String base2 = prefix2.base == Path.ROOT ? "" : prefix2.base.toString();
+		String base2 = (prefix2.base == Path.ROOT) ? "" : prefix2.base.toString();
 		int base2Len = base2.length();
 		int effectiveWildcards1 = prefix1.wildcards;
 		if(prefix1.multiLevelType != MultiLevelType.NONE) effectiveWildcards1++;
@@ -384,7 +384,7 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 			boolean isGreedy1;
 			if(lastSlashPos1 < base1Len) {
 				int slashPos = base1.indexOf(Path.SEPARATOR_STRING, lastSlashPos1 + 1);
-				int nextSlashPos = slashPos == -1 ? base1Len : slashPos;
+				int nextSlashPos = (slashPos == -1) ? base1Len : slashPos;
 				path1Start = lastSlashPos1 + 1;
 				lastSlashPos1 = nextSlashPos;
 				isWildcard1 = false;
@@ -406,7 +406,7 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 			boolean isGreedy2;
 			if(lastSlashPos2 < base2Len) {
 				int slashPos = base2.indexOf(Path.SEPARATOR_STRING, lastSlashPos2 + 1);
-				int nextSlashPos = slashPos == -1 ? base2Len : slashPos;
+				int nextSlashPos = (slashPos == -1) ? base2Len : slashPos;
 				path2Start = lastSlashPos2 + 1;
 				lastSlashPos2 = nextSlashPos;
 				isWildcard2 = false;
@@ -484,7 +484,7 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 	 */
 	public int matches(Path path) {
 		String pathStr = path.toString();
-		String baseStr = base == Path.ROOT ? "" : base.toString();
+		String baseStr = (base == Path.ROOT) ? "" : base.toString();
 		int baseLen = baseStr.length();
 		int pathLen = pathStr.length();
 		// Path must start with baseStr + '/'
