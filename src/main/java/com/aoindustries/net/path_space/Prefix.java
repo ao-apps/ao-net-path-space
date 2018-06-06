@@ -27,6 +27,7 @@ import com.aoindustries.net.Path;
 import com.aoindustries.util.ComparatorUtils;
 import com.aoindustries.validation.ValidationException;
 import java.io.Serializable;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @implNote  Made {@link Serializable} because is used as a field in {@link PrefixConflictException}.
@@ -275,22 +276,33 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 	private static int compare(Prefix p1, Prefix p2) {
 		// TODO: Throw exception if trying to compare two conflicting paths?
 
-		// base ascending
-		int diff = p1.base.compareTo(p2.base);
+		// Ending /*, /**, and /*** all count as the same number of wildcards
+		int effectiveWildcards1 = p1.wildcards;
+		if(p1.multiLevelType != MultiLevelType.NONE) effectiveWildcards1++;
+		int effectiveWildcards2 = p2.wildcards;
+		if(p2.multiLevelType != MultiLevelType.NONE) effectiveWildcards2++;
+
+		// Determine the total path depth, including both wildcards and path elements
+		// This is computed as the number of slashes in the base ("" for root '/'), plus number of effective wildcards
+		String baseStr1 = p1.base == Path.ROOT ? "" : p1.base.toString();
+		String baseStr2 = p2.base == Path.ROOT ? "" : p2.base.toString();
+		int pathDepth1 = StringUtils.countMatches(baseStr1, Path.SEPARATOR_CHAR) + effectiveWildcards1;
+		int pathDepth2 = StringUtils.countMatches(baseStr2, Path.SEPARATOR_CHAR) + effectiveWildcards2;
+
+		// Sort by path depth descending first
+		int diff = ComparatorUtils.compare(pathDepth2, pathDepth1);
 		if(diff != 0) return diff;
 
-		// Ending /*, /**, and /*** all count as the same number of wildcards
-		int effectiveWildcards = p1.wildcards;
-		if(p1.multiLevelType != MultiLevelType.NONE) effectiveWildcards++;
-		int effectiveWildcardsOther = p2.wildcards;
-		if(p2.multiLevelType != MultiLevelType.NONE) effectiveWildcardsOther++;
-
-		// wildcards descending (this means has wildcards before no wildcards)
-		diff = ComparatorUtils.compare(effectiveWildcardsOther, effectiveWildcards);
+		// wildcards descending (this means has more wildcards before fewer wildcards)
+		diff = ComparatorUtils.compare(effectiveWildcards2, effectiveWildcards1);
 		if(diff != 0) return diff;
 
 		// multiLevelType descending (Order by /***, /**, NONE)
-		return p2.multiLevelType.compareTo(p1.multiLevelType);
+		diff = p2.multiLevelType.compareTo(p1.multiLevelType);
+		if(diff != 0) return diff;
+
+		// base ascending
+		return p1.base.compareTo(p2.base);
 	}
 
 	/**
@@ -303,7 +315,7 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 	 * The implementation of TODO: Link findSpace, should be much faster than an iterative search, however.
 	 * </p>
 	 * <p>
-	 * There are no ordering guarantees between prefixes that {@link #conflictsWith(com.aoindustries.net.path_space.Prefix) conflict with one another}.
+	 * TODO: There are no ordering guarantees between prefixes that {@link #conflictsWith(com.aoindustries.net.path_space.Prefix) conflict with one another}?
 	 * </p>
 	 *
 	 * @see  #conflictsWith(com.aoindustries.net.path_space.Prefix)
@@ -312,9 +324,10 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 	@Override
 	public int compareTo(Prefix other) {
 		int diff = compare(this, other);
+		assert (diff == 0) == this.equals(other)
+			: "compareTo is not consistent with equals: this = \"" + this + "\", other = \"" + other + '"';
 		assert Integer.signum(diff) == -Integer.signum(compare(other, this))
 			: "compareTo method is not reflexive: this = \"" + this + "\", other = \"" + other + '"';
-		// TODO: assert
 		return diff;
 	}
 

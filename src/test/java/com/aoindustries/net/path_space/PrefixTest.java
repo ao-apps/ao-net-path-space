@@ -532,17 +532,17 @@ public class PrefixTest {
 		assertCompareBefore(
 			"/z/z/z/z/z/*",
 			"/**",
+			"/a/**",
 			"/z/**",
+			"/a/a/**",
 			"/z/z/**",
+			"/a/a/a/**",
 			"/z/z/z/**",
+			"/a/a/a/a/**",
 			"/z/z/z/z/**"
 		);
 		assertCompareAfter(
 			"/z/z/z/z/z/*",
-			"/a/**",
-			"/a/a/**",
-			"/a/a/a/**",
-			"/a/a/a/a/**",
 			// TODO: This conflicts, should the conflict throw and exception?
 			"/a/a/a/a/a/**",
 			// TODO: This conflicts, should the conflict throw and exception?
@@ -575,17 +575,17 @@ public class PrefixTest {
 		assertCompareBefore(
 			"/z/z/z/z/z/*",
 			"/**",
+			"/a/**",
 			"/z/**",
+			"/a/*/**",
 			"/z/*/**",
+			"/a/*/*/**",
 			"/z/*/*/**",
+			"/a/*/*/*/**",
 			"/z/*/*/*/**"
 		);
 		assertCompareAfter(
 			"/z/z/z/z/z/*",
-			"/a/**",
-			"/a/*/**",
-			"/a/*/*/**",
-			"/a/*/*/*/**",
 			// TODO: This conflicts, should the conflict throw and exception?
 			"/a/*/*/*/*/**",
 			// TODO: This conflicts, should the conflict throw and exception?
