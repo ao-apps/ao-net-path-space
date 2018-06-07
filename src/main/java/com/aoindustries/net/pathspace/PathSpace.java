@@ -305,8 +305,6 @@ public class PathSpace <V> {
 	 */
 	PathMatch<V> getIndexed(Path path) {
 		// Search the path up to the deepest possibly used
-		// TODO: Could save the slash positions in an array to avoid searching for slashes both directions, but this
-		//       would involve array allocation, which would probably be on the stack due to escape analysis.
 		String pathStr = path.toString();
 		int pathStrLen = pathStr.length();
 		// Find the deepest path used for matching
