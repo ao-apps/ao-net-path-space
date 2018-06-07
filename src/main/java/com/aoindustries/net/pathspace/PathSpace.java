@@ -140,7 +140,6 @@ public class PathSpace <V> {
 			// Add to map
 			if(sortedMap.put(prefix, value) != null) throw new AssertionError("Duplicate prefix should have been found as a conflict already: " + prefix);
 			// Add to index
-			// TODO: Should unbounded entries also be put in the bounded index at their effectiveWildcards (wildcards + 1)?
 			List<List<Map<String,ImmutablePair<Prefix,V>>>> totalDepthIndex;
 			int wildcardsOffset;
 			if(prefix.getMultiLevelType() == Prefix.MultiLevelType.NONE) {
