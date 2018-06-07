@@ -82,13 +82,6 @@ public class PathSpace <V> {
 	 * and the associated value.
 	 * </p>
 	 */
-	// TODO: Substring object to allow map lookups without using String.substring (which copies all characters as of java 1.7.0_06)?
-	//       It would implement its equals method as a call to String.regionMatches.
-	// TODO: Likely premature optimization but in theory would handle long paths O(n) instead of O(n^2).
-	//       Well, this theory probably not correct if having to generate hashCodes for each of the substrings, however
-	//       when combined with the singletonMap simply calling equals, it could be a win.
-	//       Conclusion: only do this if profiling says to, the gains are probably non-existent.
-	// TODO: Put into ao-lang or its own microproject "ao-substring"?
 	private final List<List<Map<String,ImmutablePair<Prefix,V>>>> boundedIndex = new ArrayList<List<Map<String,ImmutablePair<Prefix,V>>>>();
 
 	/**
