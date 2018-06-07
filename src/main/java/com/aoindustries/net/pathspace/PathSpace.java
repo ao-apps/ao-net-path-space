@@ -382,7 +382,6 @@ public class PathSpace <V> {
 		// Search backwards for any matching unbounded index
 		int unboundedIndexSize = unboundedIndex.size();
 		if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: unboundedIndexSize = " + unboundedIndexSize);
-		// TODO: Store first index used by each index to avoid full search back to beginning of path?  This would not matter when /** added to the set.
 		while(pathDepth > unboundedIndexSize) {
 			lastSlashPos = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, lastSlashPos - 1);
 			assert lastSlashPos != -1 : "lastSlashPos != -1: " + lastSlashPos + " != -1";
