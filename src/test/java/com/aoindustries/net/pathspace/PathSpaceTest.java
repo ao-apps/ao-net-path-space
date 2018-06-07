@@ -72,7 +72,8 @@ public class PathSpaceTest {
 		Assert.assertEquals("prefix", expected.getPrefix(), actual.getPrefix());
 		Assert.assertEquals("prefixPath", expected.getPrefixPath(), actual.getPrefixPath());
 		Assert.assertEquals("subPath", expected.getSubPath(), actual.getSubPath());
-		Assert.assertEquals("value", expected.getValue(), actual.getValue());
+		Assert.assertSame("value", expected.getValue(), actual.getValue());
+		Assert.assertEquals(expected, actual);
 	}
 
 	private static <V> PathSpace.PathMatch<V> newPathMatch(String prefix, String prefixPath, String subPath, V value) throws ValidationException {
@@ -90,7 +91,11 @@ public class PathSpaceTest {
 			"/**",
 			"/path/*",
 			"/path/other/*",
-			"/other/path/***"
+			"/other/path/***",
+			"/bicycle/*/***",
+			"/deeper/*/*/*",
+			"/deeper/1/2/3/4/5/6/**", // Just trying to get in the way
+			"/deeper/1/2/3/4/5/6/7/*" // Just trying to get in the way
 		);
 		assertEquals(
 			newPathMatch("/**", "/", "/", (Void)null),
@@ -157,8 +162,72 @@ public class PathSpaceTest {
 			testSpace.get(Path.valueOf("/other/path/banana/bread"))
 		);
 		assertEquals(
-			newPathMatch("/other/path/***", "/other/path", "/banana/bread/", (Void)null),
-			testSpace.get(Path.valueOf("/other/path/banana/bread/"))
+			newPathMatch("/other/path/***", "/other/path", "/banana/bread/other/path/banana/bread/other/path/banana/bread/other/path/banana/bread/", (Void)null),
+			testSpace.get(Path.valueOf("/other/path/banana/bread/other/path/banana/bread/other/path/banana/bread/other/path/banana/bread/"))
+		);
+		assertEquals(
+			newPathMatch("/bicycle/*/***", "/bicycle/path", "/", (Void)null),
+			testSpace.get(Path.valueOf("/bicycle/path/"))
+		);
+		assertEquals(
+			newPathMatch("/bicycle/*/***", "/bicycle/path", "/banana", (Void)null),
+			testSpace.get(Path.valueOf("/bicycle/path/banana"))
+		);
+		assertEquals(
+			newPathMatch("/bicycle/*/***", "/bicycle/path", "/banana/", (Void)null),
+			testSpace.get(Path.valueOf("/bicycle/path/banana/"))
+		);
+		assertEquals(
+			newPathMatch("/bicycle/*/***", "/bicycle/path", "/banana/bread", (Void)null),
+			testSpace.get(Path.valueOf("/bicycle/path/banana/bread"))
+		);
+		assertEquals(
+			newPathMatch("/bicycle/*/***", "/bicycle/path", "/banana/bread/bicycle/path/banana/bread/bicycle/path/banana/bread/bicycle/path/banana/bread/", (Void)null),
+			testSpace.get(Path.valueOf("/bicycle/path/banana/bread/bicycle/path/banana/bread/bicycle/path/banana/bread/bicycle/path/banana/bread/"))
+		);
+		assertEquals(
+			newPathMatch("/**", "/", "/deeper", (Void)null),
+			testSpace.get(Path.valueOf("/deeper"))
+		);
+		assertEquals(
+			newPathMatch("/**", "/", "/deeper/", (Void)null),
+			testSpace.get(Path.valueOf("/deeper/"))
+		);
+		assertEquals(
+			newPathMatch("/**", "/", "/deeper/1", (Void)null),
+			testSpace.get(Path.valueOf("/deeper/1"))
+		);
+		assertEquals(
+			newPathMatch("/**", "/", "/deeper/1/", (Void)null),
+			testSpace.get(Path.valueOf("/deeper/1/"))
+		);
+		assertEquals(
+			newPathMatch("/**", "/", "/deeper/1/2", (Void)null),
+			testSpace.get(Path.valueOf("/deeper/1/2"))
+		);
+		assertEquals(
+			newPathMatch("/deeper/*/*/*", "/deeper/1/2", "/", (Void)null),
+			testSpace.get(Path.valueOf("/deeper/1/2/"))
+		);
+		assertEquals(
+			newPathMatch("/deeper/*/*/*", "/deeper/1/2", "/3", (Void)null),
+			testSpace.get(Path.valueOf("/deeper/1/2/3"))
+		);
+		assertEquals(
+			newPathMatch("/**", "/", "/deeper/1/2/3/", (Void)null),
+			testSpace.get(Path.valueOf("/deeper/1/2/3/"))
+		);
+		assertEquals(
+			newPathMatch("/**", "/", "/deeper/1/2/3/4", (Void)null),
+			testSpace.get(Path.valueOf("/deeper/1/2/3/4"))
+		);
+		assertEquals(
+			newPathMatch("/**", "/", "/deeper/1/2/3/4/", (Void)null),
+			testSpace.get(Path.valueOf("/deeper/1/2/3/4/"))
+		);
+		assertEquals(
+			newPathMatch("/**", "/", "/deeper/1/2/3/4/5", (Void)null),
+			testSpace.get(Path.valueOf("/deeper/1/2/3/4/5"))
 		);
 	}
 
@@ -168,7 +237,11 @@ public class PathSpaceTest {
 		PathSpace<Void> testSpace = newTestSpace(
 			"/path/*",
 			"/path/other/*",
-			"/other/path/***"
+			"/other/path/***",
+			"/bicycle/*/***",
+			"/deeper/*/*/*",
+			"/deeper/1/2/3/4/5/6/**", // Just trying to get in the way
+			"/deeper/1/2/3/4/5/6/7/*" // Just trying to get in the way
 		);
 		assertNull(
 			testSpace.get(Path.ROOT)
@@ -227,8 +300,63 @@ public class PathSpaceTest {
 			testSpace.get(Path.valueOf("/other/path/banana/bread"))
 		);
 		assertEquals(
-			newPathMatch("/other/path/***", "/other/path", "/banana/bread/", (Void)null),
-			testSpace.get(Path.valueOf("/other/path/banana/bread/"))
+			newPathMatch("/other/path/***", "/other/path", "/banana/bread/other/path/banana/bread/other/path/banana/bread/other/path/banana/bread/", (Void)null),
+			testSpace.get(Path.valueOf("/other/path/banana/bread/other/path/banana/bread/other/path/banana/bread/other/path/banana/bread/"))
+		);
+		assertEquals(
+			newPathMatch("/bicycle/*/***", "/bicycle/path", "/", (Void)null),
+			testSpace.get(Path.valueOf("/bicycle/path/"))
+		);
+		assertEquals(
+			newPathMatch("/bicycle/*/***", "/bicycle/path", "/banana", (Void)null),
+			testSpace.get(Path.valueOf("/bicycle/path/banana"))
+		);
+		assertEquals(
+			newPathMatch("/bicycle/*/***", "/bicycle/path", "/banana/", (Void)null),
+			testSpace.get(Path.valueOf("/bicycle/path/banana/"))
+		);
+		assertEquals(
+			newPathMatch("/bicycle/*/***", "/bicycle/path", "/banana/bread", (Void)null),
+			testSpace.get(Path.valueOf("/bicycle/path/banana/bread"))
+		);
+		assertEquals(
+			newPathMatch("/bicycle/*/***", "/bicycle/path", "/banana/bread/bicycle/path/banana/bread/bicycle/path/banana/bread/bicycle/path/banana/bread/", (Void)null),
+			testSpace.get(Path.valueOf("/bicycle/path/banana/bread/bicycle/path/banana/bread/bicycle/path/banana/bread/bicycle/path/banana/bread/"))
+		);
+		assertNull(
+			testSpace.get(Path.valueOf("/deeper"))
+		);
+		assertNull(
+			testSpace.get(Path.valueOf("/deeper/"))
+		);
+		assertNull(
+			testSpace.get(Path.valueOf("/deeper/1"))
+		);
+		assertNull(
+			testSpace.get(Path.valueOf("/deeper/1/"))
+		);
+		assertNull(
+			testSpace.get(Path.valueOf("/deeper/1/2"))
+		);
+		assertEquals(
+			newPathMatch("/deeper/*/*/*", "/deeper/1/2", "/", (Void)null),
+			testSpace.get(Path.valueOf("/deeper/1/2/"))
+		);
+		assertEquals(
+			newPathMatch("/deeper/*/*/*", "/deeper/1/2", "/3", (Void)null),
+			testSpace.get(Path.valueOf("/deeper/1/2/3"))
+		);
+		assertNull(
+			testSpace.get(Path.valueOf("/deeper/1/2/3/"))
+		);
+		assertNull(
+			testSpace.get(Path.valueOf("/deeper/1/2/3/4"))
+		);
+		assertNull(
+			testSpace.get(Path.valueOf("/deeper/1/2/3/4/"))
+		);
+		assertNull(
+			testSpace.get(Path.valueOf("/deeper/1/2/3/4/5"))
 		);
 	}
 }

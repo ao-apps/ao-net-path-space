@@ -22,16 +22,20 @@
  */
 package com.aoindustries.net.pathspace;
 
-import com.aoindustries.lang.NotImplementedException;
+import com.aoindustries.lang.ObjectUtils;
 import com.aoindustries.net.Path;
+import com.aoindustries.util.MinimalMap;
+import com.aoindustries.util.Tuple2; // TODO: Move Tuple2 to own microproject and remove dependency on large aocode-public.  Or use "javatuples" project
 import com.aoindustries.validation.ValidationException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Manages a set of {@link Prefix}, identifying conflicts and providing efficient lookup
@@ -47,7 +51,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class PathSpace <V> {
 
-	private static final boolean ASSERTIONS_ENABLED = true;
+	private static final boolean DEBUG = false; // false for production
+
+	// TODO: private static final boolean ASSERTIONS_ENABLED = true;
 	/* TODO: Selective assertions once fast lookup is implemented:
 	static {
 		boolean assertionsEnabled = false;
@@ -61,7 +67,48 @@ public class PathSpace <V> {
 	private final Lock readLock = readWriteLock.readLock();
 	private final Lock writeLock = readWriteLock.writeLock();
 
-	private final Map<Prefix, V> map = new HashMap<Prefix, V>();
+	/**
+	 * The index of all bounded prefixes (prefixes with multilevel type {@link Prefix.MultiLevelType#NONE}).
+	 * <p>
+	 * The main list is indexed by the total path depth, including the prefix depth and all wildcards.
+	 * This will always be at least one (for /*), so the index is offset by one.
+	 * </p>
+	 * <p>
+	 * The list for each path depth is indexed by the number of wildcard substitutions in the prefix.
+	 * This also will always be at least one (for /path/*), so the index is offset by one.
+	 * </p>
+	 * <p>
+	 * The map for each path depth and number of wildcards contains {@link Prefix#getBase() prefix base}
+	 * and the associated value.
+	 * </p>
+	 */
+	// TODO: Substring object to allow map lookups without using String.substring (which copies all characters as of java 1.7.0_06)?
+	//       It would implement its equals method as a call to String.regionMatches.
+	// TODO: Likely premature optimization but in theory would handle long paths O(n) instead of O(n^2).
+	//       Well, this theory probably not correct if having to generate hashCodes for each of the substrings, however
+	//       when combined with the singletonMap simply calling equals, it could be a win.
+	//       Conclusion: only do this if profiling says to, the gains are probably non-existent.
+	// TODO: Put into ao-lang or its own microproject "ao-substring"?
+	private final List<List<Map<String,Tuple2<Prefix,V>>>> boundedIndex = new ArrayList<List<Map<String,Tuple2<Prefix,V>>>>();
+
+	/**
+	 * The index of all unbounded prefixes (prefixes with multilevel types other than {@link Prefix.MultiLevelType#NONE}.
+	 * <p>
+	 * The main list is indexed by the total path depth, including the prefix depth and all wildcards (+1 for effectiveWildcards).
+	 * Effective wildcards will always be at least one (for /** or /***), so the index is offset by one.
+	 * </p>
+	 * <p>
+	 * The list for each path depth is indexed by the number of wildcard substitutions in the prefix.
+	 * This also will always be at least one (for /path/*), so the index is offset by one.
+	 * </p>
+	 * <p>
+	 * The map for each path depth and number of wildcards contains {@link Prefix#getBase() prefix base}
+	 * and the associated value.
+	 * </p>
+	 *
+	 * @see  #boundedIndex
+	 */
+	private final List<List<Map<String,Tuple2<Prefix,V>>>> unboundedIndex = new ArrayList<List<Map<String,Tuple2<Prefix,V>>>>();
 
 	/**
 	 * A sorted set to verify map lookup results are consistent with a sequential
@@ -70,7 +117,7 @@ public class PathSpace <V> {
 	 * @see  Prefix#compareTo(com.aoindustries.net.pathspace.Prefix)
 	 * @see  Prefix#matches(com.aoindustries.net.Path)
 	 */
-	private final SortedMap<Prefix, V> sortedMap = ASSERTIONS_ENABLED ? new TreeMap<Prefix, V>() : null;
+	private final SortedMap<Prefix, V> sortedMap = new TreeMap<Prefix, V>();
 
 	/**
 	 * Adds a new prefix to this space while checking for conflicts.
@@ -85,20 +132,53 @@ public class PathSpace <V> {
 	public void put(Prefix prefix, V value) throws PrefixConflictException {
 		writeLock.lock();
 		try {
+			if(DEBUG) {
+				System.err.println();
+				System.err.println("DEBUG: PathSpace: put: prefix = " + prefix);
+			}
+			// TODO: Could check for conflicts within the indexed structure instead of relying on sequential scan through all entries
+			// TODO: But this would be optimizing the performance of the put method, which is only used on application start-up for our use-case.
 			// Check for conflict
-			for(Prefix existing : map.keySet()) {
+			for(Prefix existing : sortedMap.keySet()) {
 				if(existing.conflictsWith(prefix)) {
 					throw new PrefixConflictException(existing, prefix);
 				}
 			}
 			// Add to map
-			V existingValue = map.put(prefix, value);
-			assert existingValue == null;
-			// Add to sorted map when performing assertions
-			if(ASSERTIONS_ENABLED) {
-				existingValue = sortedMap.put(prefix, value);
-				assert existingValue == null;
+			if(sortedMap.put(prefix, value) != null) throw new AssertionError("Duplicate prefix should have been found as a conflict already: " + prefix);
+			// Add to index
+			// TODO: Should unbounded entries also be put in the bounded index at their effectiveWildcards (wildcards + 1)?
+			List<List<Map<String,Tuple2<Prefix,V>>>> totalDepthIndex;
+			int wildcardsOffset;
+			if(prefix.getMultiLevelType() == Prefix.MultiLevelType.NONE) {
+				totalDepthIndex = boundedIndex;
+				wildcardsOffset = 0;
+			} else {
+				totalDepthIndex = unboundedIndex;
+				wildcardsOffset = 1;
 			}
+			Path base = prefix.getBase();
+			String baseStr = base == Path.ROOT ? "" : base.toString();
+			if(DEBUG) System.err.println("DEBUG: PathSpace: put: baseStr = " + baseStr + ", wildcardsOffset = " + wildcardsOffset);
+			int baseDepth = StringUtils.countMatches(baseStr, Path.SEPARATOR_CHAR);
+			int wildcards = prefix.getWildcards() + wildcardsOffset;
+			int totalDepth = baseDepth + wildcards;
+			if(DEBUG) System.err.println("DEBUG: PathSpace: put: baseDepth = " + baseDepth + ", wildcards = " + wildcards + ", totalDepth = " + totalDepth);
+			while(totalDepthIndex.size() <= (totalDepth - 1)) totalDepthIndex.add(null);
+			List<Map<String,Tuple2<Prefix,V>>> wildcardDepthIndex = totalDepthIndex.get(totalDepth - 1);
+			if(wildcardDepthIndex == null) {
+				wildcardDepthIndex = new ArrayList<Map<String,Tuple2<Prefix,V>>>(wildcards);
+				totalDepthIndex.set(totalDepth - 1, wildcardDepthIndex);
+			}
+			while(wildcardDepthIndex.size() <= (wildcards - 1)) wildcardDepthIndex.add(null);
+			wildcardDepthIndex.set(
+				wildcards - 1,
+				MinimalMap.put(
+					wildcardDepthIndex.get(wildcards - 1),
+					baseStr,
+					new Tuple2<Prefix,V>(prefix, value)
+				)
+			);
 		} finally {
 			writeLock.unlock();
 		}
@@ -108,6 +188,7 @@ public class PathSpace <V> {
 	 * The result of a call to {@link #get(com.aoindustries.net.Path)}.
 	 */
 	public static class PathMatch<V> {
+
 		private final Prefix prefix;
 		private final Path prefixPath;
 		private final Path subPath;
@@ -128,6 +209,31 @@ public class PathSpace <V> {
 		@Override
 		public String toString() {
 			return prefixPath.toString() + '!' + subPath.toString();
+		}
+
+		/**
+		 * Two matches are equal when they have the same prefix (by .equals),
+		 * prefixPath (by .equals), subPath (by .equals), and value (by identity).
+		 */
+		@Override
+		public boolean equals(Object o) {
+			if(!(o instanceof PathMatch<?>)) return false;
+			PathMatch<?> other = (PathMatch<?>)o;
+			return
+				value == other.value
+				&& prefix.equals(other.prefix)
+				&& prefixPath.equals(other.prefixPath)
+				&& subPath.equals(other.subPath)
+			;
+		}
+
+		@Override
+		public int hashCode() {
+			int hash = prefix.hashCode();
+			hash = hash * 31 + prefixPath.hashCode();
+			hash = hash * 31 + subPath.hashCode();
+			hash = hash * 31 + ObjectUtils.hashCode(value);
+			return hash;
 		}
 
 		/**
@@ -160,6 +266,197 @@ public class PathSpace <V> {
 	}
 
 	/**
+	 * Sequential implementation of {@link #get(com.aoindustries.net.Path)} based on iterative
+	 * calls to {@link Prefix#matches(com.aoindustries.net.Path)}
+	 * in the natural ordering established by {@link Prefix#compareTo(com.aoindustries.net.pathspace.Prefix)}.
+	 * <p>
+	 * The caller must already hold {@link #readLock}
+	 * </p>
+	 */
+	PathMatch<V> getSequential(Path path) {
+		for(Map.Entry<Prefix, V> entry : sortedMap.entrySet()) {
+			Prefix prefix = entry.getKey();
+			int matchLen = prefix.matches(path);
+			if(matchLen != -1) {
+				Path prefixPath;
+				try {
+					prefixPath = (matchLen == 0) ? Path.ROOT : Path.valueOf(path.toString().substring(0, matchLen));
+				} catch(ValidationException e) {
+					AssertionError ae = new AssertionError("A path prefix of a valid path is also valid for length " + matchLen + ": " + path);
+					ae.initCause(e);
+					throw ae;
+				}
+				Path subPath;
+				try {
+					subPath = (matchLen == 0) ? path : Path.valueOf(path.toString().substring(matchLen));
+				} catch(ValidationException e) {
+					AssertionError ae = new AssertionError("A sub-path of a valid path is also valid from position " + matchLen + ": " + path);
+					ae.initCause(e);
+					throw ae;
+				}
+				return new PathMatch<V>(
+					prefix,
+					prefixPath,
+					subPath,
+					entry.getValue()
+				);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Indexed implementation of {@link #get(com.aoindustries.net.Path)}.
+	 * <p>
+	 * The caller must already hold {@link #readLock}
+	 * </p>
+	 */
+	PathMatch<V> getIndexed(Path path) {
+		// Search the path up to the deepest possibly used
+		// TODO: Could save the slash positions in an array to avoid searching for slashes both directions, but this
+		//       would involve array allocation, which would probably be on the stack due to escape analysis.
+		String pathStr = path.toString();
+		int pathStrLen = pathStr.length();
+		// Find the deepest path used for matching
+		int deepestPath = Math.max(unboundedIndex.size(), boundedIndex.size());
+		if(DEBUG) {
+			System.err.println();
+			System.err.println("DEBUG: PathSpace: getIndexed: pathStr = " + pathStr + ", pathStrLen = " + pathStrLen + ", deepestPath = " + deepestPath);
+		}
+		int pathDepth = 0;
+		int lastSlashPos = 0;
+		while(pathDepth < deepestPath) {
+			pathDepth++;
+			int slashPos = pathStr.indexOf(Path.SEPARATOR_CHAR, lastSlashPos + 1);
+			if(slashPos == -1) {
+				lastSlashPos = pathStrLen;
+				break;
+			} else {
+				lastSlashPos = slashPos;
+			}
+		}
+		if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: pathDepth = " + pathDepth + ", lastSlashPos = " + lastSlashPos);
+		// When at end of path, look for an exact-level match in bounded index
+		if(lastSlashPos == pathStrLen && pathDepth <= boundedIndex.size()) {
+			List<Map<String,Tuple2<Prefix,V>>> wildcardDepthIndex = boundedIndex.get(pathDepth - 1);
+			if(wildcardDepthIndex != null) {
+				int wildcardDepthIndexLen = wildcardDepthIndex.size();
+				assert wildcardDepthIndexLen <= pathDepth : "wildcardDepthIndexLen <= pathDepth: " + wildcardDepthIndexLen + " <= " + pathDepth;
+				int prevSlashPos1 = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, lastSlashPos - 1);
+				if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: prevSlashPos1 = " + prevSlashPos1);
+				assert prevSlashPos1 != -1 : "prevSlashPos1 != -1: " + prevSlashPos1 + " != -1";
+				int searchSlashPos = prevSlashPos1;
+				if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: wildcardDepthIndexLen = " + wildcardDepthIndexLen + ", pathDepth = " + pathDepth + ", searchSlashPos = " + searchSlashPos);
+				for(int i = 0; i < wildcardDepthIndexLen; i++) {
+					Map<String,Tuple2<Prefix,V>> wildcardDepthMap = wildcardDepthIndex.get(i);
+					if(wildcardDepthMap != null) {
+						String searchStr1 = pathStr.substring(0, searchSlashPos);
+						if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: Loop 1: searchStr1 = " + searchStr1);
+						Tuple2<Prefix,V> match = wildcardDepthMap.get(searchStr1);
+						if(match != null) {
+							// Return match
+							Path prefixPath;
+							try {
+								prefixPath = (prevSlashPos1 == 0) ? Path.ROOT : Path.valueOf(pathStr.substring(0, prevSlashPos1));
+							} catch(ValidationException e) {
+								AssertionError ae = new AssertionError("A path prefix of a valid path is also valid for length " + prevSlashPos1 + ": " + path);
+								ae.initCause(e);
+								throw ae;
+							}
+							Path subPath;
+							try {
+								subPath = (prevSlashPos1 == 0) ? path : Path.valueOf(pathStr.substring(prevSlashPos1));
+							} catch(ValidationException e) {
+								AssertionError ae = new AssertionError("A sub-path of a valid path is also valid from position " + prevSlashPos1 + ": " + path);
+								ae.initCause(e);
+								throw ae;
+							}
+							if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: returning 1: prefixPath = " + prefixPath + ", subPath = " + subPath);
+							return new PathMatch<V>(
+								match.getElement1(),
+								prefixPath,
+								subPath,
+								match.getElement2()
+							);
+						}
+					}
+					if(i < (wildcardDepthIndexLen -1 )) {
+						int prevSearchSlashPos1 = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, searchSlashPos - 1);
+						if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: Loop 1: prevSearchSlashPos1 = " + prevSearchSlashPos1);
+						assert prevSearchSlashPos1 != -1 : "prevSearchSlashPos1 != -1: " + prevSearchSlashPos1 + " != -1";
+						searchSlashPos = prevSearchSlashPos1;
+					}
+				}
+			}
+		}
+		// Search backwards for any matching unbounded index
+		int unboundedIndexSize = unboundedIndex.size();
+		if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: unboundedIndexSize = " + unboundedIndexSize);
+		// TODO: Store first index used by each index to avoid full search back to beginning of path?  This would not matter when /** added to the set.
+		while(pathDepth > unboundedIndexSize) {
+			lastSlashPos = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, lastSlashPos - 1);
+			assert lastSlashPos != -1 : "lastSlashPos != -1: " + lastSlashPos + " != -1";
+			pathDepth--;
+		}
+		while(pathDepth > 0) {
+			if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: Loop 2: pathDepth = " + pathDepth + ", lastSlashPos = " + lastSlashPos);
+			int prevSlashPos2 = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, lastSlashPos - 1);
+			if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: prevSlashPos2 = " + prevSlashPos2);
+			assert prevSlashPos2 != -1 : "prevSlashPos2 != -1: " + prevSlashPos2 + " != -1";
+			List<Map<String,Tuple2<Prefix,V>>> unboundedDepthIndex = unboundedIndex.get(pathDepth - 1);
+			if(unboundedDepthIndex != null) {
+				int unboundedDepthIndexLen = unboundedDepthIndex.size();
+				assert unboundedDepthIndexLen <= pathDepth : "unboundedDepthIndexLen <= pathDepth: " + unboundedDepthIndexLen + " <= " + pathDepth;
+				int searchSlashPos = prevSlashPos2;
+				if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: unboundedDepthIndexLen = " + unboundedDepthIndexLen + ", pathDepth = " + pathDepth + ", searchSlashPos = " + searchSlashPos);
+				for(int i = 0; i < unboundedDepthIndexLen; i++) {
+					Map<String,Tuple2<Prefix,V>> wildcardDepthMap = unboundedDepthIndex.get(i);
+					if(wildcardDepthMap != null) {
+						String searchStr = pathStr.substring(0, searchSlashPos);
+						if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: Loop 2.1: searchStr = " + searchStr);
+						Tuple2<Prefix,V> match = wildcardDepthMap.get(searchStr);
+						if(match != null) {
+							// Return match
+							Path prefixPath;
+							try {
+								prefixPath = (prevSlashPos2 == 0) ? Path.ROOT : Path.valueOf(pathStr.substring(0, prevSlashPos2));
+							} catch(ValidationException e) {
+								AssertionError ae = new AssertionError("A path prefix of a valid path is also valid for length " + prevSlashPos2 + ": " + path);
+								ae.initCause(e);
+								throw ae;
+							}
+							Path subPath;
+							try {
+								subPath = (prevSlashPos2 == 0) ? path : Path.valueOf(pathStr.substring(prevSlashPos2));
+							} catch(ValidationException e) {
+								AssertionError ae = new AssertionError("A sub-path of a valid path is also valid from position " + prevSlashPos2 + ": " + path);
+								ae.initCause(e);
+								throw ae;
+							}
+							if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: returning 2: prefixPath = " + prefixPath + ", subPath = " + subPath);
+							return new PathMatch<V>(
+								match.getElement1(),
+								prefixPath,
+								subPath,
+								match.getElement2()
+							);
+						}
+					}
+					if(i < (unboundedDepthIndexLen - 1)) {
+						int prevSearchSlashPos2 = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, searchSlashPos - 1);
+						assert prevSearchSlashPos2 != -1 : "prevSearchSlashPos2 != -1: " + prevSearchSlashPos2 + " != -1";
+						if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: Loop 2.1: prevSearchSlashPos2 = " + prevSearchSlashPos2);
+						searchSlashPos = prevSearchSlashPos2;
+					}
+				}
+			}
+			lastSlashPos = prevSlashPos2;
+			pathDepth--;
+		}
+		return null;
+	}
+
+	/**
 	 * Gets the prefix associated with the given path.
 	 *
 	 * @return  The matching prefix or {@code null} if no match
@@ -167,43 +464,10 @@ public class PathSpace <V> {
 	public PathMatch<V> get(Path path) {
 		readLock.lock();
 		try {
-			if(!ASSERTIONS_ENABLED) {
-				throw new NotImplementedException("TODO: Implement fast look-up version");
-			} else {
-				// Perform sequential scan for assertions
-				PathMatch<V> sequentialMatch = null;
-				for(Map.Entry<Prefix, V> entry : sortedMap.entrySet()) {
-					Prefix prefix = entry.getKey();
-					int matchLen = prefix.matches(path);
-					if(matchLen != -1) {
-						Path prefixPath;
-						try {
-							prefixPath = (matchLen == 0) ? Path.ROOT : Path.valueOf(path.toString().substring(0, matchLen));
-						} catch(ValidationException e) {
-							AssertionError ae = new AssertionError("A path prefix of a valid path is also valid for length " + matchLen + ": " + path);
-							ae.initCause(e);
-							throw ae;
-						}
-						Path subPath;
-						try {
-							subPath = (matchLen == 0) ? path : Path.valueOf(path.toString().substring(matchLen));
-						} catch(ValidationException e) {
-							AssertionError ae = new AssertionError("A sub-path of a valid path is also valid from position " + matchLen + ": " + path);
-							ae.initCause(e);
-							throw ae;
-						}
-						sequentialMatch = new PathMatch<V>(
-							prefix,
-							prefixPath,
-							subPath,
-							entry.getValue()
-						);
-						break;
-					}
-				}
-				// TODO: Don't return this, but compare for equality with fast implementation
-				return sequentialMatch;
-			}
+			PathMatch<V> indexedMatch = getIndexed(path);
+			assert ObjectUtils.equals(indexedMatch, getSequential(path))
+				: "Indexed get inconsistent with sequential get: path = " + path + ", indexedMatch = " + indexedMatch + ", sequentialMatch = " + getSequential(path);
+			return indexedMatch;
 		} finally {
 			readLock.unlock();
 		}
