@@ -25,7 +25,6 @@ package com.aoindustries.net.pathspace;
 import com.aoindustries.lang.ObjectUtils;
 import com.aoindustries.net.Path;
 import com.aoindustries.util.MinimalMap;
-import com.aoindustries.util.Tuple2; // TODO: Move Tuple2 to own microproject and remove dependency on large aocode-public.  Or use "javatuples" project
 import com.aoindustries.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +35,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 /**
  * Manages a set of {@link Prefix}, identifying conflicts and providing efficient lookup
@@ -89,7 +89,7 @@ public class PathSpace <V> {
 	//       when combined with the singletonMap simply calling equals, it could be a win.
 	//       Conclusion: only do this if profiling says to, the gains are probably non-existent.
 	// TODO: Put into ao-lang or its own microproject "ao-substring"?
-	private final List<List<Map<String,Tuple2<Prefix,V>>>> boundedIndex = new ArrayList<List<Map<String,Tuple2<Prefix,V>>>>();
+	private final List<List<Map<String,ImmutablePair<Prefix,V>>>> boundedIndex = new ArrayList<List<Map<String,ImmutablePair<Prefix,V>>>>();
 
 	/**
 	 * The index of all unbounded prefixes (prefixes with multilevel types other than {@link Prefix.MultiLevelType#NONE}.
@@ -108,7 +108,7 @@ public class PathSpace <V> {
 	 *
 	 * @see  #boundedIndex
 	 */
-	private final List<List<Map<String,Tuple2<Prefix,V>>>> unboundedIndex = new ArrayList<List<Map<String,Tuple2<Prefix,V>>>>();
+	private final List<List<Map<String,ImmutablePair<Prefix,V>>>> unboundedIndex = new ArrayList<List<Map<String,ImmutablePair<Prefix,V>>>>();
 
 	/**
 	 * A sorted set to verify map lookup results are consistent with a sequential
@@ -148,7 +148,7 @@ public class PathSpace <V> {
 			if(sortedMap.put(prefix, value) != null) throw new AssertionError("Duplicate prefix should have been found as a conflict already: " + prefix);
 			// Add to index
 			// TODO: Should unbounded entries also be put in the bounded index at their effectiveWildcards (wildcards + 1)?
-			List<List<Map<String,Tuple2<Prefix,V>>>> totalDepthIndex;
+			List<List<Map<String,ImmutablePair<Prefix,V>>>> totalDepthIndex;
 			int wildcardsOffset;
 			if(prefix.getMultiLevelType() == Prefix.MultiLevelType.NONE) {
 				totalDepthIndex = boundedIndex;
@@ -165,9 +165,9 @@ public class PathSpace <V> {
 			int totalDepth = baseDepth + wildcards;
 			if(DEBUG) System.err.println("DEBUG: PathSpace: put: baseDepth = " + baseDepth + ", wildcards = " + wildcards + ", totalDepth = " + totalDepth);
 			while(totalDepthIndex.size() <= (totalDepth - 1)) totalDepthIndex.add(null);
-			List<Map<String,Tuple2<Prefix,V>>> wildcardDepthIndex = totalDepthIndex.get(totalDepth - 1);
+			List<Map<String,ImmutablePair<Prefix,V>>> wildcardDepthIndex = totalDepthIndex.get(totalDepth - 1);
 			if(wildcardDepthIndex == null) {
-				wildcardDepthIndex = new ArrayList<Map<String,Tuple2<Prefix,V>>>(wildcards);
+				wildcardDepthIndex = new ArrayList<Map<String,ImmutablePair<Prefix,V>>>(wildcards);
 				totalDepthIndex.set(totalDepth - 1, wildcardDepthIndex);
 			}
 			while(wildcardDepthIndex.size() <= (wildcards - 1)) wildcardDepthIndex.add(null);
@@ -176,7 +176,7 @@ public class PathSpace <V> {
 				MinimalMap.put(
 					wildcardDepthIndex.get(wildcards - 1),
 					baseStr,
-					new Tuple2<Prefix,V>(prefix, value)
+					new ImmutablePair<Prefix,V>(prefix, value)
 				)
 			);
 		} finally {
@@ -338,7 +338,7 @@ public class PathSpace <V> {
 		if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: pathDepth = " + pathDepth + ", lastSlashPos = " + lastSlashPos);
 		// When at end of path, look for an exact-level match in bounded index
 		if(lastSlashPos == pathStrLen && pathDepth <= boundedIndex.size()) {
-			List<Map<String,Tuple2<Prefix,V>>> wildcardDepthIndex = boundedIndex.get(pathDepth - 1);
+			List<Map<String,ImmutablePair<Prefix,V>>> wildcardDepthIndex = boundedIndex.get(pathDepth - 1);
 			if(wildcardDepthIndex != null) {
 				int wildcardDepthIndexLen = wildcardDepthIndex.size();
 				assert wildcardDepthIndexLen <= pathDepth : "wildcardDepthIndexLen <= pathDepth: " + wildcardDepthIndexLen + " <= " + pathDepth;
@@ -348,11 +348,11 @@ public class PathSpace <V> {
 				int searchSlashPos = prevSlashPos1;
 				if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: wildcardDepthIndexLen = " + wildcardDepthIndexLen + ", pathDepth = " + pathDepth + ", searchSlashPos = " + searchSlashPos);
 				for(int i = 0; i < wildcardDepthIndexLen; i++) {
-					Map<String,Tuple2<Prefix,V>> wildcardDepthMap = wildcardDepthIndex.get(i);
+					Map<String,ImmutablePair<Prefix,V>> wildcardDepthMap = wildcardDepthIndex.get(i);
 					if(wildcardDepthMap != null) {
 						String searchStr1 = pathStr.substring(0, searchSlashPos);
 						if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: Loop 1: searchStr1 = " + searchStr1);
-						Tuple2<Prefix,V> match = wildcardDepthMap.get(searchStr1);
+						ImmutablePair<Prefix,V> match = wildcardDepthMap.get(searchStr1);
 						if(match != null) {
 							// Return match
 							Path prefixPath;
@@ -373,10 +373,10 @@ public class PathSpace <V> {
 							}
 							if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: returning 1: prefixPath = " + prefixPath + ", subPath = " + subPath);
 							return new PathMatch<V>(
-								match.getElement1(),
+								match.getLeft(),
 								prefixPath,
 								subPath,
-								match.getElement2()
+								match.getRight()
 							);
 						}
 					}
@@ -403,18 +403,18 @@ public class PathSpace <V> {
 			int prevSlashPos2 = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, lastSlashPos - 1);
 			if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: prevSlashPos2 = " + prevSlashPos2);
 			assert prevSlashPos2 != -1 : "prevSlashPos2 != -1: " + prevSlashPos2 + " != -1";
-			List<Map<String,Tuple2<Prefix,V>>> unboundedDepthIndex = unboundedIndex.get(pathDepth - 1);
+			List<Map<String,ImmutablePair<Prefix,V>>> unboundedDepthIndex = unboundedIndex.get(pathDepth - 1);
 			if(unboundedDepthIndex != null) {
 				int unboundedDepthIndexLen = unboundedDepthIndex.size();
 				assert unboundedDepthIndexLen <= pathDepth : "unboundedDepthIndexLen <= pathDepth: " + unboundedDepthIndexLen + " <= " + pathDepth;
 				int searchSlashPos = prevSlashPos2;
 				if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: unboundedDepthIndexLen = " + unboundedDepthIndexLen + ", pathDepth = " + pathDepth + ", searchSlashPos = " + searchSlashPos);
 				for(int i = 0; i < unboundedDepthIndexLen; i++) {
-					Map<String,Tuple2<Prefix,V>> wildcardDepthMap = unboundedDepthIndex.get(i);
+					Map<String,ImmutablePair<Prefix,V>> wildcardDepthMap = unboundedDepthIndex.get(i);
 					if(wildcardDepthMap != null) {
 						String searchStr = pathStr.substring(0, searchSlashPos);
 						if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: Loop 2.1: searchStr = " + searchStr);
-						Tuple2<Prefix,V> match = wildcardDepthMap.get(searchStr);
+						ImmutablePair<Prefix,V> match = wildcardDepthMap.get(searchStr);
 						if(match != null) {
 							// Return match
 							Path prefixPath;
@@ -435,10 +435,10 @@ public class PathSpace <V> {
 							}
 							if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: returning 2: prefixPath = " + prefixPath + ", subPath = " + subPath);
 							return new PathMatch<V>(
-								match.getElement1(),
+								match.getLeft(),
 								prefixPath,
 								subPath,
-								match.getElement2()
+								match.getRight()
 							);
 						}
 					}
