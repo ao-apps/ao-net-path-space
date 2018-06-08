@@ -25,15 +25,11 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>com.aoindustries</groupId>
-		<artifactId>ao-oss-parent</artifactId>
-		<version>1.1.0-SNAPSHOT</version>
+		<groupId>com.aoindustries</groupId><artifactId>ao-oss-parent</artifactId><version>1.1.0-SNAPSHOT</version>
 		<relativePath>../ao-oss-parent/pom.xml</relativePath>
 	</parent>
 
-	<groupId>com.aoindustries</groupId>
-	<artifactId>ao-net-path-space</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<groupId>com.aoindustries</groupId><artifactId>ao-net-path-space</artifactId><version>1.0.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
 	<name>AO Net Path Space</name>
@@ -56,8 +52,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 				<pluginManagement>
 					<plugins>
 						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-javadoc-plugin</artifactId>
+							<groupId>org.apache.maven.plugins</groupId><artifactId>maven-javadoc-plugin</artifactId>
 							<configuration>
 								<links>
 									<link>${javac.link.javaApi}</link>
@@ -74,19 +69,14 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 
 	<dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>junit</groupId><artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.7</version>
+			<groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>3.7</version>
 		</dependency>
 		<dependency>
-			<groupId>com.aoindustries</groupId>
-			<artifactId>ao-net-types</artifactId>
-			<version>1.1.0-SNAPSHOT</version>
+			<groupId>com.aoindustries</groupId><artifactId>ao-net-types</artifactId><version>1.1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>
