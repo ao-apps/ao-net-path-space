@@ -71,7 +71,7 @@ public class PathSpaceTest {
 	private static <V> void assertEquals(PathSpace.PathMatch<V> expected, PathSpace.PathMatch<V> actual) {
 		Assert.assertEquals("prefix", expected.getPrefix(), actual.getPrefix());
 		Assert.assertEquals("prefixPath", expected.getPrefixPath(), actual.getPrefixPath());
-		Assert.assertEquals("subPath", expected.getSubPath(), actual.getSubPath());
+		Assert.assertEquals("subPath", expected.getPath(), actual.getPath());
 		Assert.assertSame("value", expected.getValue(), actual.getValue());
 		Assert.assertEquals(expected, actual);
 	}

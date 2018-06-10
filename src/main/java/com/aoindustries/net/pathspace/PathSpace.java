@@ -183,24 +183,24 @@ public class PathSpace <V> {
 
 		private final Prefix prefix;
 		private final Path prefixPath;
-		private final Path subPath;
+		private final Path path;
 		private final V value;
 
 		PathMatch(
 			Prefix prefix,
 			Path prefixPath,
-			Path subPath,
+			Path path,
 			V value
 		) {
 			this.prefix = prefix;
 			this.prefixPath = prefixPath;
-			this.subPath = subPath;
+			this.path = path;
 			this.value = value;
 		}
 
 		@Override
 		public String toString() {
-			return prefixPath.toString() + '!' + subPath.toString();
+			return prefixPath.toString() + '!' + path.toString();
 		}
 
 		/**
@@ -215,7 +215,7 @@ public class PathSpace <V> {
 				value == other.value
 				&& prefix.equals(other.prefix)
 				&& prefixPath.equals(other.prefixPath)
-				&& subPath.equals(other.subPath)
+				&& path.equals(other.path)
 			;
 		}
 
@@ -223,7 +223,7 @@ public class PathSpace <V> {
 		public int hashCode() {
 			int hash = prefix.hashCode();
 			hash = hash * 31 + prefixPath.hashCode();
-			hash = hash * 31 + subPath.hashCode();
+			hash = hash * 31 + path.hashCode();
 			hash = hash * 31 + ObjectUtils.hashCode(value);
 			return hash;
 		}
@@ -245,8 +245,8 @@ public class PathSpace <V> {
 		/**
 		 * Gets the portion of the lookup path past the prefix path.
 		 */
-		public Path getSubPath() {
-			return subPath;
+		public Path getPath() {
+			return path;
 		}
 
 		/**
