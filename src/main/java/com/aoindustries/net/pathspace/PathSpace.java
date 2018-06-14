@@ -118,7 +118,7 @@ public class PathSpace <V> {
 	 * @implNote  This implementation is very simple and not optimized for performance.
 	 *            It does a sequential scan for the conflict check.
 	 *
-	 * @throws  PrefixConflictException  If the prefix conflicts with an existing entry
+	 * @throws  PrefixConflictException  If the prefix conflicts with an existing entry.
 	 *
 	 * @see  Prefix#conflictsWith(com.aoindustries.net.pathspace.Prefix)
 	 */
