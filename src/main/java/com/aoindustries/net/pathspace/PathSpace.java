@@ -179,6 +179,7 @@ public class PathSpace <V> {
 	/**
 	 * The result of a call to {@link #get(com.aoindustries.net.Path)}.
 	 */
+	// TODO: Move to own class to simplify usage of this class
 	public static class PathMatch<V> {
 
 		private final Prefix prefix;
