@@ -56,7 +56,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 							<configuration>
 								<links>
 									<link>${javac.link.javaApi}</link>
-									<link>https://commons.apache.org/proper/commons-lang/apidocs/</link>
+									<link>https://commons.apache.org/proper/commons-lang/javadocs/api-3.7/</link>
 									<link>https://aoindustries.com/ao-net-types/apidocs/</link>
 								</links>
 							</configuration>
