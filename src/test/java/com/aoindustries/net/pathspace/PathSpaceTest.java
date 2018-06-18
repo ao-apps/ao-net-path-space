@@ -68,7 +68,7 @@ public class PathSpaceTest {
 		);
 	}
 
-	private static <V> void assertEquals(PathSpace.PathMatch<V> expected, PathSpace.PathMatch<V> actual) {
+	private static <V> void assertEquals(PathMatch<V> expected, PathMatch<V> actual) {
 		Assert.assertEquals("prefix", expected.getPrefix(), actual.getPrefix());
 		Assert.assertEquals("prefixPath", expected.getPrefixPath(), actual.getPrefixPath());
 		Assert.assertEquals("subPath", expected.getPath(), actual.getPath());
@@ -76,8 +76,8 @@ public class PathSpaceTest {
 		Assert.assertEquals(expected, actual);
 	}
 
-	private static <V> PathSpace.PathMatch<V> newPathMatch(String prefix, String prefixPath, String subPath, V value) throws ValidationException {
-		return new PathSpace.PathMatch<V>(
+	private static <V> PathMatch<V> newPathMatch(String prefix, String prefixPath, String subPath, V value) throws ValidationException {
+		return new PathMatch<V>(
 			Prefix.valueOf(prefix),
 			Path.valueOf(prefixPath),
 			Path.valueOf(subPath),

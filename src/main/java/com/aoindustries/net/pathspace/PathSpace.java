@@ -22,7 +22,6 @@
  */
 package com.aoindustries.net.pathspace;
 
-import com.aoindustries.lang.ObjectUtils;
 import com.aoindustries.net.Path;
 import com.aoindustries.util.MinimalMap;
 import com.aoindustries.validation.ValidationException;
@@ -34,6 +33,7 @@ import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -173,88 +173,6 @@ public class PathSpace <V> {
 			);
 		} finally {
 			writeLock.unlock();
-		}
-	}
-
-	/**
-	 * The result of a call to {@link #get(com.aoindustries.net.Path)}.
-	 */
-	// TODO: Move to own class to simplify usage of this class
-	public static class PathMatch<V> {
-
-		private final Prefix prefix;
-		private final Path prefixPath;
-		private final Path path;
-		private final V value;
-
-		PathMatch(
-			Prefix prefix,
-			Path prefixPath,
-			Path path,
-			V value
-		) {
-			this.prefix = prefix;
-			this.prefixPath = prefixPath;
-			this.path = path;
-			this.value = value;
-		}
-
-		@Override
-		public String toString() {
-			return prefixPath.toString() + '!' + path.toString();
-		}
-
-		/**
-		 * Two matches are equal when they have the same prefix (by .equals),
-		 * prefixPath (by .equals), subPath (by .equals), and value (by identity).
-		 */
-		@Override
-		public boolean equals(Object o) {
-			if(!(o instanceof PathMatch<?>)) return false;
-			PathMatch<?> other = (PathMatch<?>)o;
-			return
-				value == other.value
-				&& prefix.equals(other.prefix)
-				&& prefixPath.equals(other.prefixPath)
-				&& path.equals(other.path)
-			;
-		}
-
-		@Override
-		public int hashCode() {
-			int hash = prefix.hashCode();
-			hash = hash * 31 + prefixPath.hashCode();
-			hash = hash * 31 + path.hashCode();
-			hash = hash * 31 + ObjectUtils.hashCode(value);
-			return hash;
-		}
-
-		/**
-		 * Gets the prefix what matched the lookup.
-		 */
-		public Prefix getPrefix() {
-			return prefix;
-		}
-
-		/**
-		 * Gets the portion of the lookup path that matches the prefix.
-		 */
-		public Path getPrefixPath() {
-			return prefixPath;
-		}
-
-		/**
-		 * Gets the portion of the lookup path past the prefix path.
-		 */
-		public Path getPath() {
-			return path;
-		}
-
-		/**
-		 * Gets the value associated with the prefix.
-		 */
-		public V getValue() {
-			return value;
 		}
 	}
 
@@ -451,6 +369,7 @@ public class PathSpace <V> {
 	 *
 	 * @return  The matching prefix or {@code null} if no match
 	 */
+	@SuppressWarnings("deprecation") // TODO: Java 1.7: Do not suppress
 	public PathMatch<V> get(Path path) {
 		readLock.lock();
 		try {
