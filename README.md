@@ -1,4 +1,4 @@
-# [<img src="ao-logo.png" alt="AO Logo" width="35" height="40">](https://aoindustries.com/) [AO Net Path Space](https://aoindustries.com/ao-net-path-space/)
+# [<img src="ao-logo.png" alt="AO Logo" width="35" height="40">](https://github.com/aoindustries) [AO Net Path Space](https://github.com/aoindustries/ao-net-path-space)
 <p>
 	<a href="https://aoindustries.com/life-cycle#project-alpha">
 		<img src="https://aoindustries.com/ao-badges/project-alpha.svg" alt="project: alpha" />
@@ -54,7 +54,7 @@ Manages allocation of a path space between components.
 ## Motivation
 Managing the URL path space is central to web application development.  When components are developed independently and combined into a single URL space, as well as underlying implementation space (such as Java Servlet paths), it is important that each component occupy a well-defined space without unexpected overlapping of other components.  The goal is to reliably identify conflicts within an application's URL or implementation space instead of having unintended overlapping components or access rules.
 
-[SemanticCMS Core Controller](https://semanticcms.com/core/controller/) uses this project to manage which requests are passed along for direct processing by the local Servlet container.  This layer of allocating the servlet space is important because resources from `/META-INF/resources/` within all project JAR files are merged into a single space with the potential to inadvertently overlap.  Explicit reservation of servlet space through the controller helps identify these conflicts early in the module development or integration phase.
+[SemanticCMS Core Controller](https://github.com/aoindustries/semanticcms-core-controller) uses this project to manage which requests are passed along for direct processing by the local Servlet container.  This layer of allocating the servlet space is important because resources from `/META-INF/resources/` within all project JAR files are merged into a single space with the potential to inadvertently overlap.  Explicit reservation of servlet space through the controller helps identify these conflicts early in the module development or integration phase.
 
 ## Evaluated Alternatives
 No alternative known.  Please let us know if this effort is redundant.  Always happy for any assistance in curing ignorance.
