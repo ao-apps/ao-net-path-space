@@ -79,7 +79,7 @@ public class PathMatch<V> {
 	}
 
 	/**
-	 * Gets the prefix what matched the lookup.
+	 * Gets the prefix that matched the lookup.
 	 */
 	public Prefix getPrefix() {
 		return prefix;
