@@ -69,7 +69,7 @@ public class PathMatch<V> {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation") // TODO: Java 1.7: Do not suppress
+	@SuppressWarnings("deprecation") // Java 1.7: Do not suppress
 	public int hashCode() {
 		int hash = prefix.hashCode();
 		hash = hash * 31 + prefixPath.hashCode();

@@ -62,7 +62,7 @@ public class PathSpace<V> {
 	}
 	 */
 
-	// TODO: Java 1.8: StampedLock since not needing reentrant
+	// Java 1.8: StampedLock since not needing reentrant
 	private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 	private final Lock readLock = readWriteLock.readLock();
 	private final Lock writeLock = readWriteLock.writeLock();
@@ -369,7 +369,7 @@ public class PathSpace<V> {
 	 *
 	 * @return  The matching prefix or {@code null} if no match
 	 */
-	@SuppressWarnings("deprecation") // TODO: Java 1.7: Do not suppress
+	@SuppressWarnings("deprecation") // Java 1.7: Do not suppress
 	public PathMatch<V> get(Path path) {
 		readLock.lock();
 		try {
