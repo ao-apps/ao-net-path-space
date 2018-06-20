@@ -24,10 +24,10 @@ package com.aoindustries.net.pathspace;
 
 import com.aoindustries.lang.NullArgumentException;
 import com.aoindustries.net.Path;
-import com.aoindustries.util.ComparatorUtils;
 import com.aoindustries.validation.ValidationException;
 import java.io.Serializable;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 /**
  * @implNote  Made {@link Serializable} because is used as a field in {@link PrefixConflictException}.
@@ -290,11 +290,11 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 		int pathDepth2 = StringUtils.countMatches(baseStr2, Path.SEPARATOR_CHAR) + effectiveWildcards2;
 
 		// Sort by path depth descending first
-		int diff = ComparatorUtils.compare(pathDepth2, pathDepth1);
+		int diff = NumberUtils.compare(pathDepth2, pathDepth1); // Java 1.7: Use Integer.compare
 		if(diff != 0) return diff;
 
 		// wildcards descending (this means has more wildcards before fewer wildcards)
-		diff = ComparatorUtils.compare(effectiveWildcards2, effectiveWildcards1);
+		diff = NumberUtils.compare(effectiveWildcards2, effectiveWildcards1); // Java 1.7: Use Integer.compare
 		if(diff != 0) return diff;
 
 		// multiLevelType descending (Order by /***, /**, NONE)
@@ -307,7 +307,7 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 
 	/**
 	 * The natural ordering is such that an iterative call to {@link #matches(com.aoindustries.net.Path)} will return.
-	 * {@code true} on the most specific matching space.  This match is consistent with TODO: link findSpace.
+	 * {@code true} on the most specific matching space.  This match is consistent with {@link PathSpace#get(com.aoindustries.net.Path)}.
 	 * <p>
 	 * This ordering is useful for human review, as it represents the path space conceptually in a top-to-bottom list.
 	 * </p>
