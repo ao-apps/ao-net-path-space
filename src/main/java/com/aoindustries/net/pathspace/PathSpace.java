@@ -49,7 +49,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
  *
  * @author  AO Industries, Inc.
  */
-public class PathSpace <V> {
+public class PathSpace<V> {
 
 	private static final boolean DEBUG = false; // false for production
 
