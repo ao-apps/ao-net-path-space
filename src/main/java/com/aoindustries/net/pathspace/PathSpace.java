@@ -24,7 +24,6 @@ package com.aoindustries.net.pathspace;
 
 import com.aoindustries.net.Path;
 import com.aoindustries.util.MinimalMap;
-import com.aoindustries.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -189,21 +188,13 @@ public class PathSpace<V> {
 			Prefix prefix = entry.getKey();
 			int matchLen = prefix.matches(path);
 			if(matchLen != -1) {
-				Path prefixPath;
-				try {
-					prefixPath = (matchLen == 0) ? Path.ROOT : Path.valueOf(path.toString().substring(0, matchLen));
-				} catch(ValidationException e) {
-					AssertionError ae = new AssertionError("A path prefix of a valid path is also valid for length " + matchLen + ": " + path);
-					ae.initCause(e);
-					throw ae;
-				}
-				Path subPath;
-				try {
-					subPath = (matchLen == 0) ? path : Path.valueOf(path.toString().substring(matchLen));
-				} catch(ValidationException e) {
-					AssertionError ae = new AssertionError("A sub-path of a valid path is also valid from position " + matchLen + ": " + path);
-					ae.initCause(e);
-					throw ae;
+				Path prefixPath, subPath;
+				if(matchLen == 0) {
+					prefixPath = Path.ROOT;
+					subPath = path;
+				} else {
+					prefixPath = path.prefix(matchLen);
+					subPath = path.suffix(matchLen);
 				}
 				return new PathMatch<V>(
 					prefix,
@@ -224,7 +215,7 @@ public class PathSpace<V> {
 	 */
 	PathMatch<V> getIndexed(Path path) {
 		// Search the path up to the deepest possibly used
-		String pathStr = path.toString();
+		final String pathStr = path.toString();
 		int pathStrLen = pathStr.length();
 		// Find the deepest path used for matching
 		int deepestPath = Math.max(unboundedIndex.size(), boundedIndex.size());
@@ -264,22 +255,8 @@ public class PathSpace<V> {
 						ImmutablePair<Prefix,V> match = wildcardDepthMap.get(searchStr1);
 						if(match != null) {
 							// Return match
-							Path prefixPath;
-							try {
-								prefixPath = (prevSlashPos1 == 0) ? Path.ROOT : Path.valueOf(pathStr.substring(0, prevSlashPos1));
-							} catch(ValidationException e) {
-								AssertionError ae = new AssertionError("A path prefix of a valid path is also valid for length " + prevSlashPos1 + ": " + path);
-								ae.initCause(e);
-								throw ae;
-							}
-							Path subPath;
-							try {
-								subPath = (prevSlashPos1 == 0) ? path : Path.valueOf(pathStr.substring(prevSlashPos1));
-							} catch(ValidationException e) {
-								AssertionError ae = new AssertionError("A sub-path of a valid path is also valid from position " + prevSlashPos1 + ": " + path);
-								ae.initCause(e);
-								throw ae;
-							}
+							Path prefixPath = (prevSlashPos1 == 0) ? Path.ROOT : path.prefix(prevSlashPos1);
+							Path subPath = (prevSlashPos1 == 0) ? path : path.suffix(prevSlashPos1);
 							if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: returning 1: prefixPath = " + prefixPath + ", subPath = " + subPath);
 							return new PathMatch<V>(
 								match.getLeft(),
@@ -325,22 +302,8 @@ public class PathSpace<V> {
 						ImmutablePair<Prefix,V> match = wildcardDepthMap.get(searchStr);
 						if(match != null) {
 							// Return match
-							Path prefixPath;
-							try {
-								prefixPath = (prevSlashPos2 == 0) ? Path.ROOT : Path.valueOf(pathStr.substring(0, prevSlashPos2));
-							} catch(ValidationException e) {
-								AssertionError ae = new AssertionError("A path prefix of a valid path is also valid for length " + prevSlashPos2 + ": " + path);
-								ae.initCause(e);
-								throw ae;
-							}
-							Path subPath;
-							try {
-								subPath = (prevSlashPos2 == 0) ? path : Path.valueOf(pathStr.substring(prevSlashPos2));
-							} catch(ValidationException e) {
-								AssertionError ae = new AssertionError("A sub-path of a valid path is also valid from position " + prevSlashPos2 + ": " + path);
-								ae.initCause(e);
-								throw ae;
-							}
+							Path prefixPath = (prevSlashPos2 == 0) ? Path.ROOT : path.prefix(prevSlashPos2);
+							Path subPath = (prevSlashPos2 == 0) ? path : path.suffix(prevSlashPos2);
 							if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: returning 2: prefixPath = " + prefixPath + ", subPath = " + subPath);
 							return new PathMatch<V>(
 								match.getLeft(),
