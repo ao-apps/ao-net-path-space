@@ -33,7 +33,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 		title="@{documented.name}"
 		description="@{documented.description}"
 		datePublished="2018-06-03T20:05:42-0500"
-		dateModified="2018-06-05T20:37:49-0500"
+		dateModified="2019-04-15T01:09:21-0500"
 	>
 		<core:child page="changelog.jspx" />
 		<core:child page="apidocs/index.jspx" />
@@ -88,7 +88,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 					</ul>
 				</li>
 				<li>Small footprint, minimal dependencies - not part of a big monolithic package.</li>
-				<li>Java 1.6 implementation:
+				<li>Java 1.7 implementation:
 					<ul>
 						<li>Android compatible.</li>
 						<li>Java EE 6+ compatible.</li>
