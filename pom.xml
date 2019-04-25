@@ -55,7 +55,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 						<configuration>
 							<links>
 								<link>${javac.link.javaApi}</link>
-								<link>https://commons.apache.org/proper/commons-lang/javadocs/api-3.8.1/</link>
+								<link>https://commons.apache.org/proper/commons-lang/javadocs/api-3.9/</link>
 								<link>https://aoindustries.com/ao-net-types/apidocs/</link>
 							</links>
 						</configuration>
@@ -71,7 +71,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>3.8.1</version>
+			<groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>3.9</version>
 		</dependency>
 		<dependency>
 			<groupId>com.aoindustries</groupId><artifactId>ao-net-types</artifactId><version>1.1.1-validation-SNAPSHOT</version>
