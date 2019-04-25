@@ -1,6 +1,6 @@
 /*
  * ao-net-path-space - Manages allocation of a path space between components.
- * Copyright (C) 2018  AO Industries, Inc.
+ * Copyright (C) 2018, 2019  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -41,9 +41,9 @@ public class PathSpaceTest {
 
 	private static PathSpace<Void> newTestSpace(String... prefixes) {
 		// Add in a random order
-		List<String> prefixList = new ArrayList<String>(Arrays.asList(prefixes));
+		List<String> prefixList = new ArrayList<>(Arrays.asList(prefixes));
 		Collections.shuffle(prefixList);
-		PathSpace<Void> testSpace = new PathSpace<Void>();
+		PathSpace<Void> testSpace = new PathSpace<>();
 		for(String prefix : prefixList) {
 			testSpace.put(Prefix.valueOf(prefix), null);
 		}
@@ -77,7 +77,7 @@ public class PathSpaceTest {
 	}
 
 	private static <V> PathMatch<V> newPathMatch(String prefix, String prefixPath, String subPath, V value) throws ValidationException {
-		return new PathMatch<V>(
+		return new PathMatch<>(
 			Prefix.valueOf(prefix),
 			Path.valueOf(prefixPath),
 			Path.valueOf(subPath),

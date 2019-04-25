@@ -1,6 +1,6 @@
 /*
  * ao-net-path-space - Manages allocation of a path space between components.
- * Copyright (C) 2018  AO Industries, Inc.
+ * Copyright (C) 2018, 2019  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -27,12 +27,12 @@ import com.aoindustries.util.MinimalMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -81,7 +81,7 @@ public class PathSpace<V> {
 	 * and the associated value.
 	 * </p>
 	 */
-	private final List<List<Map<String,ImmutablePair<Prefix,V>>>> boundedIndex = new ArrayList<List<Map<String,ImmutablePair<Prefix,V>>>>();
+	private final List<List<Map<String,ImmutablePair<Prefix,V>>>> boundedIndex = new ArrayList<>();
 
 	/**
 	 * The index of all unbounded prefixes (prefixes with multilevel types other than {@link Prefix.MultiLevelType#NONE}.
@@ -100,7 +100,7 @@ public class PathSpace<V> {
 	 *
 	 * @see  #boundedIndex
 	 */
-	private final List<List<Map<String,ImmutablePair<Prefix,V>>>> unboundedIndex = new ArrayList<List<Map<String,ImmutablePair<Prefix,V>>>>();
+	private final List<List<Map<String,ImmutablePair<Prefix,V>>>> unboundedIndex = new ArrayList<>();
 
 	/**
 	 * A sorted set to verify map lookup results are consistent with a sequential
@@ -109,7 +109,7 @@ public class PathSpace<V> {
 	 * @see  Prefix#compareTo(com.aoindustries.net.pathspace.Prefix)
 	 * @see  Prefix#matches(com.aoindustries.net.Path)
 	 */
-	private final SortedMap<Prefix, V> sortedMap = new TreeMap<Prefix, V>();
+	private final SortedMap<Prefix, V> sortedMap = new TreeMap<>();
 
 	/**
 	 * Adds a new prefix to this space while checking for conflicts.
@@ -158,7 +158,7 @@ public class PathSpace<V> {
 			while(totalDepthIndex.size() <= (totalDepth - 1)) totalDepthIndex.add(null);
 			List<Map<String,ImmutablePair<Prefix,V>>> wildcardDepthIndex = totalDepthIndex.get(totalDepth - 1);
 			if(wildcardDepthIndex == null) {
-				wildcardDepthIndex = new ArrayList<Map<String,ImmutablePair<Prefix,V>>>(wildcards);
+				wildcardDepthIndex = new ArrayList<>(wildcards);
 				totalDepthIndex.set(totalDepth - 1, wildcardDepthIndex);
 			}
 			while(wildcardDepthIndex.size() <= (wildcards - 1)) wildcardDepthIndex.add(null);
@@ -167,7 +167,7 @@ public class PathSpace<V> {
 				MinimalMap.put(
 					wildcardDepthIndex.get(wildcards - 1),
 					baseStr,
-					new ImmutablePair<Prefix,V>(prefix, value)
+					new ImmutablePair<>(prefix, value)
 				)
 			);
 		} finally {
@@ -196,7 +196,7 @@ public class PathSpace<V> {
 					prefixPath = path.prefix(matchLen);
 					subPath = path.suffix(matchLen);
 				}
-				return new PathMatch<V>(
+				return new PathMatch<>(
 					prefix,
 					prefixPath,
 					subPath,
@@ -258,7 +258,7 @@ public class PathSpace<V> {
 							Path prefixPath = (prevSlashPos1 == 0) ? Path.ROOT : path.prefix(prevSlashPos1);
 							Path subPath = (prevSlashPos1 == 0) ? path : path.suffix(prevSlashPos1);
 							if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: returning 1: prefixPath = " + prefixPath + ", subPath = " + subPath);
-							return new PathMatch<V>(
+							return new PathMatch<>(
 								match.getLeft(),
 								prefixPath,
 								subPath,
@@ -305,7 +305,7 @@ public class PathSpace<V> {
 							Path prefixPath = (prevSlashPos2 == 0) ? Path.ROOT : path.prefix(prevSlashPos2);
 							Path subPath = (prevSlashPos2 == 0) ? path : path.suffix(prevSlashPos2);
 							if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: returning 2: prefixPath = " + prefixPath + ", subPath = " + subPath);
-							return new PathMatch<V>(
+							return new PathMatch<>(
 								match.getLeft(),
 								prefixPath,
 								subPath,
@@ -332,12 +332,11 @@ public class PathSpace<V> {
 	 *
 	 * @return  The matching prefix or {@code null} if no match
 	 */
-	@SuppressWarnings("deprecation") // Java 1.7: Do not suppress
 	public PathMatch<V> get(Path path) {
 		readLock.lock();
 		try {
 			PathMatch<V> indexedMatch = getIndexed(path);
-			assert ObjectUtils.equals(indexedMatch, getSequential(path))
+			assert Objects.equals(indexedMatch, getSequential(path))
 				: "Indexed get inconsistent with sequential get: path = " + path + ", indexedMatch = " + indexedMatch + ", sequentialMatch = " + getSequential(path);
 			return indexedMatch;
 		} finally {

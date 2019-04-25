@@ -1,6 +1,6 @@
 /*
  * ao-net-path-space - Manages allocation of a path space between components.
- * Copyright (C) 2018  AO Industries, Inc.
+ * Copyright (C) 2018, 2019  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -27,7 +27,6 @@ import com.aoindustries.net.Path;
 import com.aoindustries.validation.ValidationException;
 import java.io.Serializable;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 
 /**
  * @implNote  Made {@link Serializable} because is used as a field in {@link PrefixConflictException}.
@@ -290,11 +289,11 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 		int pathDepth2 = StringUtils.countMatches(baseStr2, Path.SEPARATOR_CHAR) + effectiveWildcards2;
 
 		// Sort by path depth descending first
-		int diff = NumberUtils.compare(pathDepth2, pathDepth1); // Java 1.7: Use Integer.compare
+		int diff = Integer.compare(pathDepth2, pathDepth1);
 		if(diff != 0) return diff;
 
 		// wildcards descending (this means has more wildcards before fewer wildcards)
-		diff = NumberUtils.compare(effectiveWildcards2, effectiveWildcards1); // Java 1.7: Use Integer.compare
+		diff = Integer.compare(effectiveWildcards2, effectiveWildcards1);
 		if(diff != 0) return diff;
 
 		// multiLevelType descending (Order by /***, /**, NONE)

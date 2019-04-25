@@ -1,6 +1,6 @@
 /*
  * ao-net-path-space - Manages allocation of a path space between components.
- * Copyright (C) 2018  AO Industries, Inc.
+ * Copyright (C) 2018, 2019  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -23,7 +23,7 @@
 package com.aoindustries.net.pathspace;
 
 import com.aoindustries.net.Path;
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 
 /**
  * The result of a call to {@link PathSpace#get(com.aoindustries.net.Path)}.
@@ -69,12 +69,11 @@ public class PathMatch<V> {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation") // Java 1.7: Do not suppress
 	public int hashCode() {
 		int hash = prefix.hashCode();
 		hash = hash * 31 + prefixPath.hashCode();
 		hash = hash * 31 + path.hashCode();
-		hash = hash * 31 + ObjectUtils.hashCode(value);
+		hash = hash * 31 + Objects.hashCode(value);
 		return hash;
 	}
 
