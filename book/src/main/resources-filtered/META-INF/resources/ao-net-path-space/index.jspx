@@ -108,7 +108,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 				access rules.
 			</p>
 			<p>
-				<core:link domain="semanticcms.com" book="/core/controller" /> uses this project to manage which
+				<ao:a href="https://semanticcms.com/core/controller/">SemanticCMS Core Controller</ao:a> uses this project to manage which
 				requests are passed along for direct processing by the local Servlet container.  This layer of allocating
 				the servlet space is important because resources from <code>/META-INF/resources/</code> within all project
 				JAR files are merged into a single space with the potential to inadvertently overlap.  Explicit reservation
