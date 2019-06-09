@@ -33,7 +33,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 		title="@{documented.name}"
 		description="@{documented.description}"
 		datePublished="2018-06-03T20:05:42-0500"
-		dateModified="2019-06-01T18:51:51-0500"
+		dateModified="2019-06-08T20:10:45-0500"
 	>
 		<core:child page="changelog.jspx" />
 		<core:child page="apidocs/index.jspx" />
@@ -103,8 +103,8 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 				Managing the URL path space is central to web application development.  When components are developed
 				independently and combined into a single URL space, as well as underlying implementation space
 				(such as Java Servlet paths), it is important that each component occupy a well-defined space without
-				unexpected overlapping of other components.  The goal is to reliably identify conflicts within an
-				application's URL or implementation space instead of having unintended overlapping components or
+				unexpectedly overlapping other components.  The goal is to reliably identify conflicts within an
+				application's URL or implementation space instead of unintentionally having overlapping components or
 				access rules.
 			</p>
 			<p>
@@ -112,8 +112,8 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 				requests are passed along for direct processing by the local Servlet container.  This layer of allocating
 				the servlet space is important because resources from <code>/META-INF/resources/</code> within all project
 				JAR files are merged into a single space with the potential to inadvertently overlap.  Explicit reservation
-				of servlet space through the controller helps identify these conflicts early in the module development or
-				integration phase.
+				of servlet space through the controller helps identify these conflicts early in the module development and
+				integration phases.
 			</p>
 		</section:section>
 		<section:aside label="Evaluated Alternatives">
