@@ -56,6 +56,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 							<links>
 								<link>${javac.link.javaApi}</link>
 								<!-- Direct -->
+								<link>https://aoindustries.com/ao-lang/apidocs/</link>
 								<link>https://aoindustries.com/ao-net-types/apidocs/</link>
 								<link>https://commons.apache.org/proper/commons-lang/javadocs/api-3.9/</link>
 							</links>
@@ -74,6 +75,9 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 			</dependency>
 			<!-- Direct -->
 			<dependency>
+				<groupId>com.aoindustries</groupId><artifactId>ao-lang</artifactId><version>3.0.1-SNAPSHOT</version>
+			</dependency>
+			<dependency>
 				<groupId>com.aoindustries</groupId><artifactId>ao-net-types</artifactId><version>1.2.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
@@ -89,6 +93,9 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 			<scope>test</scope>
 		</dependency>
 		<!-- Direct -->
+		<dependency>
+			<groupId>com.aoindustries</groupId><artifactId>ao-lang</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.aoindustries</groupId><artifactId>ao-net-types</artifactId>
 		</dependency>
