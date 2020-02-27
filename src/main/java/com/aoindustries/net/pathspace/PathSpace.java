@@ -1,6 +1,6 @@
 /*
  * ao-net-path-space - Manages allocation of a path space between components.
- * Copyright (C) 2018, 2019  AO Industries, Inc.
+ * Copyright (C) 2018, 2019, 2020  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -113,9 +113,10 @@ public class PathSpace<V> {
 
 	/**
 	 * Adds a new prefix to this space while checking for conflicts.
-	 *
-	 * @implNote  This implementation is very simple and not optimized for performance.
-	 *            It does a sequential scan for the conflict check.
+	 * <p>
+	 * Note: This implementation is very simple and not optimized for performance.
+	 * It does a sequential scan for the conflict check.
+	 * </p>
 	 *
 	 * @throws  PrefixConflictException  If the prefix conflicts with an existing entry.
 	 *

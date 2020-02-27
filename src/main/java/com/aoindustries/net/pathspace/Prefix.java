@@ -1,6 +1,6 @@
 /*
  * ao-net-path-space - Manages allocation of a path space between components.
- * Copyright (C) 2018, 2019  AO Industries, Inc.
+ * Copyright (C) 2018, 2019, 2020  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -29,11 +29,12 @@ import java.io.Serializable;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * @implNote  Made {@link Serializable} because is used as a field in {@link PrefixConflictException}.
- *
  * @author  AO Industries, Inc.
  */
-public final class Prefix implements Comparable<Prefix>, Serializable {
+public final class Prefix implements
+	Comparable<Prefix>,
+	// Note: Made Serializable because is used as a field in PrefixConflictException.
+	Serializable {
 
 	public static final char WILDCARD_CHAR = '*';
 
@@ -56,10 +57,8 @@ public final class Prefix implements Comparable<Prefix>, Serializable {
 	public static final String GREEDY_SUFFIX = UNBOUNDED_SUFFIX + WILDCARD_CHAR;
 	private static final int GREEDY_SUFFIX_LEN = GREEDY_SUFFIX.length();
 
-	/**
-	 * @implNote This ordering is important for the implementation of {@link Prefix#compareTo(com.aoindustries.net.pathspace.Prefix)}.
-	 */
 	public enum MultiLevelType {
+		// Note: This ordering is important for the implementation of Prefix.compareTo(Prefix).
 		NONE("", true),
 		UNBOUNDED(UNBOUNDED_SUFFIX, true),
 		GREEDY(GREEDY_SUFFIX, false);
