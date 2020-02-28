@@ -1,6 +1,6 @@
 /*
  * ao-net-path-space - Manages allocation of a path space between components.
- * Copyright (C) 2018  AO Industries, Inc.
+ * Copyright (C) 2018, 2020  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -800,8 +800,10 @@ public class PrefixTest {
 	// <editor-fold defaultstate="collapsed" desc="Test matches">
 	/**
 	 * Tests that all paths match
-	 *
-	 * @implNote TODO: Add test of match length
+	 * <p>
+	 * <b>Implementation Note:</b><br />
+	 * TODO: Add test of match length
+	 * </p>
 	 */
 	private static void testMatches(Prefix prefix, String ... paths) throws ValidationException {
 		for(String path : paths) {
