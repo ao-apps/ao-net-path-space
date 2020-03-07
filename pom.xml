@@ -40,15 +40,15 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 	</properties>
 
 	<name>AO Net Path Space</name>
-	<url>https://aoindustries.com/${project.artifactId}/</url>
+	<url>https://aoindustries.com/ao-net-path-space/</url>
 	<description>Manages allocation of a path space between components.</description>
 	<inceptionYear>2018</inceptionYear>
 
 	<scm>
 		<!-- Can't inherit due to multi-module -->
-		<connection>scm:git:git://github.com/aoindustries/${project.artifactId}.git</connection>
-		<developerConnection>scm:git:git@github.com:aoindustries/${project.artifactId}.git</developerConnection>
-		<url>https://github.com/aoindustries/${project.artifactId}</url>
+		<connection>scm:git:git://github.com/aoindustries/ao-net-path-space.git</connection>
+		<developerConnection>scm:git:git@github.com:aoindustries/ao-net-path-space.git</developerConnection>
+		<url>https://github.com/aoindustries/ao-net-path-space</url>
 		<tag>HEAD</tag>
 	</scm>
 
