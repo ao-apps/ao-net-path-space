@@ -801,7 +801,7 @@ public class PrefixTest {
 	/**
 	 * Tests that all paths match
 	 * <p>
-	 * <b>Implementation Note:</b><br />
+	 * <b>Implementation Note:</b><br>
 	 * TODO: Add test of match length
 	 * </p>
 	 */
