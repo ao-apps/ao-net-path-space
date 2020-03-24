@@ -47,7 +47,7 @@ Manages allocation of a path space between components.
         * `/path/*/***` - multi-level greedy space - matches all resources at or below the given path depth.
         * `/path/*/*/***` - any number of levels allowed.
 * Small footprint, minimal dependencies - not part of a big monolithic package.
-* Java 1.7 implementation:
+* Java 1.8 implementation:
     * Android compatible.
     * Java EE 6+ compatible.
 

@@ -22,8 +22,8 @@
  */
 package com.aoindustries.net.pathspace;
 
+import com.aoindustries.collections.MinimalMap;
 import com.aoindustries.net.Path;
-import com.aoindustries.util.MinimalMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
