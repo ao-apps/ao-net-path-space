@@ -32,6 +32,11 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 	<groupId>com.aoindustries</groupId><artifactId>ao-net-path-space</artifactId><version>1.0.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 
+	<properties>
+		<!-- Dependencies -->
+		<org.apache.commons:commons-lang3:version>3.9</org.apache.commons:commons-lang3:version>
+	</properties>
+
 	<name>AO Net Path Space</name>
 	<url>https://aoindustries.com/ao-net-path-space/</url>
 	<description>Manages allocation of a path space between components.</description>
@@ -59,7 +64,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 								<link>https://aoindustries.com/ao-collections/apidocs/</link>
 								<link>https://aoindustries.com/ao-lang/apidocs/</link>
 								<link>https://aoindustries.com/ao-net-types/apidocs/</link>
-								<link>https://commons.apache.org/proper/commons-lang/javadocs/api-3.9/</link>
+								<link>https://commons.apache.org/proper/commons-lang/javadocs/api-${org.apache.commons:commons-lang3:version}/</link>
 							</links>
 						</configuration>
 					</plugin>
@@ -85,7 +90,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 				<groupId>com.aoindustries</groupId><artifactId>ao-net-types</artifactId><version>1.2.1-SNAPSHOT<!-- ${POST-SNAPSHOT} --></version>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>3.9</version>
+				<groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>${org.apache.commons:commons-lang3:version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
