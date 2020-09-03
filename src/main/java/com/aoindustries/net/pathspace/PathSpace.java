@@ -33,6 +33,8 @@ import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -50,7 +52,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
  */
 public class PathSpace<V> {
 
-	private static final boolean DEBUG = false; // false for production
+	private static final Logger logger = Logger.getLogger(PathSpace.class.getName());
 
 	// TODO: private static final boolean ASSERTIONS_ENABLED = true;
 	/* TODO: Selective assertions once fast lookup is implemented:
@@ -125,10 +127,7 @@ public class PathSpace<V> {
 	public void put(Prefix prefix, V value) throws PrefixConflictException {
 		writeLock.lock();
 		try {
-			if(DEBUG) {
-				System.err.println();
-				System.err.println("DEBUG: PathSpace: put: prefix = " + prefix);
-			}
+			if(logger.isLoggable(Level.FINER)) logger.finer("prefix = " + prefix);
 			// TODO: Could check for conflicts within the indexed structure instead of relying on sequential scan through all entries
 			// TODO: But this would be optimizing the performance of the put method, which is only used on application start-up for our use-case.
 			// Check for conflict
@@ -151,18 +150,22 @@ public class PathSpace<V> {
 			}
 			Path base = prefix.getBase();
 			String baseStr = base == Path.ROOT ? "" : base.toString();
-			if(DEBUG) System.err.println("DEBUG: PathSpace: put: baseStr = " + baseStr + ", wildcardsOffset = " + wildcardsOffset);
+			if(logger.isLoggable(Level.FINEST)) logger.finest("baseStr = " + baseStr + ", wildcardsOffset = " + wildcardsOffset);
 			int baseDepth = StringUtils.countMatches(baseStr, Path.SEPARATOR_CHAR);
 			int wildcards = prefix.getWildcards() + wildcardsOffset;
 			int totalDepth = baseDepth + wildcards;
-			if(DEBUG) System.err.println("DEBUG: PathSpace: put: baseDepth = " + baseDepth + ", wildcards = " + wildcards + ", totalDepth = " + totalDepth);
-			while(totalDepthIndex.size() <= (totalDepth - 1)) totalDepthIndex.add(null);
+			if(logger.isLoggable(Level.FINEST)) logger.finest("baseDepth = " + baseDepth + ", wildcards = " + wildcards + ", totalDepth = " + totalDepth);
+			while(totalDepthIndex.size() <= (totalDepth - 1)) {
+				totalDepthIndex.add(null);
+			}
 			List<Map<String,ImmutablePair<Prefix,V>>> wildcardDepthIndex = totalDepthIndex.get(totalDepth - 1);
 			if(wildcardDepthIndex == null) {
 				wildcardDepthIndex = new ArrayList<>(wildcards);
 				totalDepthIndex.set(totalDepth - 1, wildcardDepthIndex);
 			}
-			while(wildcardDepthIndex.size() <= (wildcards - 1)) wildcardDepthIndex.add(null);
+			while(wildcardDepthIndex.size() <= (wildcards - 1)) {
+				wildcardDepthIndex.add(null);
+			}
 			wildcardDepthIndex.set(
 				wildcards - 1,
 				MinimalMap.put(
@@ -220,10 +223,7 @@ public class PathSpace<V> {
 		int pathStrLen = pathStr.length();
 		// Find the deepest path used for matching
 		int deepestPath = Math.max(unboundedIndex.size(), boundedIndex.size());
-		if(DEBUG) {
-			System.err.println();
-			System.err.println("DEBUG: PathSpace: getIndexed: pathStr = " + pathStr + ", pathStrLen = " + pathStrLen + ", deepestPath = " + deepestPath);
-		}
+		if(logger.isLoggable(Level.FINER)) logger.finer("pathStr = " + pathStr + ", pathStrLen = " + pathStrLen + ", deepestPath = " + deepestPath);
 		int pathDepth = 0;
 		int lastSlashPos = 0;
 		while(pathDepth < deepestPath) {
@@ -236,7 +236,7 @@ public class PathSpace<V> {
 				lastSlashPos = slashPos;
 			}
 		}
-		if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: pathDepth = " + pathDepth + ", lastSlashPos = " + lastSlashPos);
+		if(logger.isLoggable(Level.FINEST)) logger.finest("pathDepth = " + pathDepth + ", lastSlashPos = " + lastSlashPos);
 		// When at end of path, look for an exact-level match in bounded index
 		if(lastSlashPos == pathStrLen && pathDepth <= boundedIndex.size()) {
 			List<Map<String,ImmutablePair<Prefix,V>>> wildcardDepthIndex = boundedIndex.get(pathDepth - 1);
@@ -244,21 +244,21 @@ public class PathSpace<V> {
 				int wildcardDepthIndexLen = wildcardDepthIndex.size();
 				assert wildcardDepthIndexLen <= pathDepth : "wildcardDepthIndexLen <= pathDepth: " + wildcardDepthIndexLen + " <= " + pathDepth;
 				int prevSlashPos1 = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, lastSlashPos - 1);
-				if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: prevSlashPos1 = " + prevSlashPos1);
+				if(logger.isLoggable(Level.FINEST)) logger.finest("prevSlashPos1 = " + prevSlashPos1);
 				assert prevSlashPos1 != -1 : "prevSlashPos1 != -1: " + prevSlashPos1 + " != -1";
 				int searchSlashPos = prevSlashPos1;
-				if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: wildcardDepthIndexLen = " + wildcardDepthIndexLen + ", pathDepth = " + pathDepth + ", searchSlashPos = " + searchSlashPos);
+				if(logger.isLoggable(Level.FINEST)) logger.finest("wildcardDepthIndexLen = " + wildcardDepthIndexLen + ", pathDepth = " + pathDepth + ", searchSlashPos = " + searchSlashPos);
 				for(int i = 0; i < wildcardDepthIndexLen; i++) {
 					Map<String,ImmutablePair<Prefix,V>> wildcardDepthMap = wildcardDepthIndex.get(i);
 					if(wildcardDepthMap != null) {
 						String searchStr1 = pathStr.substring(0, searchSlashPos);
-						if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: Loop 1: searchStr1 = " + searchStr1);
+						if(logger.isLoggable(Level.FINEST)) logger.finest("Loop 1: searchStr1 = " + searchStr1);
 						ImmutablePair<Prefix,V> match = wildcardDepthMap.get(searchStr1);
 						if(match != null) {
 							// Return match
 							Path prefixPath = (prevSlashPos1 == 0) ? Path.ROOT : path.prefix(prevSlashPos1);
 							Path subPath = (prevSlashPos1 == 0) ? path : path.suffix(prevSlashPos1);
-							if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: returning 1: prefixPath = " + prefixPath + ", subPath = " + subPath);
+							if(logger.isLoggable(Level.FINER)) logger.finer("returning 1: prefixPath = " + prefixPath + ", subPath = " + subPath);
 							return new PathMatch<>(
 								match.getLeft(),
 								prefixPath,
@@ -269,7 +269,7 @@ public class PathSpace<V> {
 					}
 					if(i < (wildcardDepthIndexLen -1 )) {
 						int prevSearchSlashPos1 = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, searchSlashPos - 1);
-						if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: Loop 1: prevSearchSlashPos1 = " + prevSearchSlashPos1);
+						if(logger.isLoggable(Level.FINEST)) logger.finest("Loop 1: prevSearchSlashPos1 = " + prevSearchSlashPos1);
 						assert prevSearchSlashPos1 != -1 : "prevSearchSlashPos1 != -1: " + prevSearchSlashPos1 + " != -1";
 						searchSlashPos = prevSearchSlashPos1;
 					}
@@ -278,34 +278,34 @@ public class PathSpace<V> {
 		}
 		// Search backwards for any matching unbounded index
 		int unboundedIndexSize = unboundedIndex.size();
-		if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: unboundedIndexSize = " + unboundedIndexSize);
+		if(logger.isLoggable(Level.FINEST)) logger.finest("unboundedIndexSize = " + unboundedIndexSize);
 		while(pathDepth > unboundedIndexSize) {
 			lastSlashPos = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, lastSlashPos - 1);
 			assert lastSlashPos != -1 : "lastSlashPos != -1: " + lastSlashPos + " != -1";
 			pathDepth--;
 		}
 		while(pathDepth > 0) {
-			if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: Loop 2: pathDepth = " + pathDepth + ", lastSlashPos = " + lastSlashPos);
+			if(logger.isLoggable(Level.FINEST)) logger.finest("Loop 2: pathDepth = " + pathDepth + ", lastSlashPos = " + lastSlashPos);
 			int prevSlashPos2 = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, lastSlashPos - 1);
-			if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: prevSlashPos2 = " + prevSlashPos2);
+			if(logger.isLoggable(Level.FINEST)) logger.finest("prevSlashPos2 = " + prevSlashPos2);
 			assert prevSlashPos2 != -1 : "prevSlashPos2 != -1: " + prevSlashPos2 + " != -1";
 			List<Map<String,ImmutablePair<Prefix,V>>> unboundedDepthIndex = unboundedIndex.get(pathDepth - 1);
 			if(unboundedDepthIndex != null) {
 				int unboundedDepthIndexLen = unboundedDepthIndex.size();
 				assert unboundedDepthIndexLen <= pathDepth : "unboundedDepthIndexLen <= pathDepth: " + unboundedDepthIndexLen + " <= " + pathDepth;
 				int searchSlashPos = prevSlashPos2;
-				if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: unboundedDepthIndexLen = " + unboundedDepthIndexLen + ", pathDepth = " + pathDepth + ", searchSlashPos = " + searchSlashPos);
+				if(logger.isLoggable(Level.FINEST)) logger.finest("unboundedDepthIndexLen = " + unboundedDepthIndexLen + ", pathDepth = " + pathDepth + ", searchSlashPos = " + searchSlashPos);
 				for(int i = 0; i < unboundedDepthIndexLen; i++) {
 					Map<String,ImmutablePair<Prefix,V>> wildcardDepthMap = unboundedDepthIndex.get(i);
 					if(wildcardDepthMap != null) {
 						String searchStr = pathStr.substring(0, searchSlashPos);
-						if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: Loop 2.1: searchStr = " + searchStr);
+						if(logger.isLoggable(Level.FINEST)) logger.finest("Loop 2.1: searchStr = " + searchStr);
 						ImmutablePair<Prefix,V> match = wildcardDepthMap.get(searchStr);
 						if(match != null) {
 							// Return match
 							Path prefixPath = (prevSlashPos2 == 0) ? Path.ROOT : path.prefix(prevSlashPos2);
 							Path subPath = (prevSlashPos2 == 0) ? path : path.suffix(prevSlashPos2);
-							if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: returning 2: prefixPath = " + prefixPath + ", subPath = " + subPath);
+							if(logger.isLoggable(Level.FINER)) logger.finer("returning 2: prefixPath = " + prefixPath + ", subPath = " + subPath);
 							return new PathMatch<>(
 								match.getLeft(),
 								prefixPath,
@@ -317,7 +317,7 @@ public class PathSpace<V> {
 					if(i < (unboundedDepthIndexLen - 1)) {
 						int prevSearchSlashPos2 = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, searchSlashPos - 1);
 						assert prevSearchSlashPos2 != -1 : "prevSearchSlashPos2 != -1: " + prevSearchSlashPos2 + " != -1";
-						if(DEBUG) System.err.println("DEBUG: PathSpace: getIndexed: Loop 2.1: prevSearchSlashPos2 = " + prevSearchSlashPos2);
+						if(logger.isLoggable(Level.FINEST)) logger.finest("Loop 2.1: prevSearchSlashPos2 = " + prevSearchSlashPos2);
 						searchSlashPos = prevSearchSlashPos2;
 					}
 				}
@@ -325,6 +325,7 @@ public class PathSpace<V> {
 			lastSlashPos = prevSlashPos2;
 			pathDepth--;
 		}
+		if(logger.isLoggable(Level.FINER)) logger.finer("returning null");
 		return null;
 	}
 

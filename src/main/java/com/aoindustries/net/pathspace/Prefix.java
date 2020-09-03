@@ -265,7 +265,9 @@ public final class Prefix implements
 		int toStringLen = baseStrLen + wildcards * WILDCARD_SUFFIX_LEN + multiLevelSuffixLen;
 		StringBuilder sb = new StringBuilder(toStringLen);
 		sb.append(baseStr, 0, baseStrLen);
-		for(int i = 0; i < wildcards; i++) sb.append(WILDCARD_SUFFIX);
+		for(int i = 0; i < wildcards; i++) {
+			sb.append(WILDCARD_SUFFIX);
+		}
 		sb.append(multiLevelSuffix);
 		assert toStringLen == sb.length();
 		return sb.toString();
