@@ -1,6 +1,6 @@
 /*
  * ao-net-path-space - Manages allocation of a path space between components.
- * Copyright (C) 2018  AO Industries, Inc.
+ * Copyright (C) 2018, 2020  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -22,6 +22,8 @@
  */
 package com.aoindustries.net.pathspace;
 
+import com.aoindustries.lang.Throwables;
+
 /**
  * Exception thrown when conflicting prefixes are detected.
  *
@@ -37,9 +39,19 @@ public class PrefixConflictException extends RuntimeException {
 	private final Prefix adding;
 
 	PrefixConflictException(Prefix existing, Prefix adding) {
-		super("Prefix \"" + adding + "\" conflicts with existing prefix \"" + existing + '"');
 		this.existing = existing;
 		this.adding = adding;
+	}
+
+	PrefixConflictException(Prefix existing, Prefix adding, Throwable cause) {
+		super(cause);
+		this.existing = existing;
+		this.adding = adding;
+	}
+
+	@Override
+	public String getMessage() {
+		return "Prefix \"" + adding + "\" conflicts with existing prefix \"" + existing + '"';
 	}
 
 	public Prefix getExisting() {
@@ -48,5 +60,11 @@ public class PrefixConflictException extends RuntimeException {
 
 	public Prefix getAdding() {
 		return adding;
+	}
+
+	static {
+		Throwables.registerSurrogateFactory(PrefixConflictException.class, (template, cause) ->
+			new PrefixConflictException(template.existing, template.adding, cause)
+		);
 	}
 }
