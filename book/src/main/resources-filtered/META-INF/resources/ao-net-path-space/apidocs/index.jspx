@@ -35,7 +35,7 @@ along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses />.
 		<ao:forward page="index.html" />
 	</c:if>
 	<core:page
-		title="@{documented.name} @{com.aoindustries:ao-net-path-space:pom.version} API Docs"
+		title="@{documented.name} ${ao:getProjectVersion('./', 'com.aoindustries', 'ao-net-path-space', '¿@{project.version}?')} API Docs"
 		shortTitle="API Docs"
 		datePublished="2018-06-03T17:46:56-0500"
 		dateModified="${ao:getLastModified('index.html')}"
