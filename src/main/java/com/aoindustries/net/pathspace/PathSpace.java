@@ -1,6 +1,6 @@
 /*
  * ao-net-path-space - Manages allocation of a path space between components.
- * Copyright (C) 2018, 2019, 2020  AO Industries, Inc.
+ * Copyright (C) 2018, 2019, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -83,7 +83,7 @@ public class PathSpace<V> {
 	 * and the associated value.
 	 * </p>
 	 */
-	private final List<List<Map<String,ImmutablePair<Prefix,V>>>> boundedIndex = new ArrayList<>();
+	private final List<List<Map<String, ImmutablePair<Prefix, V>>>> boundedIndex = new ArrayList<>();
 
 	/**
 	 * The index of all unbounded prefixes (prefixes with multilevel types other than {@link Prefix.MultiLevelType#NONE}.
@@ -102,7 +102,7 @@ public class PathSpace<V> {
 	 *
 	 * @see  #boundedIndex
 	 */
-	private final List<List<Map<String,ImmutablePair<Prefix,V>>>> unboundedIndex = new ArrayList<>();
+	private final List<List<Map<String, ImmutablePair<Prefix, V>>>> unboundedIndex = new ArrayList<>();
 
 	/**
 	 * A sorted set to verify map lookup results are consistent with a sequential
@@ -139,7 +139,7 @@ public class PathSpace<V> {
 			// Add to map
 			if(sortedMap.put(prefix, value) != null) throw new AssertionError("Duplicate prefix should have been found as a conflict already: " + prefix);
 			// Add to index
-			List<List<Map<String,ImmutablePair<Prefix,V>>>> totalDepthIndex;
+			List<List<Map<String, ImmutablePair<Prefix, V>>>> totalDepthIndex;
 			int wildcardsOffset;
 			if(prefix.getMultiLevelType() == Prefix.MultiLevelType.NONE) {
 				totalDepthIndex = boundedIndex;
@@ -158,7 +158,7 @@ public class PathSpace<V> {
 			while(totalDepthIndex.size() <= (totalDepth - 1)) {
 				totalDepthIndex.add(null);
 			}
-			List<Map<String,ImmutablePair<Prefix,V>>> wildcardDepthIndex = totalDepthIndex.get(totalDepth - 1);
+			List<Map<String, ImmutablePair<Prefix, V>>> wildcardDepthIndex = totalDepthIndex.get(totalDepth - 1);
 			if(wildcardDepthIndex == null) {
 				wildcardDepthIndex = new ArrayList<>(wildcards);
 				totalDepthIndex.set(totalDepth - 1, wildcardDepthIndex);
@@ -239,7 +239,7 @@ public class PathSpace<V> {
 		if(logger.isLoggable(Level.FINEST)) logger.finest("pathDepth = " + pathDepth + ", lastSlashPos = " + lastSlashPos);
 		// When at end of path, look for an exact-level match in bounded index
 		if(lastSlashPos == pathStrLen && pathDepth <= boundedIndex.size()) {
-			List<Map<String,ImmutablePair<Prefix,V>>> wildcardDepthIndex = boundedIndex.get(pathDepth - 1);
+			List<Map<String, ImmutablePair<Prefix, V>>> wildcardDepthIndex = boundedIndex.get(pathDepth - 1);
 			if(wildcardDepthIndex != null) {
 				int wildcardDepthIndexLen = wildcardDepthIndex.size();
 				assert wildcardDepthIndexLen <= pathDepth : "wildcardDepthIndexLen <= pathDepth: " + wildcardDepthIndexLen + " <= " + pathDepth;
@@ -249,11 +249,11 @@ public class PathSpace<V> {
 				int searchSlashPos = prevSlashPos1;
 				if(logger.isLoggable(Level.FINEST)) logger.finest("wildcardDepthIndexLen = " + wildcardDepthIndexLen + ", pathDepth = " + pathDepth + ", searchSlashPos = " + searchSlashPos);
 				for(int i = 0; i < wildcardDepthIndexLen; i++) {
-					Map<String,ImmutablePair<Prefix,V>> wildcardDepthMap = wildcardDepthIndex.get(i);
+					Map<String, ImmutablePair<Prefix, V>> wildcardDepthMap = wildcardDepthIndex.get(i);
 					if(wildcardDepthMap != null) {
 						String searchStr1 = pathStr.substring(0, searchSlashPos);
 						if(logger.isLoggable(Level.FINEST)) logger.finest("Loop 1: searchStr1 = " + searchStr1);
-						ImmutablePair<Prefix,V> match = wildcardDepthMap.get(searchStr1);
+						ImmutablePair<Prefix, V> match = wildcardDepthMap.get(searchStr1);
 						if(match != null) {
 							// Return match
 							Path prefixPath = (prevSlashPos1 == 0) ? Path.ROOT : path.prefix(prevSlashPos1);
@@ -289,18 +289,18 @@ public class PathSpace<V> {
 			int prevSlashPos2 = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, lastSlashPos - 1);
 			if(logger.isLoggable(Level.FINEST)) logger.finest("prevSlashPos2 = " + prevSlashPos2);
 			assert prevSlashPos2 != -1 : "prevSlashPos2 != -1: " + prevSlashPos2 + " != -1";
-			List<Map<String,ImmutablePair<Prefix,V>>> unboundedDepthIndex = unboundedIndex.get(pathDepth - 1);
+			List<Map<String, ImmutablePair<Prefix, V>>> unboundedDepthIndex = unboundedIndex.get(pathDepth - 1);
 			if(unboundedDepthIndex != null) {
 				int unboundedDepthIndexLen = unboundedDepthIndex.size();
 				assert unboundedDepthIndexLen <= pathDepth : "unboundedDepthIndexLen <= pathDepth: " + unboundedDepthIndexLen + " <= " + pathDepth;
 				int searchSlashPos = prevSlashPos2;
 				if(logger.isLoggable(Level.FINEST)) logger.finest("unboundedDepthIndexLen = " + unboundedDepthIndexLen + ", pathDepth = " + pathDepth + ", searchSlashPos = " + searchSlashPos);
 				for(int i = 0; i < unboundedDepthIndexLen; i++) {
-					Map<String,ImmutablePair<Prefix,V>> wildcardDepthMap = unboundedDepthIndex.get(i);
+					Map<String, ImmutablePair<Prefix, V>> wildcardDepthMap = unboundedDepthIndex.get(i);
 					if(wildcardDepthMap != null) {
 						String searchStr = pathStr.substring(0, searchSlashPos);
 						if(logger.isLoggable(Level.FINEST)) logger.finest("Loop 2.1: searchStr = " + searchStr);
-						ImmutablePair<Prefix,V> match = wildcardDepthMap.get(searchStr);
+						ImmutablePair<Prefix, V> match = wildcardDepthMap.get(searchStr);
 						if(match != null) {
 							// Return match
 							Path prefixPath = (prevSlashPos2 == 0) ? Path.ROOT : path.prefix(prevSlashPos2);
