@@ -1,6 +1,6 @@
 /*
  * ao-net-path-space - Manages allocation of a path space between components.
- * Copyright (C) 2018, 2020  AO Industries, Inc.
+ * Copyright (C) 2018, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -20,14 +20,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.aoindustries.net.pathspace;
+package com.aoapps.net.pathspace;
 
-import com.aoindustries.lang.Throwables;
+import com.aoapps.lang.Throwables;
 
 /**
  * Exception thrown when conflicting prefixes are detected.
  *
- * @see  PathSpace#put(com.aoindustries.net.pathspace.Prefix, java.lang.Object)
+ * @see  PathSpace#put(com.aoapps.net.pathspace.Prefix, java.lang.Object)
  *
  * @author  AO Industries, Inc.
  */

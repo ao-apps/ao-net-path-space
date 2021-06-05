@@ -1,6 +1,6 @@
 /*
  * ao-net-path-space - Manages allocation of a path space between components.
- * Copyright (C) 2018, 2019, 2020  AO Industries, Inc.
+ * Copyright (C) 2018, 2019, 2020, 2021  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -20,11 +20,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.aoindustries.net.pathspace;
+package com.aoapps.net.pathspace;
 
-import com.aoindustries.lang.NullArgumentException;
-import com.aoindustries.net.Path;
-import com.aoindustries.validation.ValidationException;
+import com.aoapps.lang.NullArgumentException;
+import com.aoapps.lang.validation.ValidationException;
+import com.aoapps.net.Path;
 import java.io.Serializable;
 import org.apache.commons.lang3.StringUtils;
 
@@ -158,10 +158,10 @@ public final class Prefix implements
 	 * This is the inverse function of {@link #toString()}.
 	 * </p>
 	 *
-	 * @param  prefix  The prefix to parse.  Must adhere to all rules of {@link  #valueOf(com.aoindustries.net.Path, int, com.aoindustries.net.pathspace.Prefix.MultiLevelType)}
+	 * @param  prefix  The prefix to parse.  Must adhere to all rules of {@link  #valueOf(com.aoapps.net.Path, int, com.aoapps.net.pathspace.Prefix.MultiLevelType)}
 	 *
 	 * @see  #toString()
-	 * @see  #valueOf(com.aoindustries.net.Path, int, com.aoindustries.net.pathspace.Prefix.MultiLevelType)
+	 * @see  #valueOf(com.aoapps.net.Path, int, com.aoapps.net.pathspace.Prefix.MultiLevelType)
 	 */
 	public static Prefix valueOf(String prefix) {
 		NullArgumentException.checkNotNull(prefix, "prefix");
@@ -216,7 +216,7 @@ public final class Prefix implements
 	 * Validity checks are performed in the @{code valueOf} methods because this class is used internally
 	 * for map lookups.  These lookups avoid the validity checks on these short-lived key lookup instances.
 	 *
-	 * @see  #valueOf(com.aoindustries.net.Path, int, com.aoindustries.net.pathspace.Prefix.MultiLevelType)
+	 * @see  #valueOf(com.aoapps.net.Path, int, com.aoapps.net.pathspace.Prefix.MultiLevelType)
 	 * @see  #valueOf(java.lang.String)
 	 */
 	private Prefix(Path base, int wildcards, MultiLevelType multiLevelType) {
@@ -306,8 +306,8 @@ public final class Prefix implements
 	}
 
 	/**
-	 * The natural ordering is such that an iterative call to {@link #matches(com.aoindustries.net.Path)} will return.
-	 * {@code true} on the most specific matching space.  This match is consistent with {@link PathSpace#get(com.aoindustries.net.Path)}.
+	 * The natural ordering is such that an iterative call to {@link #matches(com.aoapps.net.Path)} will return.
+	 * {@code true} on the most specific matching space.  This match is consistent with {@link PathSpace#get(com.aoapps.net.Path)}.
 	 * <p>
 	 * This ordering is useful for human review, as it represents the path space conceptually in a top-to-bottom list.
 	 * </p>
@@ -315,11 +315,11 @@ public final class Prefix implements
 	 * The implementation of TODO: Link findSpace, should be much faster than an iterative search, however.
 	 * </p>
 	 * <p>
-	 * TODO: There are no ordering guarantees between prefixes that {@link #conflictsWith(com.aoindustries.net.pathspace.Prefix) conflict with one another}?
+	 * TODO: There are no ordering guarantees between prefixes that {@link #conflictsWith(com.aoapps.net.pathspace.Prefix) conflict with one another}?
 	 * </p>
 	 *
-	 * @see  #conflictsWith(com.aoindustries.net.pathspace.Prefix)
-	 * @see  #matches(com.aoindustries.net.Path)
+	 * @see  #conflictsWith(com.aoapps.net.pathspace.Prefix)
+	 * @see  #matches(com.aoapps.net.Path)
 	 */
 	@Override
 	public int compareTo(Prefix other) {

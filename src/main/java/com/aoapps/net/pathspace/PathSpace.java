@@ -20,10 +20,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with ao-net-path-space.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.aoindustries.net.pathspace;
+package com.aoapps.net.pathspace;
 
-import com.aoindustries.collections.MinimalMap;
-import com.aoindustries.net.Path;
+import com.aoapps.collections.MinimalMap;
+import com.aoapps.net.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -108,8 +108,8 @@ public class PathSpace<V> {
 	 * A sorted set to verify map lookup results are consistent with a sequential
 	 * scan, in natural ordering, of prefixes checking for the first match.
 	 *
-	 * @see  Prefix#compareTo(com.aoindustries.net.pathspace.Prefix)
-	 * @see  Prefix#matches(com.aoindustries.net.Path)
+	 * @see  Prefix#compareTo(com.aoapps.net.pathspace.Prefix)
+	 * @see  Prefix#matches(com.aoapps.net.Path)
 	 */
 	private final SortedMap<Prefix, V> sortedMap = new TreeMap<>();
 
@@ -122,7 +122,7 @@ public class PathSpace<V> {
 	 *
 	 * @throws  PrefixConflictException  If the prefix conflicts with an existing entry.
 	 *
-	 * @see  Prefix#conflictsWith(com.aoindustries.net.pathspace.Prefix)
+	 * @see  Prefix#conflictsWith(com.aoapps.net.pathspace.Prefix)
 	 */
 	public void put(Prefix prefix, V value) throws PrefixConflictException {
 		writeLock.lock();
@@ -180,9 +180,9 @@ public class PathSpace<V> {
 	}
 
 	/**
-	 * Sequential implementation of {@link #get(com.aoindustries.net.Path)} based on iterative
-	 * calls to {@link Prefix#matches(com.aoindustries.net.Path)}
-	 * in the natural ordering established by {@link Prefix#compareTo(com.aoindustries.net.pathspace.Prefix)}.
+	 * Sequential implementation of {@link #get(com.aoapps.net.Path)} based on iterative
+	 * calls to {@link Prefix#matches(com.aoapps.net.Path)}
+	 * in the natural ordering established by {@link Prefix#compareTo(com.aoapps.net.pathspace.Prefix)}.
 	 * <p>
 	 * The caller must already hold {@link #readLock}
 	 * </p>
@@ -212,7 +212,7 @@ public class PathSpace<V> {
 	}
 
 	/**
-	 * Indexed implementation of {@link #get(com.aoindustries.net.Path)}.
+	 * Indexed implementation of {@link #get(com.aoapps.net.Path)}.
 	 * <p>
 	 * The caller must already hold {@link #readLock}
 	 * </p>
