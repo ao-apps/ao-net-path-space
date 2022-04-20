@@ -34,38 +34,38 @@ import com.aoapps.lang.Throwables;
  */
 public class PrefixConflictException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-	private final Prefix existing;
-	private final Prefix adding;
+  private final Prefix existing;
+  private final Prefix adding;
 
-	PrefixConflictException(Prefix existing, Prefix adding) {
-		this.existing = existing;
-		this.adding = adding;
-	}
+  PrefixConflictException(Prefix existing, Prefix adding) {
+    this.existing = existing;
+    this.adding = adding;
+  }
 
-	PrefixConflictException(Prefix existing, Prefix adding, Throwable cause) {
-		super(cause);
-		this.existing = existing;
-		this.adding = adding;
-	}
+  PrefixConflictException(Prefix existing, Prefix adding, Throwable cause) {
+    super(cause);
+    this.existing = existing;
+    this.adding = adding;
+  }
 
-	@Override
-	public String getMessage() {
-		return "Prefix \"" + adding + "\" conflicts with existing prefix \"" + existing + '"';
-	}
+  @Override
+  public String getMessage() {
+    return "Prefix \"" + adding + "\" conflicts with existing prefix \"" + existing + '"';
+  }
 
-	public Prefix getExisting() {
-		return existing;
-	}
+  public Prefix getExisting() {
+    return existing;
+  }
 
-	public Prefix getAdding() {
-		return adding;
-	}
+  public Prefix getAdding() {
+    return adding;
+  }
 
-	static {
-		Throwables.registerSurrogateFactory(PrefixConflictException.class, (template, cause) ->
-			new PrefixConflictException(template.existing, template.adding, cause)
-		);
-	}
+  static {
+    Throwables.registerSurrogateFactory(PrefixConflictException.class, (template, cause) ->
+      new PrefixConflictException(template.existing, template.adding, cause)
+    );
+  }
 }
