@@ -1,2 +1,6 @@
 # Significant manual code formatting clean-up…
 7d425e544d9eb4e5ec67dfc53bd3623372db7f33
+# Generics whitespace consistency
+986a67609ebd9decd2239363c4bdfb933ac84d85
+# Removed space before generic
+f6fa0003fb960ad8a16792221645fd89f21cc98f
