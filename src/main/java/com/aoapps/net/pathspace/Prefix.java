@@ -33,9 +33,9 @@ import org.apache.commons.lang3.StringUtils;
  * @author  AO Industries, Inc.
  */
 public final class Prefix implements
-  Comparable<Prefix>,
-  // Note: Made Serializable because is used as a field in PrefixConflictException.
-  Serializable {
+    Comparable<Prefix>,
+    // Note: Made Serializable because is used as a field in PrefixConflictException.
+    Serializable {
 
   public static final char WILDCARD_CHAR = '*';
 
@@ -112,9 +112,9 @@ public final class Prefix implements
       int firstPos = baseStr.indexOf(WILDCARD_SUFFIX); // Quick check if any "/*" found
       if (firstPos != -1) {
         if (
-             baseStr.indexOf(WILDCARD_SUFFIX  + Path.SEPARATOR_CHAR, firstPos) != -1
-          || baseStr.indexOf(UNBOUNDED_SUFFIX + Path.SEPARATOR_CHAR, firstPos) != -1
-          || baseStr.indexOf(GREEDY_SUFFIX    + Path.SEPARATOR_CHAR, firstPos) != -1
+            baseStr.indexOf(WILDCARD_SUFFIX  + Path.SEPARATOR_CHAR, firstPos) != -1
+                || baseStr.indexOf(UNBOUNDED_SUFFIX + Path.SEPARATOR_CHAR, firstPos) != -1
+                || baseStr.indexOf(GREEDY_SUFFIX    + Path.SEPARATOR_CHAR, firstPos) != -1
         ) {
           throw new IllegalArgumentException("Infix wildcards not supported: " + base);
         }
@@ -151,9 +151,9 @@ public final class Prefix implements
     // May not end in "/" when there is any wildcard or multi-level, unless it is the root "/".
     checkBase(base);
     return new Prefix(
-      base,
-      wildcards,
-      multiLevelType
+        base,
+        wildcards,
+        multiLevelType
     );
   }
 
@@ -186,8 +186,8 @@ public final class Prefix implements
     // Parse wildcards
     int wildcards = 0;
     while (
-      prefixLen >= WILDCARD_SUFFIX_LEN
-      && prefix.regionMatches(prefixLen - WILDCARD_SUFFIX_LEN, WILDCARD_SUFFIX, 0, WILDCARD_SUFFIX_LEN)
+        prefixLen >= WILDCARD_SUFFIX_LEN
+            && prefix.regionMatches(prefixLen - WILDCARD_SUFFIX_LEN, WILDCARD_SUFFIX, 0, WILDCARD_SUFFIX_LEN)
     ) {
       wildcards++;
       prefixLen -= WILDCARD_SUFFIX_LEN;
@@ -245,11 +245,11 @@ public final class Prefix implements
     if (!(obj instanceof Prefix)) {
       return false;
     }
-    Prefix other = (Prefix)obj;
+    Prefix other = (Prefix) obj;
     return
-      wildcards == other.wildcards
-      && multiLevelType == other.multiLevelType
-      && base.equals(other.base);
+        wildcards == other.wildcards
+            && multiLevelType == other.multiLevelType
+            && base.equals(other.base);
   }
 
   /**
@@ -344,9 +344,9 @@ public final class Prefix implements
   public int compareTo(Prefix other) {
     int diff = compare(this, other);
     assert (diff == 0) == this.equals(other)
-      : "compareTo is not consistent with equals: this = \"" + this + "\", other = \"" + other + '"';
+        : "compareTo is not consistent with equals: this = \"" + this + "\", other = \"" + other + '"';
     assert Integer.signum(diff) == -Integer.signum(compare(other, this))
-      : "compareTo method is not reflexive: this = \"" + this + "\", other = \"" + other + '"';
+        : "compareTo method is not reflexive: this = \"" + this + "\", other = \"" + other + '"';
     return diff;
   }
 
@@ -454,8 +454,8 @@ public final class Prefix implements
           int path1Len = lastSlashPos1 - path1Start;
           int path2Len = lastSlashPos2 - path2Start;
           if (
-            path1Len != path2Len
-            || !base1.regionMatches(path1Start, base2, path2Start, path1Len)
+              path1Len != path2Len
+                  || !base1.regionMatches(path1Start, base2, path2Start, path1Len)
           ) {
             return false;
           }
@@ -518,9 +518,9 @@ public final class Prefix implements
     int pathLen = pathStr.length();
     // Path must start with baseStr + '/'
     if (
-      pathLen <= baseLen
-      || !pathStr.startsWith(baseStr)
-      || pathStr.charAt(baseLen) != Path.SEPARATOR_CHAR
+        pathLen <= baseLen
+            || !pathStr.startsWith(baseStr)
+            || pathStr.charAt(baseLen) != Path.SEPARATOR_CHAR
     ) {
       return -1;
     }

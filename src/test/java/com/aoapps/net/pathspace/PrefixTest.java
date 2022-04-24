@@ -45,8 +45,8 @@ public class PrefixTest {
     Prefix p1 = valueOf(base, wildcards, multiLevelType);
     Prefix p2 = valueOf(toString);
     assertEquals(
-      p1,
-      p2
+        p1,
+        p2
     );
     assertEquals(toString, p1.toString());
     assertEquals(toString, p2.toString());
@@ -59,154 +59,155 @@ public class PrefixTest {
   @Test(expected = IllegalArgumentException.class)
   public void testValueOfRoot() {
     testValueOf(
-      Path.ROOT, 0, Prefix.MultiLevelType.NONE,
-      "/"
+        Path.ROOT, 0, Prefix.MultiLevelType.NONE,
+        "/"
     );
   }
 
   @Test
   public void testValueOfRootUnbounded() {
     testValueOf(
-      Path.ROOT, 0, Prefix.MultiLevelType.UNBOUNDED,
-      "/**"
+        Path.ROOT, 0, Prefix.MultiLevelType.UNBOUNDED,
+        "/**"
     );
   }
 
   @Test
   public void testValueOfRootGreedy() {
     testValueOf(
-      Path.ROOT, 0, Prefix.MultiLevelType.GREEDY,
-      "/***"
+        Path.ROOT, 0, Prefix.MultiLevelType.GREEDY,
+        "/***"
     );
   }
 
   @Test
   public void testValueOfRootWildcard() {
     testValueOf(
-      Path.ROOT, 1, Prefix.MultiLevelType.NONE,
-      "/*"
+        Path.ROOT, 1, Prefix.MultiLevelType.NONE,
+        "/*"
     );
   }
 
   @Test
   public void testValueOfRootWildcardUnbounded() {
     testValueOf(
-      Path.ROOT, 1, Prefix.MultiLevelType.UNBOUNDED,
-      "/*/**"
+        Path.ROOT, 1, Prefix.MultiLevelType.UNBOUNDED,
+        "/*/**"
     );
   }
 
   @Test
   public void testValueOfRootWildcardGreedy() {
     testValueOf(
-      Path.ROOT, 1, Prefix.MultiLevelType.GREEDY,
-      "/*/***"
+        Path.ROOT, 1, Prefix.MultiLevelType.GREEDY,
+        "/*/***"
     );
   }
 
   @Test
   public void testValueOfRootWildcard2() {
     testValueOf(
-      Path.ROOT, 2, Prefix.MultiLevelType.NONE,
-      "/*/*"
+        Path.ROOT, 2, Prefix.MultiLevelType.NONE,
+        "/*/*"
     );
   }
 
   @Test
   public void testValueOfRootWildcard2Unbounded() {
     testValueOf(
-      Path.ROOT, 2, Prefix.MultiLevelType.UNBOUNDED,
-      "/*/*/**"
+        Path.ROOT, 2, Prefix.MultiLevelType.UNBOUNDED,
+        "/*/*/**"
     );
   }
 
   @Test
   public void testValueOfRootWildcard2Greedy() {
     testValueOf(
-      Path.ROOT, 2, Prefix.MultiLevelType.GREEDY,
-      "/*/*/***"
+        Path.ROOT, 2, Prefix.MultiLevelType.GREEDY,
+        "/*/*/***"
     );
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testValueOfPath() throws ValidationException {
     testValueOf(
-      "/path", 0, Prefix.MultiLevelType.NONE,
-      "/path"
+        "/path", 0, Prefix.MultiLevelType.NONE,
+        "/path"
     );
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void testValueOfPathSlash() throws ValidationException {
     testValueOf(
-      "/path/", 0, Prefix.MultiLevelType.NONE,
-      "/path/"
+        "/path/", 0, Prefix.MultiLevelType.NONE,
+        "/path/"
     );
   }
 
   @Test
   public void testValueOfPathUnbounded() throws ValidationException {
     testValueOf(
-      "/path", 0, Prefix.MultiLevelType.UNBOUNDED,
-      "/path/**"
+        "/path", 0, Prefix.MultiLevelType.UNBOUNDED,
+        "/path/**"
     );
   }
 
   @Test
   public void testValueOfPathGreedy() throws ValidationException {
     testValueOf(
-      "/path", 0, Prefix.MultiLevelType.GREEDY,
-      "/path/***"
+        "/path", 0, Prefix.MultiLevelType.GREEDY,
+        "/path/***"
     );
   }
 
   @Test
   public void testValueOfPathWildcard() throws ValidationException {
     testValueOf(
-      "/path", 1, Prefix.MultiLevelType.NONE,
-      "/path/*"
+        "/path", 1, Prefix.MultiLevelType.NONE,
+        "/path/*"
     );
   }
 
   @Test
   public void testValueOfPathWildcardUnbounded() throws ValidationException {
     testValueOf(
-      "/path", 1, Prefix.MultiLevelType.UNBOUNDED,
-      "/path/*/**"
+        "/path", 1, Prefix.MultiLevelType.UNBOUNDED,
+        "/path/*/**"
     );
   }
 
   @Test
   public void testValueOfPathWildcardGreedy() throws ValidationException {
     testValueOf(
-      "/path", 1, Prefix.MultiLevelType.GREEDY,
-      "/path/*/***"
+        "/path", 1, Prefix.MultiLevelType.GREEDY,
+        "/path/*/***"
     );
   }
 
   @Test
   public void testValueOfPathWildcard2() throws ValidationException {
     testValueOf(
-      "/path", 2, Prefix.MultiLevelType.NONE,
-      "/path/*/*"
+        "/path", 2, Prefix.MultiLevelType.NONE,
+        "/path/*/*"
     );
   }
 
   @Test
   public void testValueOfPathWildcard2Unbounded() throws ValidationException {
     testValueOf(
-      "/path", 2, Prefix.MultiLevelType.UNBOUNDED,
-      "/path/*/*/**"
+        "/path", 2, Prefix.MultiLevelType.UNBOUNDED,
+        "/path/*/*/**"
     );
   }
 
   @Test
   public void testValueOfPathWildcard2Greedy() throws ValidationException {
     testValueOf(
-      "/path", 2, Prefix.MultiLevelType.GREEDY,
-      "/path/*/*/***"
+        "/path", 2, Prefix.MultiLevelType.GREEDY,
+        "/path/*/*/***"
     );
   }
+
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc="Test valueOf argument checks, both by fields and by parsing String">
@@ -229,6 +230,7 @@ public class PrefixTest {
   public void testValueOfPrefixNotNull() {
     valueOf(null);
   }
+
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc="Test valueOf base validations, both by fields and by parsing String">
@@ -391,6 +393,7 @@ public class PrefixTest {
   public void testCheckBaseNoContainsGreedyStringGreedy() {
     valueOf("/path/***/other/***");
   }
+
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc="Test compareTo">
@@ -398,14 +401,14 @@ public class PrefixTest {
     Prefix p1 = valueOf(prefix1);
     Prefix p2 = valueOf(prefix2);
     assertEquals(
-      "Prefixes do not compare as equal: \"" + p1 + "\" and \"" + p2 + '"',
-      0,
-      p1.compareTo(p2)
+        "Prefixes do not compare as equal: \"" + p1 + "\" and \"" + p2 + '"',
+        0,
+        p1.compareTo(p2)
     );
     assertEquals(
-      "Prefixes do not compare as equal (reversed): \"" + p2 + "\" and \"" + p1 + '"',
-      0,
-      p2.compareTo(p1)
+        "Prefixes do not compare as equal (reversed): \"" + p2 + "\" and \"" + p1 + '"',
+        0,
+        p2.compareTo(p1)
     );
   }
 
@@ -414,14 +417,14 @@ public class PrefixTest {
     for (String prefix2 : others) {
       Prefix p2 = valueOf(prefix2);
       assertEquals(
-        "Prefix does not compare as before: \"" + p1 + "\" and \"" + p2 + '"',
-        -1,
-        Integer.signum(p1.compareTo(p2))
+          "Prefix does not compare as before: \"" + p1 + "\" and \"" + p2 + '"',
+          -1,
+          Integer.signum(p1.compareTo(p2))
       );
       assertEquals(
-        "Prefix does not compare as after (reversed): \"" + p2 + "\" and \"" + p1 + '"',
-        1,
-        Integer.signum(p2.compareTo(p1))
+          "Prefix does not compare as after (reversed): \"" + p2 + "\" and \"" + p1 + '"',
+          1,
+          Integer.signum(p2.compareTo(p1))
       );
     }
   }
@@ -431,14 +434,14 @@ public class PrefixTest {
     for (String prefix2 : others) {
       Prefix p2 = valueOf(prefix2);
       assertEquals(
-        "Prefix does not compare as after: \"" + p1 + "\" and \"" + p2 + '"',
-        1,
-        Integer.signum(p1.compareTo(p2))
+          "Prefix does not compare as after: \"" + p1 + "\" and \"" + p2 + '"',
+          1,
+          Integer.signum(p1.compareTo(p2))
       );
       assertEquals(
-        "Prefix does not compare as before (reversed): \"" + p2 + "\" and \"" + p1 + '"',
-        -1,
-        Integer.signum(p2.compareTo(p1))
+          "Prefix does not compare as before (reversed): \"" + p2 + "\" and \"" + p1 + '"',
+          -1,
+          Integer.signum(p2.compareTo(p1))
       );
     }
   }
@@ -471,130 +474,131 @@ public class PrefixTest {
   @Test
   public void testCompareToPathDeeperWildcardsBeforeWildcard() {
     assertCompareAfter(
-      "/path/*/*",
-      "/path/*/*/*",
-      "/path/*/*/**",
-      "/path/*/*/***"
+        "/path/*/*",
+        "/path/*/*/*",
+        "/path/*/*/**",
+        "/path/*/*/***"
     );
   }
 
   @Test
   public void testCompareToPathDeeperWildcardsBeforeUnbounded() {
     assertCompareAfter(
-      "/path/*/**",
-      "/path/*/*/*",
-      "/path/*/*/**",
-      "/path/*/*/***"
+        "/path/*/**",
+        "/path/*/*/*",
+        "/path/*/*/**",
+        "/path/*/*/***"
     );
   }
 
   @Test
   public void testCompareToPathDeeperWildcardsBeforeGreedy() {
     assertCompareAfter(
-      "/path/*/***",
-      "/path/*/*/*",
-      "/path/*/*/**",
-      "/path/*/*/***"
+        "/path/*/***",
+        "/path/*/*/*",
+        "/path/*/*/**",
+        "/path/*/*/***"
     );
   }
 
   @Test
   public void testCompareToPathDeeperPathWildcardsBeforeWildcard() {
     assertCompareAfter(
-      "/path/*/*",
-      "/path/other/*/*",
-      "/path/other/*/**",
-      "/path/other/*/***"
+        "/path/*/*",
+        "/path/other/*/*",
+        "/path/other/*/**",
+        "/path/other/*/***"
     );
   }
 
   @Test
   public void testCompareToPathDeeperPathWildcardsBeforeUnbounded() {
     assertCompareAfter(
-      "/path/*/**",
-      "/path/other/*/*",
-      "/path/other/*/**",
-      "/path/other/*/***"
+        "/path/*/**",
+        "/path/other/*/*",
+        "/path/other/*/**",
+        "/path/other/*/***"
     );
   }
 
   @Test
   public void testCompareToPathDeeperPathWildcardsBeforeGreedy() {
     assertCompareAfter(
-      "/path/*/***",
-      "/path/other/*/*",
-      "/path/other/*/**",
-      "/path/other/*/***"
+        "/path/*/***",
+        "/path/other/*/*",
+        "/path/other/*/**",
+        "/path/other/*/***"
     );
   }
 
   @Test
   public void testCompareToMuchDeeperPathsWildcard() {
     assertCompareBefore(
-      "/z/z/z/z/z/*",
-      "/**",
-      "/a/**",
-      "/z/**",
-      "/a/a/**",
-      "/z/z/**",
-      "/a/a/a/**",
-      "/z/z/z/**",
-      "/a/a/a/a/**",
-      "/z/z/z/z/**"
+        "/z/z/z/z/z/*",
+        "/**",
+        "/a/**",
+        "/z/**",
+        "/a/a/**",
+        "/z/z/**",
+        "/a/a/a/**",
+        "/z/z/z/**",
+        "/a/a/a/a/**",
+        "/z/z/z/z/**"
     );
     assertCompareAfter(
-      "/z/z/z/z/z/*",
-      // TODO: This conflicts, should the conflict throw and exception?
-      "/a/a/a/a/a/**",
-      // TODO: This conflicts, should the conflict throw and exception?
-      "/z/z/z/z/z/**",
-      "/a/a/a/a/a/a/**",
-      "/z/z/z/z/z/z/**"
+        "/z/z/z/z/z/*",
+        // TODO: This conflicts, should the conflict throw and exception?
+        "/a/a/a/a/a/**",
+        // TODO: This conflicts, should the conflict throw and exception?
+        "/z/z/z/z/z/**",
+        "/a/a/a/a/a/a/**",
+        "/z/z/z/z/z/z/**"
     );
   }
 
   @Test
   public void testCompareToMuchDeeperWildcardsOnly() {
     assertCompareBefore(
-      "/z/z/z/z/z/*",
-      "/**",
-      "/*/**",
-      "/*/*/**",
-      "/*/*/*/**",
-      "/*/*/*/*/**"
+        "/z/z/z/z/z/*",
+        "/**",
+        "/*/**",
+        "/*/*/**",
+        "/*/*/*/**",
+        "/*/*/*/*/**"
     );
     assertCompareAfter(
-      "/z/z/z/z/z/*",
-      // TODO: This conflicts, should the conflict throw and exception?
-      "/*/*/*/*/*/**",
-      "/*/*/*/*/*/*/**"
+        "/z/z/z/z/z/*",
+        // TODO: This conflicts, should the conflict throw and exception?
+        "/*/*/*/*/*/**",
+        "/*/*/*/*/*/*/**"
     );
   }
 
   @Test
   public void testCompareToMuchDeeperPathWildcards() {
     assertCompareBefore(
-      "/z/z/z/z/z/*",
-      "/**",
-      "/a/**",
-      "/z/**",
-      "/a/*/**",
-      "/z/*/**",
-      "/a/*/*/**",
-      "/z/*/*/**",
-      "/a/*/*/*/**",
-      "/z/*/*/*/**"
+        "/z/z/z/z/z/*",
+        "/**",
+        "/a/**",
+        "/z/**",
+        "/a/*/**",
+        "/z/*/**",
+        "/a/*/*/**",
+        "/z/*/*/**",
+        "/a/*/*/*/**",
+        "/z/*/*/*/**"
     );
     assertCompareAfter(
-      "/z/z/z/z/z/*",
-      // TODO: This conflicts, should the conflict throw and exception?
-      "/a/*/*/*/*/**",
-      // TODO: This conflicts, should the conflict throw and exception?
-      "/z/*/*/*/*/**",
-      "/a/*/*/*/*/*/**",
-      "/z/*/*/*/*/*/**"
+        "/z/z/z/z/z/*",
+        // TODO: This conflicts, should the conflict throw and exception?
+        "/a/*/*/*/*/**",
+        // TODO: This conflicts, should the conflict throw and exception?
+        "/z/*/*/*/*/**",
+        "/a/*/*/*/*/*/**",
+        "/z/*/*/*/*/*/**"
     );
   }
+
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc="Test conflictsWith">
@@ -625,177 +629,178 @@ public class PrefixTest {
   @Test
   public void testRootWildcardConflicts() {
     testConflicts(
-      valueOf("/*"),
-      valueOf("/*"),
-      valueOf("/**"),
-      valueOf("/***")
+        valueOf("/*"),
+        valueOf("/*"),
+        valueOf("/**"),
+        valueOf("/***")
     );
   }
 
   @Test
   public void testRootWildcardNotConflicts() {
     testNotConflicts(
-      valueOf("/*"),
-      valueOf("/*/*"),
-      valueOf("/*/**"),
-      valueOf("/*/***"),
-      valueOf("/path/*"),
-      valueOf("/path/**"),
-      valueOf("/path/***")
+        valueOf("/*"),
+        valueOf("/*/*"),
+        valueOf("/*/**"),
+        valueOf("/*/***"),
+        valueOf("/path/*"),
+        valueOf("/path/**"),
+        valueOf("/path/***")
     );
   }
 
   @Test
   public void testRootUnboundedConflicts() {
     testConflicts(
-      valueOf("/**"),
-      valueOf("/*"),
-      valueOf("/**"),
-      valueOf("/***")
+        valueOf("/**"),
+        valueOf("/*"),
+        valueOf("/**"),
+        valueOf("/***")
     );
   }
 
   @Test
   public void testRootUnboundedNotConflicts() {
     testNotConflicts(
-      valueOf("/**"),
-      valueOf("/*/*"),
-      valueOf("/*/**"),
-      valueOf("/*/***"),
-      valueOf("/path/*"),
-      valueOf("/path/**"),
-      valueOf("/path/***")
+        valueOf("/**"),
+        valueOf("/*/*"),
+        valueOf("/*/**"),
+        valueOf("/*/***"),
+        valueOf("/path/*"),
+        valueOf("/path/**"),
+        valueOf("/path/***")
     );
   }
 
   @Test
   public void testRootGreedyConflicts() {
     testConflicts(
-      valueOf("/***"),
-      valueOf("/*"),
-      valueOf("/**"),
-      valueOf("/***"),
-      valueOf("/*/*"),
-      valueOf("/*/**"),
-      valueOf("/*/***"),
-      valueOf("/path/*"),
-      valueOf("/path/**"),
-      valueOf("/path/***")
+        valueOf("/***"),
+        valueOf("/*"),
+        valueOf("/**"),
+        valueOf("/***"),
+        valueOf("/*/*"),
+        valueOf("/*/**"),
+        valueOf("/*/***"),
+        valueOf("/path/*"),
+        valueOf("/path/**"),
+        valueOf("/path/***")
     );
   }
 
   @Test
   public void testRootGreedyNotConflicts() {
     testNotConflicts(
-      valueOf("/***")
-      // All conflict, nothing to do
+        valueOf("/***")
+    // All conflict, nothing to do
     );
   }
 
   @Test
   public void testPathWildcardConflicts() {
     testConflicts(
-      valueOf("/path/*"),
-      valueOf("/***"),
-      valueOf("/*/*"),
-      valueOf("/*/**"),
-      valueOf("/*/***"),
-      valueOf("/path/*"),
-      valueOf("/path/**"),
-      valueOf("/path/***")
+        valueOf("/path/*"),
+        valueOf("/***"),
+        valueOf("/*/*"),
+        valueOf("/*/**"),
+        valueOf("/*/***"),
+        valueOf("/path/*"),
+        valueOf("/path/**"),
+        valueOf("/path/***")
     );
   }
 
   @Test
   public void testPathWildcardNotConflicts() {
     testNotConflicts(
-      valueOf("/path/*"),
-      valueOf("/pathy/*"),
-      valueOf("/pathy/**"),
-      valueOf("/pathy/***"),
-      valueOf("/*"),
-      valueOf("/**"),
-      valueOf("/*/*/*"),
-      valueOf("/*/*/**"),
-      valueOf("/*/*/***"),
-      valueOf("/path/*/*"),
-      valueOf("/path/*/**"),
-      valueOf("/path/*/***"),
-      valueOf("/path/other/*"),
-      valueOf("/path/other/**"),
-      valueOf("/path/other/***")
+        valueOf("/path/*"),
+        valueOf("/pathy/*"),
+        valueOf("/pathy/**"),
+        valueOf("/pathy/***"),
+        valueOf("/*"),
+        valueOf("/**"),
+        valueOf("/*/*/*"),
+        valueOf("/*/*/**"),
+        valueOf("/*/*/***"),
+        valueOf("/path/*/*"),
+        valueOf("/path/*/**"),
+        valueOf("/path/*/***"),
+        valueOf("/path/other/*"),
+        valueOf("/path/other/**"),
+        valueOf("/path/other/***")
     );
   }
 
   @Test
   public void testPathUnboundedConflicts() {
     testConflicts(
-      valueOf("/path/**"),
-      valueOf("/***"),
-      valueOf("/*/*"),
-      valueOf("/*/**"),
-      valueOf("/*/***"),
-      valueOf("/path/*"),
-      valueOf("/path/**"),
-      valueOf("/path/***")
+        valueOf("/path/**"),
+        valueOf("/***"),
+        valueOf("/*/*"),
+        valueOf("/*/**"),
+        valueOf("/*/***"),
+        valueOf("/path/*"),
+        valueOf("/path/**"),
+        valueOf("/path/***")
     );
   }
 
   @Test
   public void testPathUnboundedNotConflicts() {
     testNotConflicts(
-      valueOf("/path/**"),
-      valueOf("/pathy/*"),
-      valueOf("/pathy/**"),
-      valueOf("/pathy/***"),
-      valueOf("/*"),
-      valueOf("/**"),
-      valueOf("/*/*/*"),
-      valueOf("/*/*/**"),
-      valueOf("/*/*/***"),
-      valueOf("/path/*/*"),
-      valueOf("/path/*/**"),
-      valueOf("/path/*/***"),
-      valueOf("/path/other/*"),
-      valueOf("/path/other/**"),
-      valueOf("/path/other/***")
+        valueOf("/path/**"),
+        valueOf("/pathy/*"),
+        valueOf("/pathy/**"),
+        valueOf("/pathy/***"),
+        valueOf("/*"),
+        valueOf("/**"),
+        valueOf("/*/*/*"),
+        valueOf("/*/*/**"),
+        valueOf("/*/*/***"),
+        valueOf("/path/*/*"),
+        valueOf("/path/*/**"),
+        valueOf("/path/*/***"),
+        valueOf("/path/other/*"),
+        valueOf("/path/other/**"),
+        valueOf("/path/other/***")
     );
   }
 
   @Test
   public void testPathGreedyConflicts() {
     testConflicts(
-      valueOf("/path/***"),
-      valueOf("/***"),
-      valueOf("/*/*"),
-      valueOf("/*/**"),
-      valueOf("/*/***"),
-      valueOf("/*/*/*"),
-      valueOf("/*/*/**"),
-      valueOf("/*/*/***"),
-      valueOf("/path/*"),
-      valueOf("/path/**"),
-      valueOf("/path/***"),
-      valueOf("/path/*/*"),
-      valueOf("/path/*/**"),
-      valueOf("/path/*/***"),
-      valueOf("/path/other/*"),
-      valueOf("/path/other/**"),
-      valueOf("/path/other/***")
+        valueOf("/path/***"),
+        valueOf("/***"),
+        valueOf("/*/*"),
+        valueOf("/*/**"),
+        valueOf("/*/***"),
+        valueOf("/*/*/*"),
+        valueOf("/*/*/**"),
+        valueOf("/*/*/***"),
+        valueOf("/path/*"),
+        valueOf("/path/**"),
+        valueOf("/path/***"),
+        valueOf("/path/*/*"),
+        valueOf("/path/*/**"),
+        valueOf("/path/*/***"),
+        valueOf("/path/other/*"),
+        valueOf("/path/other/**"),
+        valueOf("/path/other/***")
     );
   }
 
   @Test
   public void testPathGreedyNotConflicts() {
     testNotConflicts(
-      valueOf("/path/***"),
-      valueOf("/pathy/*"),
-      valueOf("/pathy/**"),
-      valueOf("/pathy/***"),
-      valueOf("/*"),
-      valueOf("/**")
+        valueOf("/path/***"),
+        valueOf("/pathy/*"),
+        valueOf("/pathy/**"),
+        valueOf("/pathy/***"),
+        valueOf("/*"),
+        valueOf("/**")
     );
   }
+
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc="Test matches">
@@ -809,9 +814,9 @@ public class PrefixTest {
   private static void testMatches(Prefix prefix, String ... paths) throws ValidationException {
     for (String path : paths) {
       assertNotEquals(
-        "must match: prefix = " + prefix + ", path = " + path,
-        -1,
-        prefix.matches(Path.valueOf(path))
+          "must match: prefix = " + prefix + ", path = " + path,
+          -1,
+          prefix.matches(Path.valueOf(path))
       );
     }
   }
@@ -822,9 +827,9 @@ public class PrefixTest {
   private static void testNotMatches(Prefix prefix, String ... paths) throws ValidationException {
     for (String path : paths) {
       assertEquals(
-        "must not match: prefix = " + prefix + ", path = " + path,
-        -1,
-        prefix.matches(Path.valueOf(path))
+          "must not match: prefix = " + prefix + ", path = " + path,
+          -1,
+          prefix.matches(Path.valueOf(path))
       );
     }
   }
@@ -834,315 +839,317 @@ public class PrefixTest {
   @Test
   public void testRootWildcardMatches() throws ValidationException {
     testMatches(
-      valueOf("/*"),
-      "/",
-      "/path"
+        valueOf("/*"),
+        "/",
+        "/path"
     );
   }
 
   @Test
   public void testRootWildcardNotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/*"),
-      "/path/",
-      "/path/other",
-      "/path/other/"
+        valueOf("/*"),
+        "/path/",
+        "/path/other",
+        "/path/other/"
     );
   }
 
   @Test
   public void testRootUnboundedMatches() throws ValidationException {
     testMatches(
-      valueOf("/**"),
-      "/",
-      "/path",
-      "/path/other",
-      "/path/other/",
-      "/path/other/more",
-      "/path/other/more/"
+        valueOf("/**"),
+        "/",
+        "/path",
+        "/path/other",
+        "/path/other/",
+        "/path/other/more",
+        "/path/other/more/"
     );
   }
 
   @Test
   public void testRootUnboundedNotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/**")
-      // All should match, nothing to do
+        valueOf("/**")
+    // All should match, nothing to do
     );
   }
 
   @Test
   public void testRootGreedyMatches() throws ValidationException {
     testMatches(
-      valueOf("/***"),
-      "/",
-      "/path",
-      "/path/",
-      "/path/other",
-      "/path/other/",
-      "/path/other/more",
-      "/path/other/more/"
+        valueOf("/***"),
+        "/",
+        "/path",
+        "/path/",
+        "/path/other",
+        "/path/other/",
+        "/path/other/more",
+        "/path/other/more/"
     );
   }
 
   @Test
   public void testRootGreedyNotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/***")
-      // All should match, nothing to do
+        valueOf("/***")
+    // All should match, nothing to do
     );
   }
 
   @Test
   public void testPathWildcardMatches() throws ValidationException {
     testMatches(
-      valueOf("/path/*"),
-      "/path/",
-      "/path/other"
+        valueOf("/path/*"),
+        "/path/",
+        "/path/other"
     );
   }
 
   @Test
   public void testPathWildcardNotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/path/*"),
-      "/",
-      "/path",
-      "/path/other/",
-      "/path/other/more",
-      "/path/other/more/",
-      "/pathy",
-      "/pathy/"
+        valueOf("/path/*"),
+        "/",
+        "/path",
+        "/path/other/",
+        "/path/other/more",
+        "/path/other/more/",
+        "/pathy",
+        "/pathy/"
     );
   }
 
   @Test
   public void testPathUnboundedMatches() throws ValidationException {
     testMatches(
-      valueOf("/path/**"),
-      "/path/",
-      "/path/other",
-      "/path/other/",
-      "/path/other/more",
-      "/path/other/more/"
+        valueOf("/path/**"),
+        "/path/",
+        "/path/other",
+        "/path/other/",
+        "/path/other/more",
+        "/path/other/more/"
     );
   }
 
   @Test
   public void testPathUnboundedNotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/path/**"),
-      "/",
-      "/path",
-      "/pathy",
-      "/pathy/"
+        valueOf("/path/**"),
+        "/",
+        "/path",
+        "/pathy",
+        "/pathy/"
     );
   }
 
   @Test
   public void testPathGreedyMatches() throws ValidationException {
     testMatches(
-      valueOf("/path/***"),
-      "/path/",
-      "/path/other",
-      "/path/other/",
-      "/path/other/more",
-      "/path/other/more/"
+        valueOf("/path/***"),
+        "/path/",
+        "/path/other",
+        "/path/other/",
+        "/path/other/more",
+        "/path/other/more/"
     );
   }
 
   @Test
   public void testPathGreedyNotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/path/***"),
-      "/",
-      "/path",
-      "/pathy",
-      "/pathy/"
+        valueOf("/path/***"),
+        "/",
+        "/path",
+        "/pathy",
+        "/pathy/"
     );
   }
+
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc="Test matches with .../*/*...">
   @Test
   public void testRootWildcardWildcardMatches() throws ValidationException {
     testMatches(
-      valueOf("/*/*"),
-      "/path/",
-      "/path/other"
+        valueOf("/*/*"),
+        "/path/",
+        "/path/other"
     );
   }
 
   @Test
   public void testRootWildcardWildcardNotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/*/*"),
-      "/",
-      "/path",
-      "/path/other/",
-      "/path/other/more",
-      "/path/other/more/"
+        valueOf("/*/*"),
+        "/",
+        "/path",
+        "/path/other/",
+        "/path/other/more",
+        "/path/other/more/"
     );
   }
 
   @Test
   public void testRootWildcardUnboundedMatches() throws ValidationException {
     testMatches(
-      valueOf("/*/**"),
-      "/path/",
-      "/path/other",
-      "/path/other/",
-      "/path/other/more",
-      "/path/other/more/"
+        valueOf("/*/**"),
+        "/path/",
+        "/path/other",
+        "/path/other/",
+        "/path/other/more",
+        "/path/other/more/"
     );
   }
 
   @Test
   public void testRootWildcardUnboundedNotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/*/**"),
-      "/",
-      "/path"
+        valueOf("/*/**"),
+        "/",
+        "/path"
     );
   }
 
   @Test
   public void testRootWildcardGreedyMatches() throws ValidationException {
     testMatches(
-      valueOf("/*/***"),
-      "/path/",
-      "/path/other",
-      "/path/other/",
-      "/path/other/more",
-      "/path/other/more/"
+        valueOf("/*/***"),
+        "/path/",
+        "/path/other",
+        "/path/other/",
+        "/path/other/more",
+        "/path/other/more/"
     );
   }
 
   @Test
   public void testRootWildcardGreedyNotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/*/***"),
-      "/",
-      "/path"
+        valueOf("/*/***"),
+        "/",
+        "/path"
     );
   }
 
   @Test
   public void testPathWildcardWildcardMatches() throws ValidationException {
     testMatches(
-      valueOf("/path/*/*"),
-      "/path/other/",
-      "/path/other/more"
+        valueOf("/path/*/*"),
+        "/path/other/",
+        "/path/other/more"
     );
   }
 
   @Test
   public void testPathWildcardWildcardNotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/path/*/*"),
-      "/",
-      "/path",
-      "/path/",
-      "/path/other",
-      "/path/other/more/",
-      "/path/other/more/fruit",
-      "/path/other/more/fruit/"
+        valueOf("/path/*/*"),
+        "/",
+        "/path",
+        "/path/",
+        "/path/other",
+        "/path/other/more/",
+        "/path/other/more/fruit",
+        "/path/other/more/fruit/"
     );
   }
 
   @Test
   public void testPathWildcardUnboundedMatches() throws ValidationException {
     testMatches(
-      valueOf("/path/*/**"),
-      "/path/other/",
-      "/path/other/more",
-      "/path/other/more/",
-      "/path/other/more/fruit",
-      "/path/other/more/fruit/"
+        valueOf("/path/*/**"),
+        "/path/other/",
+        "/path/other/more",
+        "/path/other/more/",
+        "/path/other/more/fruit",
+        "/path/other/more/fruit/"
     );
   }
 
   @Test
   public void testPathWildcardUnboundedNotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/path/*/**"),
-      "/",
-      "/path",
-      "/path/",
-      "/path/other"
+        valueOf("/path/*/**"),
+        "/",
+        "/path",
+        "/path/",
+        "/path/other"
     );
   }
 
   @Test
   public void testPathWildcardGreedyMatches() throws ValidationException {
     testMatches(
-      valueOf("/path/*/***"),
-      "/path/other/",
-      "/path/other/more",
-      "/path/other/more/",
-      "/path/other/more/fruit",
-      "/path/other/more/fruit/"
+        valueOf("/path/*/***"),
+        "/path/other/",
+        "/path/other/more",
+        "/path/other/more/",
+        "/path/other/more/fruit",
+        "/path/other/more/fruit/"
     );
   }
 
   @Test
   public void testPathWildcardGreedyNotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/path/*/***"),
-      "/",
-      "/path",
-      "/path/",
-      "/path/other"
+        valueOf("/path/*/***"),
+        "/",
+        "/path",
+        "/path/",
+        "/path/other"
     );
   }
+
   // </editor-fold>
 
   // <editor-fold defaultstate="collapsed" desc="Test matches with deeper nested /*/*/*...">
   @Test
   public void testRootWildcard3() throws ValidationException {
     testMatches(
-      valueOf("/*/*/*"),
-      "/path/other/",
-      "/path/other/more"
+        valueOf("/*/*/*"),
+        "/path/other/",
+        "/path/other/more"
     );
   }
 
   @Test
   public void testRootWildcard3NotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/*/*/*"),
-      "/",
-      "/path",
-      "/path/",
-      "/path/other",
-      "/path/other/more/",
-      "/path/other/more/fruit",
-      "/path/other/more/fruit/"
+        valueOf("/*/*/*"),
+        "/",
+        "/path",
+        "/path/",
+        "/path/other",
+        "/path/other/more/",
+        "/path/other/more/fruit",
+        "/path/other/more/fruit/"
     );
   }
 
   @Test
   public void testRootWildcard4() throws ValidationException {
     testMatches(
-      valueOf("/*/*/*/*"),
-      "/path/other/more/",
-      "/path/other/more/fruit"
+        valueOf("/*/*/*/*"),
+        "/path/other/more/",
+        "/path/other/more/fruit"
     );
   }
 
   @Test
   public void testRootWildcard4NotMatches() throws ValidationException {
     testNotMatches(
-      valueOf("/*/*/*/*"),
-      "/",
-      "/path",
-      "/path/",
-      "/path/other",
-      "/path/other/",
-      "/path/other/more",
-      "/path/other/more/fruit/",
-      "/path/other/more/fruit/loops",
-      "/path/other/more/fruit/loops/"
+        valueOf("/*/*/*/*"),
+        "/",
+        "/path",
+        "/path/",
+        "/path/other",
+        "/path/other/",
+        "/path/other/more",
+        "/path/other/more/fruit/",
+        "/path/other/more/fruit/loops",
+        "/path/other/more/fruit/loops/"
     );
   }
   // </editor-fold>

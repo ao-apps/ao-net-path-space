@@ -37,10 +37,10 @@ public class PathMatch<V> {
   private final V value;
 
   PathMatch(
-    Prefix prefix,
-    Path prefixPath,
-    Path path,
-    V value
+      Prefix prefix,
+      Path prefixPath,
+      Path path,
+      V value
   ) {
     this.prefix = prefix;
     this.prefixPath = prefixPath;
@@ -62,12 +62,12 @@ public class PathMatch<V> {
     if (!(o instanceof PathMatch<?>)) {
       return false;
     }
-    PathMatch<?> other = (PathMatch<?>)o;
+    PathMatch<?> other = (PathMatch<?>) o;
     return
-      value == other.value
-      && prefix.equals(other.prefix)
-      && prefixPath.equals(other.prefixPath)
-      && path.equals(other.path)
+        value == other.value
+            && prefix.equals(other.prefix)
+            && prefixPath.equals(other.prefixPath)
+            && path.equals(other.path)
     ;
   }
 

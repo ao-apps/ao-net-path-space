@@ -65,7 +65,7 @@ public class PrefixConflictException extends RuntimeException {
 
   static {
     Throwables.registerSurrogateFactory(PrefixConflictException.class, (template, cause) ->
-      new PrefixConflictException(template.existing, template.adding, cause)
+        new PrefixConflictException(template.existing, template.adding, cause)
     );
   }
 }

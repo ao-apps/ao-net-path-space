@@ -176,12 +176,12 @@ public class PathSpace<V> {
         wildcardDepthIndex.add(null);
       }
       wildcardDepthIndex.set(
-        wildcards - 1,
-        MinimalMap.put(
-          wildcardDepthIndex.get(wildcards - 1),
-          baseStr,
-          new ImmutablePair<>(prefix, value)
-        )
+          wildcards - 1,
+          MinimalMap.put(
+              wildcardDepthIndex.get(wildcards - 1),
+              baseStr,
+              new ImmutablePair<>(prefix, value)
+          )
       );
     } finally {
       writeLock.unlock();
@@ -210,10 +210,10 @@ public class PathSpace<V> {
           subPath = path.suffix(matchLen);
         }
         return new PathMatch<>(
-          prefix,
-          prefixPath,
-          subPath,
-          entry.getValue()
+            prefix,
+            prefixPath,
+            subPath,
+            entry.getValue()
         );
       }
     }
@@ -281,14 +281,14 @@ public class PathSpace<V> {
                 logger.finer("returning 1: prefixPath = " + prefixPath + ", subPath = " + subPath);
               }
               return new PathMatch<>(
-                match.getLeft(),
-                prefixPath,
-                subPath,
-                match.getRight()
+                  match.getLeft(),
+                  prefixPath,
+                  subPath,
+                  match.getRight()
               );
             }
           }
-          if (i < (wildcardDepthIndexLen -1 )) {
+          if (i < (wildcardDepthIndexLen - 1)) {
             int prevSearchSlashPos1 = pathStr.lastIndexOf(Path.SEPARATOR_CHAR, searchSlashPos - 1);
             if (logger.isLoggable(Level.FINEST)) {
               logger.finest("Loop 1: prevSearchSlashPos1 = " + prevSearchSlashPos1);
@@ -342,10 +342,10 @@ public class PathSpace<V> {
                 logger.finer("returning 2: prefixPath = " + prefixPath + ", subPath = " + subPath);
               }
               return new PathMatch<>(
-                match.getLeft(),
-                prefixPath,
-                subPath,
-                match.getRight()
+                  match.getLeft(),
+                  prefixPath,
+                  subPath,
+                  match.getRight()
               );
             }
           }
@@ -378,7 +378,7 @@ public class PathSpace<V> {
     try {
       PathMatch<V> indexedMatch = getIndexed(path);
       assert Objects.equals(indexedMatch, getSequential(path))
-        : "Indexed get inconsistent with sequential get: path = " + path + ", indexedMatch = " + indexedMatch + ", sequentialMatch = " + getSequential(path);
+          : "Indexed get inconsistent with sequential get: path = " + path + ", indexedMatch = " + indexedMatch + ", sequentialMatch = " + getSequential(path);
       return indexedMatch;
     } finally {
       readLock.unlock();
