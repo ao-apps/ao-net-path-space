@@ -30,6 +30,8 @@ import java.io.Serializable;
 import org.apache.commons.lang3.StringUtils;
 
 /**
+ * Path prefix for wildcard matching support.
+ *
  * @author  AO Industries, Inc.
  */
 public final class Prefix implements
@@ -37,27 +39,32 @@ public final class Prefix implements
     // Note: Made Serializable because is used as a field in PrefixConflictException.
     Serializable {
 
+  /**
+   * The character used for wildcards.
+   */
   public static final char WILDCARD_CHAR = '*';
 
   /**
-   * @see  Path#SEPARATOR_STRING
-   * @see  #WILDCARD_CHAR
+   * See {@link Path#SEPARATOR_STRING}, {@link #WILDCARD_CHAR}.
    */
   public static final String WILDCARD_SUFFIX = Path.SEPARATOR_STRING + WILDCARD_CHAR;
   private static final int WILDCARD_SUFFIX_LEN = WILDCARD_SUFFIX.length();
 
   /**
-   * @see  MultiLevelType#UNBOUNDED
+   * See {@link MultiLevelType#UNBOUNDED}.
    */
   public static final String UNBOUNDED_SUFFIX = WILDCARD_SUFFIX + WILDCARD_CHAR;
   private static final int UNBOUNDED_SUFFIX_LEN = UNBOUNDED_SUFFIX.length();
 
   /**
-   * @see  MultiLevelType#GREEDY
+   * See {@link MultiLevelType#GREEDY}.
    */
   public static final String GREEDY_SUFFIX = UNBOUNDED_SUFFIX + WILDCARD_CHAR;
   private static final int GREEDY_SUFFIX_LEN = GREEDY_SUFFIX.length();
 
+  /**
+   * The set of supported multi-level nesting types.
+   */
   public enum MultiLevelType {
     // Note: This ordering is important for the implementation of Prefix.compareTo(Prefix).
     NONE("", true),
@@ -83,7 +90,7 @@ public final class Prefix implements
     }
 
     /**
-     * Does this multi-level type allow subspaces to be created within its space?
+     * Does this multi-level type allow subspaces to be created within its space?.
      */
     public boolean getAllowsSubspaces() {
       return allowsSubspaces;
@@ -257,8 +264,8 @@ public final class Prefix implements
    * <p>
    * This is the inverse function of {@link #valueOf(java.lang.String)}.
    * </p>
-   * @see  MultiLevelType#getSuffix()
    *
+   * @see  MultiLevelType#getSuffix()
    * @see  #valueOf(java.lang.String)
    */
   @Override

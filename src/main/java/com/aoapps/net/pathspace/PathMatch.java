@@ -67,8 +67,7 @@ public class PathMatch<V> {
         value == other.value
             && prefix.equals(other.prefix)
             && prefixPath.equals(other.prefixPath)
-            && path.equals(other.path)
-    ;
+            && path.equals(other.path);
   }
 
   @Override

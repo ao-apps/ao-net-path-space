@@ -201,7 +201,8 @@ public class PathSpace<V> {
       Prefix prefix = entry.getKey();
       int matchLen = prefix.matches(path);
       if (matchLen != -1) {
-        Path prefixPath, subPath;
+        Path prefixPath;
+        Path subPath;
         if (matchLen == 0) {
           prefixPath = Path.ROOT;
           subPath = path;

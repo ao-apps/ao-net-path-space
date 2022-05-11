@@ -23,6 +23,8 @@
 
 package com.aoapps.net.pathspace;
 
+import static org.junit.Assert.assertNull;
+
 import com.aoapps.lang.validation.ValidationException;
 import com.aoapps.net.Path;
 import java.util.ArrayList;
@@ -30,11 +32,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
-import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 /**
- * @see PathSpace
+ * Tests {@link PathSpace}.
  *
  * @author  AO Industries, Inc.
  */

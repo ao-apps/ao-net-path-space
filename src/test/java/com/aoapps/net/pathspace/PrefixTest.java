@@ -23,18 +23,19 @@
 
 package com.aoapps.net.pathspace;
 
-import com.aoapps.lang.validation.ValidationException;
-import com.aoapps.net.Path;
-import com.aoapps.net.pathspace.Prefix.MultiLevelType;
 import static com.aoapps.net.pathspace.Prefix.valueOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+
+import com.aoapps.lang.validation.ValidationException;
+import com.aoapps.net.Path;
+import com.aoapps.net.pathspace.Prefix.MultiLevelType;
 import org.junit.Test;
 
 /**
- * @see Prefix
+ * Tests {@link Prefix}.
  *
  * @author  AO Industries, Inc.
  */
@@ -603,7 +604,7 @@ public class PrefixTest {
 
   // <editor-fold defaultstate="collapsed" desc="Test conflictsWith">
   /**
-   * Tests that all others conflict with the first
+   * Tests that all others conflict with the first.
    */
   private static void testConflicts(Prefix p0, Prefix ... others) {
     assertTrue("p0 must conflict with self: " + p0, p0.conflictsWith(p0));
@@ -615,7 +616,7 @@ public class PrefixTest {
   }
 
   /**
-   * Tests that all others do not conflict with the first
+   * Tests that all others do not conflict with the first.
    */
   private static void testNotConflicts(Prefix p0, Prefix ... others) {
     assertTrue("p0 must conflict with self: " + p0, p0.conflictsWith(p0));
@@ -805,7 +806,7 @@ public class PrefixTest {
 
   // <editor-fold defaultstate="collapsed" desc="Test matches">
   /**
-   * Tests that all paths match
+   * Tests that all paths match.
    * <p>
    * <b>Implementation Note:</b><br>
    * TODO: Add test of match length
@@ -822,7 +823,7 @@ public class PrefixTest {
   }
 
   /**
-   * Tests that all paths do not match
+   * Tests that all paths do not match.
    */
   private static void testNotMatches(Prefix prefix, String ... paths) throws ValidationException {
     for (String path : paths) {
