@@ -22,7 +22,7 @@ Manages allocation of a path space between components.
 * [Project Home](https://oss.aoapps.com/net-path-space/)
 * [Changelog](https://oss.aoapps.com/net-path-space/changelog)
 * [API Docs](https://oss.aoapps.com/net-path-space/apidocs/)
-* [Maven Central Repository](https://search.maven.org/artifact/com.aoapps/ao-net-path-space)
+* [Maven Central Repository](https://central.sonatype.com/search?namespace=com.aoapps&q=a%3Aao-net-path-space)
 * [GitHub](https://github.com/ao-apps/ao-net-path-space)
 
 ## Features
