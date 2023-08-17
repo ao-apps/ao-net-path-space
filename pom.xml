@@ -30,7 +30,7 @@ along with ao-net-path-space.  If not, see <https://www.gnu.org/licenses/>.
   </parent>
 
   <groupId>com.aoapps</groupId><artifactId>ao-net-path-space</artifactId><version>0.1.0-POST-SNAPSHOT</version>
-  <packaging>bundle</packaging>
+  <packaging>jar</packaging>
 
   <properties>
     <module.name>com.aoapps.net.pathspace</module.name>
