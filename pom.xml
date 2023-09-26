@@ -38,8 +38,6 @@ along with ao-net-path-space.  If not, see <https://www.gnu.org/licenses/>.
     <module.name>com.aoapps.net.pathspace</module.name>
     <javadoc.breadcrumbs><![CDATA[<a target="${javadoc.target}" href="https://oss.aoapps.com/">AO OSS</a>
 / <a target="${javadoc.target}" href="${project.url}">Net Path Space</a>]]></javadoc.breadcrumbs>
-    <!-- Dependencies -->
-    <commons-lang3.version>3.13.0</commons-lang3.version>
   </properties>
 
   <name>AO Net Path Space</name>
@@ -170,7 +168,7 @@ along with ao-net-path-space.  If not, see <https://www.gnu.org/licenses/>.
                   <location>${project.build.directory}/offlineLinks/com.aoapps/ao-net-types</location>
                 </offlineLink>
                 <offlineLink>
-                  <url>https://javadoc.io/doc/org.apache.commons/commons-lang3/${commons-lang3.version}/</url>
+                  <url>https://javadoc.io/doc/org.apache.commons/commons-lang3/${org.apache.commons:commons-lang3:jar.version}/</url>
                   <location>${project.build.directory}/offlineLinks/org.apache.commons/commons-lang3</location>
                 </offlineLink>
                 <!-- Test Direct -->
@@ -199,7 +197,7 @@ along with ao-net-path-space.  If not, see <https://www.gnu.org/licenses/>.
         <groupId>com.aoapps</groupId><artifactId>ao-net-types</artifactId><version>2.0.2${POST-SNAPSHOT}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>${commons-lang3.version}</version>
+        <groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>3.13.0</version>
       </dependency>
       <!-- Transitive -->
       <dependency>
