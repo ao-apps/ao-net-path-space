@@ -1,6 +1,6 @@
 /*
  * ao-net-path-space - Manages allocation of a path space between components.
- * Copyright (C) 2018, 2019, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2018, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -166,9 +166,8 @@ public final class Prefix implements
 
   /**
    * Parses the unambiguous string representation of a prefix.
-   * <p>
-   * This is the inverse function of {@link #toString()}.
-   * </p>
+   *
+   * <p>This is the inverse function of {@link #toString()}.</p>
    *
    * @param  prefix  The prefix to parse.  Must adhere to all rules of {@link  #valueOf(com.aoapps.net.Path, int, com.aoapps.net.pathspace.Prefix.MultiLevelType)}
    *
@@ -261,9 +260,8 @@ public final class Prefix implements
 
   /**
    * Gets the unambiguous string representation of this prefix.
-   * <p>
-   * This is the inverse function of {@link #valueOf(java.lang.String)}.
-   * </p>
+   *
+   * <p>This is the inverse function of {@link #valueOf(java.lang.String)}.</p>
    *
    * @see  MultiLevelType#getSuffix()
    * @see  #valueOf(java.lang.String)
@@ -334,15 +332,12 @@ public final class Prefix implements
   /**
    * The natural ordering is such that an iterative call to {@link #matches(com.aoapps.net.Path)} will return.
    * {@code true} on the most specific matching space.  This match is consistent with {@link PathSpace#get(com.aoapps.net.Path)}.
-   * <p>
-   * This ordering is useful for human review, as it represents the path space conceptually in a top-to-bottom list.
-   * </p>
-   * <p>
-   * The implementation of TODO: Link findSpace, should be much faster than an iterative search, however.
-   * </p>
-   * <p>
-   * TODO: There are no ordering guarantees between prefixes that {@link #conflictsWith(com.aoapps.net.pathspace.Prefix) conflict with one another}?
-   * </p>
+   *
+   * <p>This ordering is useful for human review, as it represents the path space conceptually in a top-to-bottom list.</p>
+   *
+   * <p>The implementation of TODO: Link findSpace, should be much faster than an iterative search, however.</p>
+   *
+   * <p>TODO: There are no ordering guarantees between prefixes that {@link #conflictsWith(com.aoapps.net.pathspace.Prefix) conflict with one another}?</p>
    *
    * @see  #conflictsWith(com.aoapps.net.pathspace.Prefix)
    * @see  #matches(com.aoapps.net.Path)

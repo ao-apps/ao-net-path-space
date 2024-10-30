@@ -1,6 +1,6 @@
 /*
  * ao-net-path-space - Manages allocation of a path space between components.
- * Copyright (C) 2018, 2019, 2020, 2021, 2022  AO Industries, Inc.
+ * Copyright (C) 2018, 2019, 2020, 2021, 2022, 2024  AO Industries, Inc.
  *     support@aoindustries.com
  *     7262 Bull Pen Cir
  *     Mobile, AL 36695
@@ -42,12 +42,10 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 /**
  * Manages a set of {@link Prefix}, identifying conflicts and providing efficient lookup
  * even when many prefixes are in the path space.
- * <p>
- * Each path space has an associated value.
- * </p>
- * <p>
- * This class is thread-safe.
- * </p>
+ *
+ * <p>Each path space has an associated value.</p>
+ *
+ * <p>This class is thread-safe.</p>
  *
  * @author  AO Industries, Inc.
  */
@@ -71,35 +69,29 @@ public class PathSpace<V> {
 
   /**
    * The index of all bounded prefixes (prefixes with multilevel type {@link Prefix.MultiLevelType#NONE}).
-   * <p>
-   * The main list is indexed by the total path depth, including the prefix depth and all wildcards.
-   * This will always be at least one (for /*), so the index is offset by one.
-   * </p>
-   * <p>
-   * The list for each path depth is indexed by the number of wildcard substitutions in the prefix.
-   * This also will always be at least one (for /path/*), so the index is offset by one.
-   * </p>
-   * <p>
-   * The map for each path depth and number of wildcards contains {@link Prefix#getBase() prefix base}
-   * and the associated value.
-   * </p>
+   *
+   * <p>The main list is indexed by the total path depth, including the prefix depth and all wildcards.
+   * This will always be at least one (for /*), so the index is offset by one.</p>
+   *
+   * <p>The list for each path depth is indexed by the number of wildcard substitutions in the prefix.
+   * This also will always be at least one (for /path/*), so the index is offset by one.</p>
+   *
+   * <p>The map for each path depth and number of wildcards contains {@link Prefix#getBase() prefix base}
+   * and the associated value.</p>
    */
   private final List<List<Map<String, ImmutablePair<Prefix, V>>>> boundedIndex = new ArrayList<>();
 
   /**
    * The index of all unbounded prefixes (prefixes with multilevel types other than {@link Prefix.MultiLevelType#NONE}.
-   * <p>
-   * The main list is indexed by the total path depth, including the prefix depth and all wildcards (+1 for effectiveWildcards).
-   * Effective wildcards will always be at least one (for /** or /***), so the index is offset by one.
-   * </p>
-   * <p>
-   * The list for each path depth is indexed by the number of wildcard substitutions in the prefix.
-   * This also will always be at least one (for /path/*), so the index is offset by one.
-   * </p>
-   * <p>
-   * The map for each path depth and number of wildcards contains {@link Prefix#getBase() prefix base}
-   * and the associated value.
-   * </p>
+   *
+   * <p>The main list is indexed by the total path depth, including the prefix depth and all wildcards (+1 for effectiveWildcards).
+   * Effective wildcards will always be at least one (for /** or /***), so the index is offset by one.</p>
+   *
+   * <p>The list for each path depth is indexed by the number of wildcard substitutions in the prefix.
+   * This also will always be at least one (for /path/*), so the index is offset by one.</p>
+   *
+   * <p>The map for each path depth and number of wildcards contains {@link Prefix#getBase() prefix base}
+   * and the associated value.</p>
    *
    * @see  #boundedIndex
    */
@@ -116,10 +108,9 @@ public class PathSpace<V> {
 
   /**
    * Adds a new prefix to this space while checking for conflicts.
-   * <p>
-   * Note: This implementation is very simple and not optimized for performance.
-   * It does a sequential scan for the conflict check.
-   * </p>
+   *
+   * <p>Note: This implementation is very simple and not optimized for performance.
+   * It does a sequential scan for the conflict check.</p>
    *
    * @throws  PrefixConflictException  If the prefix conflicts with an existing entry.
    *
@@ -192,9 +183,8 @@ public class PathSpace<V> {
    * Sequential implementation of {@link #get(com.aoapps.net.Path)} based on iterative
    * calls to {@link Prefix#matches(com.aoapps.net.Path)}
    * in the natural ordering established by {@link Prefix#compareTo(com.aoapps.net.pathspace.Prefix)}.
-   * <p>
-   * The caller must already hold {@link #readLock}
-   * </p>
+   *
+   * <p>The caller must already hold {@link #readLock}</p>
    */
   PathMatch<V> getSequential(Path path) {
     for (Map.Entry<Prefix, V> entry : sortedMap.entrySet()) {
@@ -223,9 +213,8 @@ public class PathSpace<V> {
 
   /**
    * Indexed implementation of {@link #get(com.aoapps.net.Path)}.
-   * <p>
-   * The caller must already hold {@link #readLock}
-   * </p>
+   *
+   * <p>The caller must already hold {@link #readLock}</p>
    */
   PathMatch<V> getIndexed(Path path) {
     // Search the path up to the deepest possibly used
