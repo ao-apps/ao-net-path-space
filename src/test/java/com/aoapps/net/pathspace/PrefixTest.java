@@ -413,7 +413,7 @@ public class PrefixTest {
     );
   }
 
-  private static void assertCompareBefore(String prefix1, String ... others) {
+  private static void assertCompareBefore(String prefix1, String... others) {
     Prefix p1 = valueOf(prefix1);
     for (String prefix2 : others) {
       Prefix p2 = valueOf(prefix2);
@@ -430,7 +430,7 @@ public class PrefixTest {
     }
   }
 
-  private static void assertCompareAfter(String prefix1, String ... others) {
+  private static void assertCompareAfter(String prefix1, String... others) {
     Prefix p1 = valueOf(prefix1);
     for (String prefix2 : others) {
       Prefix p2 = valueOf(prefix2);
@@ -606,7 +606,7 @@ public class PrefixTest {
   /**
    * Tests that all others conflict with the first.
    */
-  private static void testConflicts(Prefix p0, Prefix ... others) {
+  private static void testConflicts(Prefix p0, Prefix... others) {
     assertTrue("p0 must conflict with self: " + p0, p0.conflictsWith(p0));
     for (Prefix other : others) {
       assertTrue("other must conflict with self: " + other, other.conflictsWith(other));
@@ -618,7 +618,7 @@ public class PrefixTest {
   /**
    * Tests that all others do not conflict with the first.
    */
-  private static void testNotConflicts(Prefix p0, Prefix ... others) {
+  private static void testNotConflicts(Prefix p0, Prefix... others) {
     assertTrue("p0 must conflict with self: " + p0, p0.conflictsWith(p0));
     for (Prefix other : others) {
       assertTrue("other must conflict with self: " + other, other.conflictsWith(other));
@@ -811,7 +811,7 @@ public class PrefixTest {
    * <p><b>Implementation Note:</b><br>
    * TODO: Add test of match length</p>
    */
-  private static void testMatches(Prefix prefix, String ... paths) throws ValidationException {
+  private static void testMatches(Prefix prefix, String... paths) throws ValidationException {
     for (String path : paths) {
       assertNotEquals(
           "must match: prefix = " + prefix + ", path = " + path,
@@ -824,7 +824,7 @@ public class PrefixTest {
   /**
    * Tests that all paths do not match.
    */
-  private static void testNotMatches(Prefix prefix, String ... paths) throws ValidationException {
+  private static void testNotMatches(Prefix prefix, String... paths) throws ValidationException {
     for (String path : paths) {
       assertEquals(
           "must not match: prefix = " + prefix + ", path = " + path,
