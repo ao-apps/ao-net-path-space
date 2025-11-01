@@ -233,7 +233,6 @@ public class PathSpaceTest {
     );
   }
 
-
   @Test
   public void testGetWithoutRoot() throws ValidationException {
     PathSpace<Void> testSpace = newTestSpace(
