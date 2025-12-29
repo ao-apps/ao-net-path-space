@@ -42,8 +42,6 @@ Manages allocation of a path space between components.
         * `/path/*/***` - multi-level greedy space - matches all resources at or below the given path depth.
         * `/path/*/*/***` - any number of levels allowed.
 * Small footprint, minimal dependencies - not part of a big monolithic package.
-* Java 1.8 implementation:
-    * Android compatible.
 
 ## Motivation
 Managing the URL path space is central to web application development.  When components are developed independently and combined into a single URL space, as well as underlying implementation space (such as Java Servlet paths), it is important that each component occupy a well-defined space without unexpectedly overlapping other components.  The goal is to reliably identify conflicts within an application's URL or implementation space instead of unintentionally having overlapping components or access rules.
