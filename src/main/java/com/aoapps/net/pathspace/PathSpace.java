@@ -93,7 +93,7 @@ public class PathSpace<V> {
    * <p>The map for each path depth and number of wildcards contains {@link Prefix#getBase() prefix base}
    * and the associated value.</p>
    *
-   * @see  #boundedIndex
+   * @see  PathSpace#boundedIndex
    */
   private final List<List<Map<String, ImmutablePair<Prefix, V>>>> unboundedIndex = new ArrayList<>();
 
@@ -180,11 +180,11 @@ public class PathSpace<V> {
   }
 
   /**
-   * Sequential implementation of {@link #get(com.aoapps.net.Path)} based on iterative
+   * Sequential implementation of {@link PathSpace#get(com.aoapps.net.Path)} based on iterative
    * calls to {@link Prefix#matches(com.aoapps.net.Path)}
    * in the natural ordering established by {@link Prefix#compareTo(com.aoapps.net.pathspace.Prefix)}.
    *
-   * <p>The caller must already hold {@link #readLock}</p>
+   * <p>The caller must already hold {@link PathSpace#readLock}</p>
    */
   PathMatch<V> getSequential(Path path) {
     for (Map.Entry<Prefix, V> entry : sortedMap.entrySet()) {
@@ -212,9 +212,9 @@ public class PathSpace<V> {
   }
 
   /**
-   * Indexed implementation of {@link #get(com.aoapps.net.Path)}.
+   * Indexed implementation of {@link PathSpace#get(com.aoapps.net.Path)}.
    *
-   * <p>The caller must already hold {@link #readLock}</p>
+   * <p>The caller must already hold {@link PathSpace#readLock}</p>
    */
   PathMatch<V> getIndexed(Path path) {
     // Search the path up to the deepest possibly used

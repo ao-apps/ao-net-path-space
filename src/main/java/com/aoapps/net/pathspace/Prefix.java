@@ -45,7 +45,7 @@ public final class Prefix implements
   public static final char WILDCARD_CHAR = '*';
 
   /**
-   * See {@link Path#SEPARATOR_STRING}, {@link #WILDCARD_CHAR}.
+   * See {@link Path#SEPARATOR_STRING}, {@link Prefix#WILDCARD_CHAR}.
    */
   public static final String WILDCARD_SUFFIX = Path.SEPARATOR_STRING + WILDCARD_CHAR;
   private static final int WILDCARD_SUFFIX_LEN = WILDCARD_SUFFIX.length();
@@ -141,7 +141,7 @@ public final class Prefix implements
    *
    * @param multiLevelType May not be {@code null}
    *
-   * @see  #valueOf(java.lang.String)
+   * @see  Prefix#valueOf(java.lang.String)
    */
   public static Prefix valueOf(Path base, int wildcards, MultiLevelType multiLevelType) {
     NullArgumentException.checkNotNull(base, "base");
@@ -167,12 +167,12 @@ public final class Prefix implements
   /**
    * Parses the unambiguous string representation of a prefix.
    *
-   * <p>This is the inverse function of {@link #toString()}.</p>
+   * <p>This is the inverse function of {@link Prefix#toString()}.</p>
    *
-   * @param  prefix  The prefix to parse.  Must adhere to all rules of {@link  #valueOf(com.aoapps.net.Path, int, com.aoapps.net.pathspace.Prefix.MultiLevelType)}
+   * @param  prefix  The prefix to parse.  Must adhere to all rules of {@link  Prefix#valueOf(com.aoapps.net.Path, int, com.aoapps.net.pathspace.Prefix.MultiLevelType)}
    *
-   * @see  #toString()
-   * @see  #valueOf(com.aoapps.net.Path, int, com.aoapps.net.pathspace.Prefix.MultiLevelType)
+   * @see  Prefix#toString()
+   * @see  Prefix#valueOf(com.aoapps.net.Path, int, com.aoapps.net.pathspace.Prefix.MultiLevelType)
    */
   public static Prefix valueOf(String prefix) {
     NullArgumentException.checkNotNull(prefix, "prefix");
@@ -229,8 +229,8 @@ public final class Prefix implements
    * Validity checks are performed in the @{code valueOf} methods because this class is used internally
    * for map lookups.  These lookups avoid the validity checks on these short-lived key lookup instances.
    *
-   * @see  #valueOf(com.aoapps.net.Path, int, com.aoapps.net.pathspace.Prefix.MultiLevelType)
-   * @see  #valueOf(java.lang.String)
+   * @see  Prefix#valueOf(com.aoapps.net.Path, int, com.aoapps.net.pathspace.Prefix.MultiLevelType)
+   * @see  Prefix#valueOf(java.lang.String)
    */
   private Prefix(Path base, int wildcards, MultiLevelType multiLevelType) {
     this.base = base;
@@ -261,10 +261,10 @@ public final class Prefix implements
   /**
    * Gets the unambiguous string representation of this prefix.
    *
-   * <p>This is the inverse function of {@link #valueOf(java.lang.String)}.</p>
+   * <p>This is the inverse function of {@link Prefix#valueOf(java.lang.String)}.</p>
    *
    * @see  MultiLevelType#getSuffix()
-   * @see  #valueOf(java.lang.String)
+   * @see  Prefix#valueOf(java.lang.String)
    */
   @Override
   public String toString() {
@@ -330,17 +330,17 @@ public final class Prefix implements
   }
 
   /**
-   * The natural ordering is such that an iterative call to {@link #matches(com.aoapps.net.Path)} will return.
+   * The natural ordering is such that an iterative call to {@link Prefix#matches(com.aoapps.net.Path)} will return.
    * {@code true} on the most specific matching space.  This match is consistent with {@link PathSpace#get(com.aoapps.net.Path)}.
    *
    * <p>This ordering is useful for human review, as it represents the path space conceptually in a top-to-bottom list.</p>
    *
    * <p>The implementation of TODO: Link findSpace, should be much faster than an iterative search, however.</p>
    *
-   * <p>TODO: There are no ordering guarantees between prefixes that {@link #conflictsWith(com.aoapps.net.pathspace.Prefix) conflict with one another}?</p>
+   * <p>TODO: There are no ordering guarantees between prefixes that {@link Prefix#conflictsWith(com.aoapps.net.pathspace.Prefix) conflict with one another}?</p>
    *
-   * @see  #conflictsWith(com.aoapps.net.pathspace.Prefix)
-   * @see  #matches(com.aoapps.net.Path)
+   * @see  Prefix#conflictsWith(com.aoapps.net.pathspace.Prefix)
+   * @see  Prefix#matches(com.aoapps.net.Path)
    */
   @Override
   public int compareTo(Prefix other) {
@@ -363,7 +363,7 @@ public final class Prefix implements
 
   /**
    * Gets the number of wildcard levels attached to the base.
-   * This will be at least one when {@link #getMultiLevelType()} is {@link MultiLevelType#NONE}.
+   * This will be at least one when {@link Prefix#getMultiLevelType()} is {@link MultiLevelType#NONE}.
    * Otherwise, may also be zero.
    */
   public int getWildcards() {
